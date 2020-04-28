@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+        <title>Articles</title>
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body>
+        <a name="top"/>
+        <div id="formCreate">
+            <input type="hidden" id="inpId" />
+            <input type="text" id="inpTitle" placeholder="Title" title="come to the point; essence" /><br/>
+            <textarea id="inpBody" placeholder="Body"></textarea><br/>
+            <input type="text" id="inpTags" placeholder="Tags" title="whitespace seperated list without hashtags" /><br/>
+            <div>
+                <input type="button" id="btnCreate" value="Erstellen" />
+                <input type="button" id="btnUpdate" value="Bearbeiten" />
+                <input type="button" id="btnCancel" value="Abbrechen" />
+                <input type="button" id="btnDelete" value="Löschen" />
+            </div>
+        </div>
+
+        </div>
+        <div id="articleList"></div>
+
+        <script src="./renderer.js"></script>
+    </body>
+</html>
