@@ -7,18 +7,19 @@ var Articles_1 = require("./Articles");
 // ------------========================================================------------
 window.addEventListener('DOMContentLoaded', function () {
     console.log("on DOMContentLoaded");
+    document.addEventListener('keydown', function (event) {
+        var key = event.key; // Or const {key} = event; in ES6+
+        if (event.metaKey && key == "f") {
+            document.getElementById("inpSearch").focus();
+        }
+    });
     resetArticleList();
+    document.getElementById("btnCancelSearch").hidden = true;
     document.getElementById("btnCreate").addEventListener("click", onCreateClicked);
     document.getElementById("btnUpdate").addEventListener("click", onUpdateClicked);
     document.getElementById("btnCancel").addEventListener("click", onCancelClicked);
     document.getElementById("btnDelete").addEventListener("click", onDeleteClicked);
-    document.getElementById("inpSearch").addEventListener("input", onSearchInput);
-    document.getElementById("inpSearch").addEventListener('keydown', function (event) {
-        var key = event.key; // Or const {key} = event; in ES6+
-        if (key === "Escape") {
-            resetSearch();
-        }
-    });
+    registerSearchListener();
     switchButtonsToCreateMode(true);
 });
 // UI HANDLER
@@ -31,7 +32,7 @@ function onCreateClicked() {
     }
     Articles_1["default"].saveArticle(article);
     resetArticleList();
-    // resetInputs();
+    updateArticleForm(article);
 }
 function onUpdateClicked() {
     console.log("onUpdateClicked()");
@@ -56,34 +57,57 @@ function onDeleteClicked() {
 }
 function onArticleTitleClicked(article) {
     scrollToTop();
+    updateArticleForm(article);
+}
+function onArticleTagClicked(tag) {
+    var oldSearch = getInputValue("inpSearch");
+    var tagHashed = "#" + tag;
+    var newSearch = (oldSearch.length == 0) ? tagHashed : oldSearch + " " + tagHashed;
+    setInputValue("inpSearch", newSearch);
+    onSearchInput();
+}
+// SEARCH
+// ------------========================================================------------
+function registerSearchListener() {
+    document.getElementById("inpSearch").addEventListener("input", onSearchInput);
+    document.getElementById("inpSearch").addEventListener('keydown', function (event) {
+        var key = event.key; // Or const {key} = event; in ES6+
+        if (key === "Escape") {
+            resetSearch();
+        }
+    });
+    document.getElementById("btnCancelSearch").addEventListener("click", resetSearch);
+}
+function onSearchInput() {
+    var searchTerm = getInputValue("inpSearch").trim();
+    var terms = searchTerm.split(" ").filter(function (it) { return it.length != 0; });
+    console.log("onSearchInput(" + searchTerm + ") => terms:", terms);
+    if (terms.length == 0) {
+        resetSearch();
+        return;
+    }
+    document.getElementById("btnCancelSearch").hidden = false;
+    var articles = Articles_1["default"].searchArticles(terms);
+    removeAndPrependArticleNodes(articles);
+}
+function resetSearch() {
+    setInputValue("inpSearch", "");
+    document.getElementById("btnCancelSearch").hidden = true;
+    Articles_1["default"].disableSearch();
+    resetArticleList();
+}
+// UI LOGIC
+// ------------========================================================------------
+function readArticleFromUI(givenId) {
+    if (givenId === void 0) { givenId = undefined; }
+    return new common_1.Article((givenId !== undefined) ? givenId : getInputValue("inpId"), getInputValue("inpTitle"), getInputValue("inpTags").split(" ").filter(function (it) { return it.length > 0; }), getInputValue("inpBody"));
+}
+function updateArticleForm(article) {
     setInputValue("inpId", article.id);
     setInputValue("inpTitle", article.title);
     setInputValue("inpTags", article.tags.join(" "));
     setInputValue("inpBody", article.body);
     switchButtonsToCreateMode(false);
-}
-function onSearchInput(event) {
-    var searchTerm = event.target.value.trim();
-    var terms = searchTerm.split(" ").filter(function (it) { return it.length != 0; });
-    console.log("onSearchInput(" + searchTerm + ") => terms:", terms);
-    // TODO register escape to cancel search as well
-    if (terms.length == 0) {
-        resetSearch();
-        return;
-    }
-    var articles = Articles_1["default"].searchArticles(terms);
-    removeAndPrependArticleNodes(articles);
-}
-// UI LOGIC
-// ------------========================================================------------
-function resetSearch() {
-    setInputValue("inpSearch", "");
-    Articles_1["default"].disableSearch();
-    resetArticleList();
-}
-function readArticleFromUI(givenId) {
-    if (givenId === void 0) { givenId = undefined; }
-    return new common_1.Article((givenId !== undefined) ? givenId : getInputValue("inpId"), getInputValue("inpTitle"), getInputValue("inpTags").split(" ").filter(function (it) { return it.length > 0; }), getInputValue("inpBody"));
 }
 function resetInputs() {
     setInputValue("inpId", "");
@@ -104,6 +128,17 @@ function removeAndPrependArticleNodes(articles) {
     articles.forEach(function (article) {
         articleList.prepend(createArticleNode(article));
     });
+    fillTagsSummary(articles);
+}
+function fillTagsSummary(articles) {
+    var uniqueTags = new Set();
+    articles.forEach(function (article) {
+        article.tags.forEach(function (tag) {
+            uniqueTags.add(tag);
+        });
+    });
+    var tagsText = Array.from(uniqueTags).sort().map(function (it) { return "#" + it; }).join(" ");
+    document.getElementById("tagsSummary").innerText = tagsText;
 }
 // MISC
 // ------------========================================================------------
@@ -125,9 +160,14 @@ function createArticleNode(article) {
     articleTitle.appendChild(articleTitleLink);
     var articleTags = document.createElement("p");
     articleTags.classList.add("articleTags");
-    articleTags.innerText = article.tags.map(function (tag) {
-        return "#" + tag;
-    }).join(" ");
+    article.tags.forEach(function (tag) {
+        var tagNode = document.createElement("a");
+        tagNode.classList.add("clickableTag");
+        tagNode.innerText = "#" + tag;
+        tagNode.href = "#";
+        tagNode.onclick = function () { onArticleTagClicked(tag); };
+        articleTags.appendChild(tagNode);
+    });
     var articleBody = document.createElement("p");
     articleBody.classList.add("articleBody");
     articleBody.innerText = article.body;

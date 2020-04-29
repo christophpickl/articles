@@ -9,24 +9,24 @@ import Articles from './Articles';
 
 window.addEventListener('DOMContentLoaded', () => {
     console.log("on DOMContentLoaded");
+    document.addEventListener('keydown', function(event) {
+        const key = event.key; // Or const {key} = event; in ES6+
+        if (event.metaKey && key == "f") {
+            document.getElementById("inpSearch")!.focus();
+        }
+    });
 
     resetArticleList()
+    document.getElementById("btnCancelSearch")!.hidden = true;
 
     document.getElementById("btnCreate")!.addEventListener("click", onCreateClicked); 
     document.getElementById("btnUpdate")!.addEventListener("click", onUpdateClicked); 
     document.getElementById("btnCancel")!.addEventListener("click", onCancelClicked); 
     document.getElementById("btnDelete")!.addEventListener("click", onDeleteClicked); 
-    document.getElementById("inpSearch")!.addEventListener("input", onSearchInput); 
-    document.getElementById("inpSearch")!.addEventListener('keydown', function(event) {
-        const key = event.key; // Or const {key} = event; in ES6+
-        if (key === "Escape") {
-            resetSearch();
-        }
-    });
+    registerSearchListener();
     
     switchButtonsToCreateMode(true);
 });
-
 
 // UI HANDLER
 // ------------========================================================------------
@@ -41,7 +41,7 @@ function onCreateClicked() {
     }
     Articles.saveArticle(article);
     resetArticleList();
-    // resetInputs();
+    updateArticleForm(article);
 }
 
 function onUpdateClicked() {
@@ -70,34 +70,53 @@ function onDeleteClicked() {
 
 function onArticleTitleClicked(article: Article) {
     scrollToTop();
-    setInputValue("inpId", article.id);
-    setInputValue("inpTitle", article.title);
-    setInputValue("inpTags", article.tags.join(" "));
-    setInputValue("inpBody", article.body);
-    switchButtonsToCreateMode(false);
+    updateArticleForm(article);
 }
 
-function onSearchInput(event) {
-    let searchTerm: string = event.target.value.trim()
+function onArticleTagClicked(tag: string) {
+    let oldSearch = getInputValue("inpSearch");
+    let tagHashed = "#" + tag;
+    let newSearch = (oldSearch.length == 0) ? tagHashed  : oldSearch + " " + tagHashed;
+    setInputValue("inpSearch", newSearch);
+    onSearchInput();
+}
+
+// SEARCH
+// ------------========================================================------------
+
+function registerSearchListener() {
+    document.getElementById("inpSearch")!.addEventListener("input", onSearchInput); 
+    document.getElementById("inpSearch")!.addEventListener('keydown', function(event) {
+        const key = event.key; // Or const {key} = event; in ES6+
+        if (key === "Escape") {
+            resetSearch();
+        }
+    });
+    document.getElementById("btnCancelSearch")!.addEventListener("click", resetSearch); 
+}
+
+function onSearchInput() {
+    let searchTerm: string = getInputValue("inpSearch").trim()
     let terms = searchTerm.split(" ").filter((it) => { return it.length != 0});
     console.log("onSearchInput("+searchTerm+") => terms:", terms);
-    // TODO register escape to cancel search as well
     if (terms.length == 0) {
         resetSearch();
         return;
     }
+    document.getElementById("btnCancelSearch")!.hidden = false;
     let articles = Articles.searchArticles(terms);
     removeAndPrependArticleNodes(articles);
 }
 
-// UI LOGIC
-// ------------========================================================------------
-
 function resetSearch() {
     setInputValue("inpSearch", "");
+    document.getElementById("btnCancelSearch")!.hidden = true;
     Articles.disableSearch();
     resetArticleList();
 }
+
+// UI LOGIC
+// ------------========================================================------------
 
 function readArticleFromUI(givenId: string | undefined = undefined): Article {
     return new Article(
@@ -106,6 +125,14 @@ function readArticleFromUI(givenId: string | undefined = undefined): Article {
         getInputValue("inpTags").split(" ").filter(function(it) { return it.length > 0; }),
         getInputValue("inpBody")
     );
+}
+
+function updateArticleForm(article: Article) {
+    setInputValue("inpId", article.id);
+    setInputValue("inpTitle", article.title);
+    setInputValue("inpTags", article.tags.join(" "));
+    setInputValue("inpBody", article.body);
+    switchButtonsToCreateMode(false);
 }
 
 function resetInputs() {
@@ -129,6 +156,18 @@ function removeAndPrependArticleNodes(articles: Article[]) {
     articles.forEach(function(article) {
         articleList.prepend(createArticleNode(article));
     });
+    fillTagsSummary(articles);
+}
+
+function fillTagsSummary(articles: Article[]) {
+    let uniqueTags = new Set();
+    articles.forEach((article) => {
+        article.tags.forEach((tag) => {
+            uniqueTags.add(tag)
+        });
+    });
+    let tagsText = Array.from(uniqueTags).sort().map((it)=>{ return "#" + it; }).join(" ");
+    document.getElementById("tagsSummary")!.innerText = tagsText;
 }
 
 // MISC
@@ -155,9 +194,15 @@ function createArticleNode(article: Article) {
 
     let articleTags = document.createElement("p");
     articleTags.classList.add("articleTags");
-    articleTags.innerText = article.tags.map(function(tag) {
-        return "#" + tag;
-    }).join(" ");
+
+    article.tags.forEach((tag) => {
+        let tagNode = document.createElement("a");
+        tagNode.classList.add("clickableTag");
+        tagNode.innerText = "#" + tag;
+        tagNode.href = "#";
+        tagNode.onclick = () => { onArticleTagClicked(tag); };
+        articleTags.appendChild(tagNode);
+    });
 
     let articleBody = document.createElement("p");
     articleBody.classList.add("articleBody");

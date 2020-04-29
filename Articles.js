@@ -34,9 +34,15 @@ var Articles = /** @class */ (function () {
         console.log("running search...", Articles.currentSearchTerms);
         return Articles.loadedArticles.filter(function (article) {
             return Articles.currentSearchTerms.every(function (term) {
-                return article.title.indexOf(term) != -1 ||
-                    article.tags.some(function (tag) { return tag.indexOf(term) != -1; }) ||
-                    article.body.indexOf(term) != -1;
+                if (term.startsWith("#")) {
+                    var trimmedTerm_1 = term.substring(1);
+                    return article.tags.some(function (tag) { return tag.indexOf(trimmedTerm_1) != -1; });
+                }
+                else {
+                    return article.title.indexOf(term) != -1 ||
+                        article.tags.some(function (tag) { return tag.indexOf(term) != -1; }) ||
+                        article.body.indexOf(term) != -1;
+                }
             });
         });
     };
@@ -79,6 +85,7 @@ var Articles = /** @class */ (function () {
     };
     Articles._debugOn = false;
     Articles.loadedArticles = [];
+    // terms mit start with a "#" indicating a tag search
     Articles.currentSearchTerms = null;
     return Articles;
 }());

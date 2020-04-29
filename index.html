@@ -12,18 +12,22 @@
         <a name="top"/>
         <div id="formCreate">
             <input type="hidden" id="inpId" />
-            <input type="text" id="inpTitle" placeholder="Title" title="come to the point; essence" /><br/>
-            <input type="text" id="inpTags" placeholder="Tags" title="whitespace seperated list without hashtags" /><br/>
-            <textarea id="inpBody" placeholder="Body"></textarea><br/>
+            <input type="text" id="inpTitle" placeholder="title" title="come to the point; essence" /><br/>
+            <input type="text" id="inpTags" placeholder="tags" title="whitespace seperated list without hashtags" /><br/>
+            <textarea id="inpBody" placeholder="body"></textarea><br/>
             <div>
-                <input type="button" id="btnCreate" class="crudButton" value="Create" />
-                <input type="button" id="btnUpdate" class="crudButton" value="Update" />
-                <input type="button" id="btnCancel" class="crudButton" value="Cancel" />
-                <input type="button" id="btnDelete" class="crudButton" value="Delete" />
+                <input type="button" id="btnCreate" class="crudButton" value="create" />
+                <input type="button" id="btnUpdate" class="crudButton" value="update" />
+                <input type="button" id="btnCancel" class="crudButton" value="cancel" />
+                <input type="button" id="btnDelete" class="crudButton" value="delete" />
             </div>
         </div>
+        <div id="tagsSummary">
+
+        </div>
         <div id="searchDiv">
-            <input type="text" id="inpSearch" placeholder="Search ..." />
+            <input type="text" id="inpSearch" placeholder="search ..." />
+            <input type="button" id="btnCancelSearch" value="cancel" />
         </div>
         <div id="articleList"></div>
 

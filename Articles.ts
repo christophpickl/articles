@@ -7,6 +7,7 @@ export default class Articles {
     private static _debugOn: boolean = false;
     private static loadedArticles: Article[] = [];
 
+    // terms mit start with a "#" indicating a tag search
     private static currentSearchTerms: Nullable<string[]> = null
 
     static loadArticles() {
@@ -39,9 +40,14 @@ export default class Articles {
         console.log("running search...", Articles.currentSearchTerms);
         return Articles.loadedArticles.filter(function(article) {
             return Articles.currentSearchTerms!.every((term) => {
-                return article.title.indexOf(term) != -1 ||
-                       article.tags.some((tag) => { return tag.indexOf(term) != -1 }) ||
-                       article.body.indexOf(term) != -1;
+                if(term.startsWith("#")) {
+                    let trimmedTerm = term.substring(1)
+                    return article.tags.some((tag) => { return tag.indexOf(trimmedTerm) != -1 })
+                } else {
+                    return article.title.indexOf(term) != -1 ||
+                        article.tags.some((tag) => { return tag.indexOf(term) != -1 }) ||
+                        article.body.indexOf(term) != -1;
+                }
             });
         });
     }

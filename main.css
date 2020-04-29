@@ -6,11 +6,6 @@ body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.articleTitle > a {
-    color: lightskyblue;
-    text-decoration: none;
-}
-
 #inpTitle, #inpBody, #inpTags {
     width: 100%;
     font-size: 13pt;
@@ -26,7 +21,7 @@ body {
     border-color: lightgray;
 }
 
-.crudButton {
+input[type=button] {
     width: 250px;
     font-size: 16pt;
     background-color: lightskyblue;
@@ -34,7 +29,12 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
+.crudButton {
 
+}
+#tagsSummary {
+    margin-top: 8px;
+}
 #inpSearch {
     font-size: 14pt;
     width: 750px;
@@ -52,6 +52,19 @@ body {
 .articleTitle , .articleBody, .articleTags {
     margin: 0px;
 }
+
+.articleTitle > a,
+.clickableTag {
+    color: lightskyblue;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.articleTitle > a:hover,
+.clickableTag:hover {
+    color: blue;
+}
+
 .articleTitle {
     font-size: 13pt;
     font-weight: bold;
