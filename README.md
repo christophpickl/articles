@@ -4,14 +4,8 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 # Roadmap
 
-* [1] remember window position+size
-* [1] display environment (DEV/PROD)
-
-* [6] migrate to typescript
-* [2] created/updated at timestamp
+* [2] created/updated at timestamp; require data model versioning
 * [3] nicer UI (bigger window, colors)
-    * groessere buttons
-    * blauer a hlink coloren
     * mehr vgap form and list
     * set focus on app load on title input field
 * [7] full text search (title, body and tags), using some point system (tags first, title second, body third)

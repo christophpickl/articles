@@ -1,5 +1,4 @@
 "use strict";
-// interface Articles ...
 exports.__esModule = true;
 var common_1 = require("./common");
 var fs = require("fs");
