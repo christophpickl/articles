@@ -15,11 +15,13 @@ class Article {
     constructor(
         public id: string,
         public title: string,
-        public body: string,
-        public tags: Array<string>
+        public tags: Array<string>,
+        public body: string
         ) {
 
     }
 }
 
-export { Config, Article }
+type Nullable<T> = T | null;
+
+export { Config, Article, Nullable }

@@ -1,19 +1,27 @@
 "use strict";
 exports.__esModule = true;
 console.log("preload.ts");
+var common_1 = require("./common");
 var Articles_1 = require("./Articles");
 // ON READY
 // ------------========================================================------------
 window.addEventListener('DOMContentLoaded', function () {
     console.log("on DOMContentLoaded");
-    addArticleNodes(Articles_1["default"].loadArticles());
+    resetArticleList();
     document.getElementById("btnCreate").addEventListener("click", onCreateClicked);
     document.getElementById("btnUpdate").addEventListener("click", onUpdateClicked);
     document.getElementById("btnCancel").addEventListener("click", onCancelClicked);
     document.getElementById("btnDelete").addEventListener("click", onDeleteClicked);
+    document.getElementById("inpSearch").addEventListener("input", onSearchInput);
+    document.getElementById("inpSearch").addEventListener('keydown', function (event) {
+        var key = event.key; // Or const {key} = event; in ES6+
+        if (key === "Escape") {
+            resetSearch();
+        }
+    });
     switchButtonsToCreateMode(true);
 });
-// CLICK HANDLER
+// UI HANDLER
 // ------------========================================================------------
 function onCreateClicked() {
     console.log("onCreateClicked()");
@@ -22,8 +30,8 @@ function onCreateClicked() {
         return;
     }
     Articles_1["default"].saveArticle(article);
-    addArticleNodes([article]);
-    resetInputs();
+    resetArticleList();
+    // resetInputs();
 }
 function onUpdateClicked() {
     console.log("onUpdateClicked()");
@@ -50,41 +58,52 @@ function onArticleTitleClicked(article) {
     scrollToTop();
     setInputValue("inpId", article.id);
     setInputValue("inpTitle", article.title);
-    setInputValue("inpBody", article.body);
     setInputValue("inpTags", article.tags.join(" "));
+    setInputValue("inpBody", article.body);
     switchButtonsToCreateMode(false);
+}
+function onSearchInput(event) {
+    var searchTerm = event.target.value.trim();
+    var terms = searchTerm.split(" ").filter(function (it) { return it.length != 0; });
+    console.log("onSearchInput(" + searchTerm + ") => terms:", terms);
+    // TODO register escape to cancel search as well
+    if (terms.length == 0) {
+        resetSearch();
+        return;
+    }
+    var articles = Articles_1["default"].searchArticles(terms);
+    removeAndPrependArticleNodes(articles);
 }
 // UI LOGIC
 // ------------========================================================------------
-function addArticleNodes(articles) {
-    var articleList = document.getElementById("articleList");
-    articles.forEach;
-    articles.forEach(function (article) {
-        articleList.prepend(createArticleNode(article));
-    });
+function resetSearch() {
+    setInputValue("inpSearch", "");
+    Articles_1["default"].disableSearch();
+    resetArticleList();
 }
 function readArticleFromUI(givenId) {
     if (givenId === void 0) { givenId = undefined; }
-    return {
-        id: (givenId !== undefined) ? givenId : getInputValue("inpId"),
-        title: getInputValue("inpTitle"),
-        body: getInputValue("inpBody"),
-        tags: getInputValue("inpTags").split(" ").filter(function (it) { return it.length > 0; })
-    };
+    return new common_1.Article((givenId !== undefined) ? givenId : getInputValue("inpId"), getInputValue("inpTitle"), getInputValue("inpTags").split(" ").filter(function (it) { return it.length > 0; }), getInputValue("inpBody"));
 }
 function resetInputs() {
     setInputValue("inpId", "");
     setInputValue("inpTitle", "");
-    setInputValue("inpBody", "");
     setInputValue("inpTags", "");
+    setInputValue("inpBody", "");
 }
 function resetArticleList() {
+    var articles = Articles_1["default"].loadArticles();
+    removeAndPrependArticleNodes(articles);
+}
+function removeAndPrependArticleNodes(articles) {
     var articleList = document.getElementById("articleList");
     while (articleList.firstChild) {
         articleList.removeChild(articleList.lastChild);
     }
     ;
-    addArticleNodes(Articles_1["default"].loadArticles());
+    articles.forEach(function (article) {
+        articleList.prepend(createArticleNode(article));
+    });
 }
 // MISC
 // ------------========================================================------------
@@ -102,23 +121,21 @@ function createArticleNode(article) {
     var articleTitleLink = document.createElement("a");
     articleTitleLink.innerText = article.title;
     articleTitleLink.href = "#";
+    articleTitleLink.onclick = function () { onArticleTitleClicked(article); };
     articleTitle.appendChild(articleTitleLink);
-    var articleBody = document.createElement("p");
-    articleBody.classList.add("articleBody");
-    articleBody.innerText = article.body;
     var articleTags = document.createElement("p");
     articleTags.classList.add("articleTags");
     articleTags.innerText = article.tags.map(function (tag) {
         return "#" + tag;
     }).join(" ");
-    articleTitleLink.onclick = function () {
-        onArticleTitleClicked(article);
-    };
+    var articleBody = document.createElement("p");
+    articleBody.classList.add("articleBody");
+    articleBody.innerText = article.body;
     var articleNode = document.createElement("div");
     articleNode.classList.add("articleNode");
     articleNode.appendChild(articleTitle);
-    articleNode.appendChild(articleBody);
     articleNode.appendChild(articleTags);
+    articleNode.appendChild(articleBody);
     return articleNode;
 }
 function switchButtonsToCreateMode(isCreateMode) {

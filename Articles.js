@@ -5,12 +5,12 @@ var fs = require("fs");
 var Articles = /** @class */ (function () {
     function Articles() {
     }
-    Articles.foo = function (params) {
-        console.log("foo: " + params);
-    };
     Articles.loadArticles = function () {
         if (Articles._debugOn === true) {
-            Articles.loadedArticles = [{ id: "aaaa", title: "my title", body: "my bodyyyy", "tags": ["philo", "medi"] }, { id: "bb", title: "my title 2", body: "my bodyyyy", "tags": [] }];
+            Articles.loadedArticles = [
+                new common_1.Article("id1", "balance", ["philo", "medi"], "my body\nmy story."),
+                new common_1.Article("id2", "some thing", [""], "")
+            ];
         }
         else {
             console.log("Loading articles from: " + common_1.Config.JSON_FILEPATH);
@@ -25,7 +25,20 @@ var Articles = /** @class */ (function () {
         }
         console.log("Articles loaded successfully:");
         console.log(JSON.stringify(Articles.loadedArticles));
-        return Articles.loadedArticles;
+        return Articles.runSearch();
+    };
+    Articles.runSearch = function () {
+        if (Articles.currentSearchTerms === null) {
+            return Articles.loadedArticles;
+        }
+        console.log("running search...", Articles.currentSearchTerms);
+        return Articles.loadedArticles.filter(function (article) {
+            return Articles.currentSearchTerms.every(function (term) {
+                return article.title.indexOf(term) != -1 ||
+                    article.tags.some(function (tag) { return tag.indexOf(term) != -1; }) ||
+                    article.body.indexOf(term) != -1;
+            });
+        });
     };
     Articles.deleteArticle = function (articleId) {
         Articles.loadedArticles = Articles.loadedArticles.filter(function (it) {
@@ -51,12 +64,22 @@ var Articles = /** @class */ (function () {
         Articles.loadedArticles.push(article);
         Articles.persistJson();
     };
+    Articles.searchArticles = function (terms) {
+        console.log("change search to: ", terms);
+        Articles.currentSearchTerms = terms;
+        return Articles.runSearch();
+    };
+    Articles.disableSearch = function () {
+        console.log("disableSearch");
+        Articles.currentSearchTerms = null;
+    };
     Articles.persistJson = function () {
         console.log("Persisting JSON to: " + common_1.Config.JSON_FILEPATH);
         fs.writeFileSync(common_1.Config.JSON_FILEPATH, JSON.stringify(Articles.loadedArticles));
     };
     Articles._debugOn = false;
     Articles.loadedArticles = [];
+    Articles.currentSearchTerms = null;
     return Articles;
 }());
 exports["default"] = Articles;

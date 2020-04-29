@@ -1,9 +1,8 @@
 
 console.log("preload.ts");
 
-import Articles from './Articles';
 import { Article } from './common';
-
+import Articles from './Articles';
 
 // ON READY
 // ------------========================================================------------
@@ -11,16 +10,25 @@ import { Article } from './common';
 window.addEventListener('DOMContentLoaded', () => {
     console.log("on DOMContentLoaded");
 
-    addArticleNodes(Articles.loadArticles())
+    resetArticleList()
 
     document.getElementById("btnCreate")!.addEventListener("click", onCreateClicked); 
     document.getElementById("btnUpdate")!.addEventListener("click", onUpdateClicked); 
     document.getElementById("btnCancel")!.addEventListener("click", onCancelClicked); 
     document.getElementById("btnDelete")!.addEventListener("click", onDeleteClicked); 
+    document.getElementById("inpSearch")!.addEventListener("input", onSearchInput); 
+    document.getElementById("inpSearch")!.addEventListener('keydown', function(event) {
+        const key = event.key; // Or const {key} = event; in ES6+
+        if (key === "Escape") {
+            resetSearch();
+        }
+    });
+    
     switchButtonsToCreateMode(true);
 });
 
-// CLICK HANDLER
+
+// UI HANDLER
 // ------------========================================================------------
 
 
@@ -32,8 +40,8 @@ function onCreateClicked() {
         return;
     }
     Articles.saveArticle(article);
-    addArticleNodes([article]);
-    resetInputs();
+    resetArticleList();
+    // resetInputs();
 }
 
 function onUpdateClicked() {
@@ -60,49 +68,67 @@ function onDeleteClicked() {
     switchButtonsToCreateMode(true);
 }
 
-
 function onArticleTitleClicked(article: Article) {
     scrollToTop();
     setInputValue("inpId", article.id);
     setInputValue("inpTitle", article.title);
-    setInputValue("inpBody", article.body);
     setInputValue("inpTags", article.tags.join(" "));
+    setInputValue("inpBody", article.body);
     switchButtonsToCreateMode(false);
+}
+
+function onSearchInput(event) {
+    let searchTerm: string = event.target.value.trim()
+    let terms = searchTerm.split(" ").filter((it) => { return it.length != 0});
+    console.log("onSearchInput("+searchTerm+") => terms:", terms);
+    // TODO register escape to cancel search as well
+    if (terms.length == 0) {
+        resetSearch();
+        return;
+    }
+    let articles = Articles.searchArticles(terms);
+    removeAndPrependArticleNodes(articles);
 }
 
 // UI LOGIC
 // ------------========================================================------------
 
-function addArticleNodes(articles: Array<Article>) {
-    let articleList = document.getElementById("articleList")!;
-    articles.forEach
-    articles.forEach(function(article) {
-        articleList.prepend(createArticleNode(article));
-    });
+function resetSearch() {
+    setInputValue("inpSearch", "");
+    Articles.disableSearch();
+    resetArticleList();
 }
 
 function readArticleFromUI(givenId: string | undefined = undefined): Article {
-    return { 
-        id: (givenId !== undefined) ? givenId : getInputValue("inpId"),
-        title: getInputValue("inpTitle"),
-        body: getInputValue("inpBody"),
-        tags: getInputValue("inpTags").split(" ").filter(function(it) { return it.length > 0; })
-    };
+    return new Article(
+        (givenId !== undefined) ? givenId : getInputValue("inpId"),
+        getInputValue("inpTitle"),
+        getInputValue("inpTags").split(" ").filter(function(it) { return it.length > 0; }),
+        getInputValue("inpBody")
+    );
 }
 
 function resetInputs() {
     setInputValue("inpId", "");
     setInputValue("inpTitle", "");
-    setInputValue("inpBody", "");
     setInputValue("inpTags", "");
+    setInputValue("inpBody", "");
 }
 
 function resetArticleList() {
+    let articles = Articles.loadArticles();
+    removeAndPrependArticleNodes(articles);
+}
+
+
+function removeAndPrependArticleNodes(articles: Article[]) {
     let articleList = document.getElementById("articleList")!;
     while (articleList.firstChild) {
         articleList.removeChild(articleList.lastChild!);
     };
-    addArticleNodes(Articles.loadArticles());
+    articles.forEach(function(article) {
+        articleList.prepend(createArticleNode(article));
+    });
 }
 
 // MISC
@@ -124,27 +150,24 @@ function createArticleNode(article: Article) {
     let articleTitleLink = document.createElement("a");
     articleTitleLink.innerText = article.title;
     articleTitleLink.href = "#";
+    articleTitleLink.onclick = () => { onArticleTitleClicked(article); };
     articleTitle.appendChild(articleTitleLink);
 
-    let articleBody = document.createElement("p");
-    articleBody.classList.add("articleBody");
-    articleBody.innerText = article.body;
-    
     let articleTags = document.createElement("p");
     articleTags.classList.add("articleTags");
     articleTags.innerText = article.tags.map(function(tag) {
         return "#" + tag;
     }).join(" ");
 
-    articleTitleLink.onclick = () => {
-        onArticleTitleClicked(article);
-    };
+    let articleBody = document.createElement("p");
+    articleBody.classList.add("articleBody");
+    articleBody.innerText = article.body;
 
     let articleNode = document.createElement("div");
         articleNode.classList.add("articleNode");
         articleNode.appendChild(articleTitle);
-        articleNode.appendChild(articleBody);
         articleNode.appendChild(articleTags);
+        articleNode.appendChild(articleBody);
     return articleNode;
 }
 

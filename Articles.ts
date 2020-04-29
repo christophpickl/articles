@@ -1,6 +1,5 @@
 
-import { Config } from './common';
-import { Article } from './common';
+import { Config, Article, Nullable } from './common';
 var fs = require("fs");
 
 export default class Articles {
@@ -8,13 +7,14 @@ export default class Articles {
     private static _debugOn: boolean = false;
     private static loadedArticles: Article[] = [];
 
-    static foo(params: string) {
-        console.log("foo: " + params)
-    }
+    private static currentSearchTerms: Nullable<string[]> = null
 
     static loadArticles() {
         if (Articles._debugOn === true) {
-            Articles.loadedArticles = [ { id: "aaaa", title: "my title", body: "my bodyyyy", "tags": [ "philo", "medi" ] }, { id: "bb", title: "my title 2", body: "my bodyyyy", "tags": [] } ];    
+            Articles.loadedArticles = [
+                new Article("id1", "balance", [ "philo", "medi" ], "my body\nmy story."),
+                new Article("id2", "some thing", [ "" ], "")
+            ];
         } else {
             console.log("Loading articles from: " + Config.JSON_FILEPATH);
             // TODO handle file not existing => create it
@@ -28,7 +28,22 @@ export default class Articles {
         }
         console.log("Articles loaded successfully:");
         console.log(JSON.stringify(Articles.loadedArticles));
-        return Articles.loadedArticles;
+        return Articles.runSearch();
+    }
+
+    private static runSearch(): Article[] {
+        if (Articles.currentSearchTerms === null) {
+            return Articles.loadedArticles
+        }
+
+        console.log("running search...", Articles.currentSearchTerms);
+        return Articles.loadedArticles.filter(function(article) {
+            return Articles.currentSearchTerms!.every((term) => {
+                return article.title.indexOf(term) != -1 ||
+                       article.tags.some((tag) => { return tag.indexOf(term) != -1 }) ||
+                       article.body.indexOf(term) != -1;
+            });
+        });
     }
 
 
@@ -58,6 +73,18 @@ export default class Articles {
         
         Articles.loadedArticles.push(article);
         Articles.persistJson();
+    }
+
+
+    static searchArticles(terms: string[]): Article[] {
+        console.log("change search to: ", terms)
+        Articles.currentSearchTerms = terms;
+        return Articles.runSearch();
+    }
+
+    static disableSearch() {
+        console.log("disableSearch")
+        Articles.currentSearchTerms = null
     }
     
     private static  persistJson() {

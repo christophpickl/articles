@@ -11,11 +11,11 @@ var Config = Object.freeze({
 });
 exports.Config = Config;
 var Article = /** @class */ (function () {
-    function Article(id, title, body, tags) {
+    function Article(id, title, tags, body) {
         this.id = id;
         this.title = title;
-        this.body = body;
         this.tags = tags;
+        this.body = body;
     }
     return Article;
 }());
