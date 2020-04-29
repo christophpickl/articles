@@ -2,20 +2,37 @@ body {
     /* top right bottom left*/
     padding: 30px 40px 0 40px;
     margin: 0 0 0 0;
-    background-color: bisque;
+    background-color: lightgoldenrodyellow;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
+.articleTitle > a {
+    color: lightskyblue;
+    text-decoration: none;
+}
+
 #inpTitle, #inpBody, #inpTags {
-    width: 700px;
+    width: 100%;
     font-size: 13pt;
     font-family: 'Courier New', Courier, monospace;
+    border-radius: 6px;
+    background-color: rgb(199, 228, 247);
 }
 
 #inpBody {
     height: 150px;
     margin-top: 5px;
     margin-bottom: 3px;
+    border-color: lightgray;
+}
+
+.crudButton {
+    width: 250px;
+    font-size: 16pt;
+    background-color: lightskyblue;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .articleNode {

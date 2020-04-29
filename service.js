@@ -1,18 +1,9 @@
-var fs = require('fs');
+var fs = require("fs");
+var common = require("./common");
 
 var _debugOn = false;
 
 var loadedArticles = [];
-
-var isDebug = true;
-if (process.cwd() == "/") {
-    isDebug = false;
-}
-
-var JSON_FILEPATH = process.env["HOME"] + "/.articles/articles.data.json";
-if (isDebug) {
-    JSON_FILEPATH = process.cwd() + "/articles.devdata.json";
-}
 
 exports.deleteArticle = function(articleId) {
     loadedArticles = loadedArticles.filter(function(it) {
@@ -39,11 +30,11 @@ exports.loadArticles = function() {
     if (_debugOn === true) {
         loadedArticles = [ { id: "aaaa", title: "my title", body: "my bodyyyy", "tags": [ "philo", "medi" ] }, { id: "bb", title: "my title 2", body: "my bodyyyy", "tags": [] } ];    
     } else {
-        console.log("Loading articles from: " + JSON_FILEPATH);
+        console.log("Loading articles from: " + common.JSON_FILEPATH);
         // TODO handle file not existing => create it
         
-        if(fs.existsSync(JSON_FILEPATH)) {
-            loadedArticles = JSON.parse(fs.readFileSync(JSON_FILEPATH, 'utf8').toString());
+        if(fs.existsSync(common.JSON_FILEPATH)) {
+            loadedArticles = JSON.parse(fs.readFileSync(common.JSON_FILEPATH, 'utf8').toString());
         } else {
             persistJson();
             loadedArticles = [];
@@ -63,6 +54,6 @@ exports.saveArticle = function (article) {
 }
 
 function persistJson() {
-    console.log("Persisting JSON to: " + JSON_FILEPATH);
-    fs.writeFileSync(JSON_FILEPATH, JSON.stringify(loadedArticles));
+    console.log("Persisting JSON to: " + common.JSON_FILEPATH);
+    fs.writeFileSync(common.JSON_FILEPATH, JSON.stringify(loadedArticles));
 }

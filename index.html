@@ -5,7 +5,7 @@
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-        <title>Articles</title>
+        <!-- <title>Articles - DEV</title> -->
         <link rel="stylesheet" href="main.css">
     </head>
     <body>
@@ -16,10 +16,10 @@
             <textarea id="inpBody" placeholder="Body"></textarea><br/>
             <input type="text" id="inpTags" placeholder="Tags" title="whitespace seperated list without hashtags" /><br/>
             <div>
-                <input type="button" id="btnCreate" value="Erstellen" />
-                <input type="button" id="btnUpdate" value="Bearbeiten" />
-                <input type="button" id="btnCancel" value="Abbrechen" />
-                <input type="button" id="btnDelete" value="Löschen" />
+                <input type="button" id="btnCreate" class="crudButton" value="Create" />
+                <input type="button" id="btnUpdate" class="crudButton" value="Update" />
+                <input type="button" id="btnCancel" class="crudButton" value="Cancel" />
+                <input type="button" id="btnDelete" class="crudButton" value="Delete" />
             </div>
         </div>
 

@@ -1,4 +1,3 @@
-
 console.log("preload.js running.");
 var service = require("./service");
 
@@ -8,6 +7,7 @@ var service = require("./service");
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 window.addEventListener('DOMContentLoaded', () => {
+    console.log("on DOMContentLoaded");
     addArticleNodes(service.loadArticles());
     
     document.getElementById("btnCreate").addEventListener("click", onCreateClicked); 
@@ -25,17 +25,23 @@ function switchButtonsToCreateMode(isCreateMode) {
 }
 
 function onUpdateClicked() {
+    console.log("onUpdateClicked()");
     var article = readArticleFromUI();
+    if(!validateArticle(article)) {
+        return;
+    }
     service.updateArticle(article);
     resetArticleList();
 }
 
 function onCancelClicked() {
+    console.log("onCancelClicked()");
     resetInputs();
     switchButtonsToCreateMode(true);
 }
 
 function onDeleteClicked() {
+    console.log("onDeleteClicked()");
     service.deleteArticle(document.getElementById("inpId").value);
     resetArticleList();
     resetInputs();
@@ -55,12 +61,19 @@ function scrollToTop() {
     document.documentElement.scrollTop = 0; // chrome, firefox, IE, opera
 }
 
-function onCreateClicked() {
-    console.log("Creating new article.");
-    
-    var article = readArticleFromUI(randomUuid());
+function validateArticle(article) {
     if (article.title.trim().length == 0) {
         alert("Title must not be empty!");
+        return false;
+    }
+    return true;
+}
+
+function onCreateClicked() {
+    console.log("onCreateClicked()");
+    
+    var article = readArticleFromUI(randomUuid());
+    if(!validateArticle(article)) {
         return;
     }
     service.saveArticle(article);
