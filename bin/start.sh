@@ -2,4 +2,4 @@
 
 export ELECTRON_ENABLE_LOGGING=1
 
-tsc *.ts && electron .
+tsc src/*.ts && electron .

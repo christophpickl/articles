@@ -6,12 +6,12 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 ## Now
 
-* refactor software design (classes, interfaces)
-* neues logo
-* clickable tags
 * tags mit "(42)" count dahinter
+* TECH: refactor software design (context, classes, interfaces)
+* TECH: tests
 * [5] data migration (date added, date updated, likes, isDeleted)
 * [2] mit SHIFT+click auf tag: reset search to only this tag
+* save with hitting CMD+S
 
 ## Later
 * [8] auto backup functionality

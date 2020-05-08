@@ -2,7 +2,7 @@ body {
     /* top right bottom left*/
     padding: 30px 40px 0 40px;
     margin: 0 0 0 0;
-    background-color: lightgoldenrodyellow;
+    background-color: #DCF8FA;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
@@ -53,6 +53,7 @@ input[type=button] {
     margin: 0px;
 }
 
+.tagSummaryLink,
 .articleTitle > a,
 .clickableTag {
     color: lightskyblue;
@@ -60,6 +61,7 @@ input[type=button] {
     cursor: pointer;
 }
 
+.tagSummaryLink:hover,
 .articleTitle > a:hover,
 .clickableTag:hover {
     color: blue;
