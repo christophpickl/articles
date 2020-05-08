@@ -29,9 +29,9 @@ export default class ElectronHandler {
             }
         });
         ElectronHandler.applyWindowSettings();
-        ElectronHandler.mainWindow.setTitle("Articles" + (Config.IS_DEBUG ? " - DEV" : ""));
+        ElectronHandler.mainWindow.setTitle("Artikles" + (Config.IS_DEBUG ? " - DEV" : ""));
         ElectronHandler.mainWindow.setMinimumSize(600, 600);
-        ElectronHandler.mainWindow.loadURL('file://' + __dirname + '/index.html'); // loadFile("index.html");
+        ElectronHandler.mainWindow.loadURL('file://' + __dirname + '/../view/index.html'); // loadFile("index.html");
         ElectronHandler.mainWindow.on('close', ElectronHandler.onClose);
         ElectronHandler.mainWindow.on('closed', ElectronHandler.onClosed);
         // ElectronHandler.mainWindow.webContents.openDevTools()

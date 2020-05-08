@@ -1,8 +1,8 @@
 
 console.log("preload.ts");
 
-import { Article } from './common';
-import Articles from './Articles';
+import { Article } from './src/common';
+import Articles from './src/Articles';
 
 // ON READY
 // ------------========================================================------------

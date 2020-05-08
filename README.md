@@ -2,24 +2,28 @@
 
 An (electron) desktop application to manage (tagged) articles locally.
 
-# Roadmap
+# Todos
 
-* [2] created/updated at timestamp; require data model versioning
+## Now
+
+* refactor software design (classes, interfaces)
+* neues logo
+* clickable tags
+* tags mit "(42)" count dahinter
+* [5] data migration (date added, date updated, likes, isDeleted)
+* [2] mit SHIFT+click auf tag: reset search to only this tag
+
+## Later
+* [8] auto backup functionality
 * [3] nicer UI (bigger window, colors)
     * mehr vgap form and list
     * set focus on app load on title input field
+
+## Luxury
+
 * [7] live autocomplete suggestion combox for tags
-* ad tags summary: group by, count displayen
 * FANCY: in-line editor, when click on article (don't jump to form at top!)
 * FANCY: delete button which appears when hover over some part of an article (far right, just slightly indicated)
-
-
-# Notes
-
-- keine max length beschraenkung
-- mit SHIFT+click auf tag: reset search to only this tag
-- after hit create, immediately be in "create mode" again
-- make top tag list clickable!
 - sort all tags (by number of occurence OR alphabetically)
 - change view mode: compact only seeing list of titles (sorted alphabetically?!)
 - back office:

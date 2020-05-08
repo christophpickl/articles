@@ -1,2 +1,6 @@
 node_modules/
-articles.devdata.json
+artikles.devdata.json
+src/*.js
+main.js
+preload.js
+builds/
