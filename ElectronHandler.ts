@@ -52,6 +52,7 @@ export default class ElectronHandler {
         console.log("ElectronHandler.onClosed()");
         ElectronHandler.mainWindow = null;
     }
+    
     private static saveWindowSettings() {
         let bounds = ElectronHandler.mainWindow.getBounds();
         console.log("save window settings for:", bounds);
@@ -62,6 +63,7 @@ export default class ElectronHandler {
             y: bounds.y,
         });
     }
+
     private static applyWindowSettings() {
         let lastWin = settings.get("window");
         if(lastWin !== undefined) {

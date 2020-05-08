@@ -32,7 +32,7 @@ function onCreateClicked() {
     }
     Articles_1["default"].saveArticle(article);
     resetArticleList();
-    updateArticleForm(article);
+    resetInputs();
 }
 function onUpdateClicked() {
     console.log("onUpdateClicked()");
@@ -46,14 +46,12 @@ function onUpdateClicked() {
 function onCancelClicked() {
     console.log("onCancelClicked()");
     resetInputs();
-    switchButtonsToCreateMode(true);
 }
 function onDeleteClicked() {
     console.log("onDeleteClicked()");
     Articles_1["default"].deleteArticle(getInputValue("inpId"));
     resetArticleList();
     resetInputs();
-    switchButtonsToCreateMode(true);
 }
 function onArticleTitleClicked(article) {
     scrollToTop();
@@ -114,6 +112,7 @@ function resetInputs() {
     setInputValue("inpTitle", "");
     setInputValue("inpTags", "");
     setInputValue("inpBody", "");
+    switchButtonsToCreateMode(true);
 }
 function resetArticleList() {
     var articles = Articles_1["default"].loadArticles();

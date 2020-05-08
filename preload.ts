@@ -41,7 +41,7 @@ function onCreateClicked() {
     }
     Articles.saveArticle(article);
     resetArticleList();
-    updateArticleForm(article);
+    resetInputs();
 }
 
 function onUpdateClicked() {
@@ -57,7 +57,6 @@ function onUpdateClicked() {
 function onCancelClicked() {
     console.log("onCancelClicked()");
     resetInputs();
-    switchButtonsToCreateMode(true);
 }
 
 function onDeleteClicked() {
@@ -65,7 +64,6 @@ function onDeleteClicked() {
     Articles.deleteArticle(getInputValue("inpId"));
     resetArticleList();
     resetInputs();
-    switchButtonsToCreateMode(true);
 }
 
 function onArticleTitleClicked(article: Article) {
@@ -140,6 +138,7 @@ function resetInputs() {
     setInputValue("inpTitle", "");
     setInputValue("inpTags", "");
     setInputValue("inpBody", "");
+    switchButtonsToCreateMode(true);
 }
 
 function resetArticleList() {
