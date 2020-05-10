@@ -1,7 +1,5 @@
 import { BrowserWindow } from 'electron';
-// import { settings } from 'electron-settings';
-const settings = require("electron-settings");
-
+const settings = require("electron-settings"); // have to do it old school way
 import { join } from 'path';
 import { Config } from './common';
 

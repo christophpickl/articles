@@ -32,26 +32,6 @@ export default class Articles {
         return Articles.runSearch();
     }
 
-    private static runSearch(): Article[] {
-        if (Articles.currentSearchTerms === null) {
-            return Articles.loadedArticles
-        }
-
-        console.log("running search...", Articles.currentSearchTerms);
-        return Articles.loadedArticles.filter(function(article) {
-            return Articles.currentSearchTerms!.every((term) => {
-                if(term.startsWith("#")) {
-                    let trimmedTerm = term.substring(1)
-                    return article.tags.some((tag) => { return tag.indexOf(trimmedTerm) != -1 })
-                } else {
-                    return article.title.indexOf(term) != -1 ||
-                        article.tags.some((tag) => { return tag.indexOf(term) != -1 }) ||
-                        article.body.indexOf(term) != -1;
-                }
-            });
-        });
-    }
-
 
     static deleteArticle(articleId: string) {
         Articles.loadedArticles = Articles.loadedArticles.filter(function(it) {
@@ -96,6 +76,26 @@ export default class Articles {
     private static  persistJson() {
         console.log("Persisting JSON to: " + Config.JSON_FILEPATH);
         fs.writeFileSync(Config.JSON_FILEPATH, JSON.stringify(Articles.loadedArticles));
+    }
+
+    private static runSearch(): Article[] {
+        if (Articles.currentSearchTerms === null) {
+            return Articles.loadedArticles
+        }
+
+        console.log("running search...", Articles.currentSearchTerms);
+        return Articles.loadedArticles.filter(function(article) {
+            return Articles.currentSearchTerms!.every((term) => {
+                if(term.startsWith("#")) {
+                    let trimmedTerm = term.substring(1)
+                    return article.tags.some((tag) => { return tag.indexOf(trimmedTerm) != -1 })
+                } else {
+                    return article.title.indexOf(term) != -1 ||
+                        article.tags.some((tag) => { return tag.indexOf(term) != -1 }) ||
+                        article.body.indexOf(term) != -1;
+                }
+            });
+        });
     }
     
 }

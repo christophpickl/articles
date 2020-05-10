@@ -24,8 +24,6 @@ export default class UiHandler {
         
         UiHandler.switchButtonsToCreateMode(true);
     }
-    // UI HANDLER
-    // ------------========================================================------------
     
     static onCreateClicked() {
         console.log("onCreateClicked()");

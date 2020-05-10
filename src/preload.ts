@@ -1,6 +1,3 @@
-
-console.log("preload.ts");
-
 import UiHandler from './UiHandler';
 
 window.addEventListener('DOMContentLoaded', () => {

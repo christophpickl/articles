@@ -6,18 +6,24 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 ## Now
 
-* tags mit "(42)" count dahinter
+* ! data migration (date added, date updated, likes, isDeleted)
+* CONTENT: rewrite everything, using "you" (but first introduce data migration ;)
+* CONTENT: rework/rethink all tags
+* UI!: move all tags in a vertical list as a side bar
+* UI: order tags alphabetically
+* CONTENT: mark every artikle, where a teacher is involved, the name of the teacher, at the end with a "[so-und-so]"
 * TECH: refactor software design (context, classes, interfaces)
+* change UI: make list of articles scrollable (fill vertical space); no need for "scrollUp" util
 * TECH: tests
-* [5] data migration (date added, date updated, likes, isDeleted)
-* [2] mit SHIFT+click auf tag: reset search to only this tag
-* save with hitting CMD+S
+* UI: mit SHIFT+click auf tag: reset search to only this tag
+* UI: save with hitting CMD+S
+* UI: set focus on app load on title input field
 
 ## Later
+
+* better build with electron, see: https://github.com/jreznot/electron-java-app/blob/master/build.gradle
 * [8] auto backup functionality
-* [3] nicer UI (bigger window, colors)
-    * mehr vgap form and list
-    * set focus on app load on title input field
+* when search for #dao it also finds #daoism and also #foodaofoo (shouldn't it be a "direct" match?!)
 
 ## Luxury
 
