@@ -1,5 +1,4 @@
 node_modules/
 artikles.devdata.json
 src/*.js
-main.js
 builds/

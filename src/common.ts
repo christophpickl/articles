@@ -1,4 +1,7 @@
 
+export { Config, Article, Nullable, randomUuid }
+
+
 let isDebug = (process.cwd() == "/") ? false : true;
 // env = process.env.NODE_ENV || 'development' ... https://stackoverflow.com/questions/41762570/how-to-export-object-in-typescript
 
@@ -31,6 +34,3 @@ function randomUuid(): string {
       return v.toString(16);
     });
 }
-
-
-export { Config, Article, Nullable, randomUuid }

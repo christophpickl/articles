@@ -1,71 +1,73 @@
 import { BrowserWindow } from 'electron';
-const settings = require("electron-settings"); // have to do it old school way
 import { join } from 'path';
 import { Config } from './common';
+import { Settings } from './Settings';
 
+export class ElectronHandler {
 
-export default class ElectronHandler {
-    static mainWindow: Electron.BrowserWindow;
-    static application: Electron.App;
-    static BrowserWindow;
+    private mainWindow: Electron.BrowserWindow | null = null;
+    private readonly application: Electron.App;
+    private readonly BrowserWindow;
 
-    static main(app: Electron.App, browserWindow: typeof BrowserWindow) {
-        ElectronHandler.BrowserWindow = browserWindow;
-        ElectronHandler.application = app;
-        ElectronHandler.application.on('window-all-closed', ElectronHandler.onWindowAllClosed);
-        ElectronHandler.application.on('ready', ElectronHandler.onReady);
+    constructor(
+        application: Electron.App, 
+        browserWindow: typeof BrowserWindow,
+        private settings: Settings
+        ) {
+        this.BrowserWindow = browserWindow;
+        this.application = application;
     }
 
-    private static onReady() {
-        console.log("ElectronHandler.onReady()");
-        console.log(ElectronHandler.application.getPath("userData"));
+    public registerHandlers() {
+        this.application.on('window-all-closed', () => { this.onWindowAllClosed(); });
+        this.application.on('ready', () => { this.onReady(); });
+    }
 
-        ElectronHandler.mainWindow = new ElectronHandler.BrowserWindow({
+    private onReady() {
+        console.log("ElectronHandler.onReady()");
+        console.log("userData path: ", this.application.getPath("userData"));
+
+        this.mainWindow = new this.BrowserWindow({
             width: 800, height: 600,
             webPreferences: {
                 preload: join(__dirname, 'preload.js')
             }
         });
-        ElectronHandler.applyWindowSettings();
-        ElectronHandler.mainWindow.setTitle("Artikles" + (Config.IS_DEBUG ? " - DEV" : ""));
-        ElectronHandler.mainWindow.setMinimumSize(600, 600);
-        ElectronHandler.mainWindow.loadURL('file://' + __dirname + '/../view/index.html'); // loadFile("index.html");
-        ElectronHandler.mainWindow.on('close', ElectronHandler.onClose);
-        ElectronHandler.mainWindow.on('closed', ElectronHandler.onClosed);
-        // ElectronHandler.mainWindow.webContents.openDevTools()
+        this.applyWindowSettings();
+        this.mainWindow!.setTitle("Artikles" + (Config.IS_DEBUG ? " - DEV" : ""));
+        this.mainWindow!.setMinimumSize(600, 600);
+        this.mainWindow!.loadURL('file://' + __dirname + '/../view/index.html'); // loadFile("index.html");
+        this.mainWindow!.on('close', () => { this.onClose(); });
+        this.mainWindow!.on('closed', () => { this.onClosed(); });
+        // this.mainWindow.webContents.openDevTools()
     }
 
-    private static onWindowAllClosed() {
+    private onWindowAllClosed() {
         console.log("ElectronHandler.onWindowAllClosed()");
-        ElectronHandler.application.quit();
+        this.application.quit();
     }
 
     // also invoked when hitting CMD+Q :)
-    private static onClose() {
+    private onClose() {
         console.log("ElectronHandler.onClose()");
-        ElectronHandler.saveWindowSettings();
+        this.saveWindowSettings();
     }
 
-    private static onClosed() {
+    private onClosed() {
         console.log("ElectronHandler.onClosed()");
-        ElectronHandler.mainWindow = null;
+        this.mainWindow = null;
     }
     
-    private static saveWindowSettings() {
-        let bounds = ElectronHandler.mainWindow.getBounds();
+    private saveWindowSettings() {
+        let bounds = this.mainWindow!.getBounds();
         console.log("save window settings for:", bounds);
-        settings.set("window", {
-            width: bounds.width,
-            height: bounds.height,
-            x: bounds.x,
-            y: bounds.y,
-        });
+        this.settings.saveWindow(bounds);
     }
 
-    private static applyWindowSettings() {
-        let lastWin = settings.get("window");
-        if(lastWin !== undefined) {
-            ElectronHandler.mainWindow.setBounds(lastWin);
+    private applyWindowSettings() {
+        let lastWin = this.settings.loadWindow();
+        if (lastWin !== null) {
+            this.mainWindow!.setBounds(lastWin);
         }
     }
 }
