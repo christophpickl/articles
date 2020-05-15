@@ -1,11 +1,24 @@
 
-import { Article, randomUuid } from './common';
-import Articles from './Articles';
+import { randomUuid } from './common';
+import { Article } from './domain';
+import { ArticleRepo } from './Articles';
+const { ipcMain } = require('electron');
 
 export default class UiHandler {
+    constructor(
+        private readonly articleRepo: ArticleRepo
+    ){}
 
-    static init() {
+    init() {
         console.log("init()");
+
+        ipcMain.on('preloaded', (event, argDocument) => {
+            console.log("document: " + argDocument)
+            //event.reply('preloaded-reply', 'foobar');
+        });
+
+          return;
+
         document.addEventListener('keydown', function(event) {
             const key = event.key; // Or const {key} = event; in ES6+
             if (event.metaKey && key == "f") {
@@ -13,143 +26,143 @@ export default class UiHandler {
             }
         });
 
-        UiHandler.resetArticleList()
+        this.resetArticleList()
         document.getElementById("btnCancelSearch")!.hidden = true;
 
-        document.getElementById("btnCreate")!.addEventListener("click", UiHandler.onCreateClicked); 
-        document.getElementById("btnUpdate")!.addEventListener("click", UiHandler.onUpdateClicked); 
-        document.getElementById("btnCancel")!.addEventListener("click", UiHandler.onCancelClicked); 
-        document.getElementById("btnDelete")!.addEventListener("click", UiHandler.onDeleteClicked); 
-        UiHandler.registerSearchListener();
+        document.getElementById("btnCreate")!.addEventListener("click", this.onCreateClicked); 
+        document.getElementById("btnUpdate")!.addEventListener("click", this.onUpdateClicked); 
+        document.getElementById("btnCancel")!.addEventListener("click", this.onCancelClicked); 
+        document.getElementById("btnDelete")!.addEventListener("click", this.onDeleteClicked); 
+        this.registerSearchListener();
         
-        UiHandler.switchButtonsToCreateMode(true);
+        this.switchButtonsToCreateMode(true);
     }
     
-    static onCreateClicked() {
+    onCreateClicked() {
         console.log("onCreateClicked()");
     
-        var article = UiHandler.readArticleFromUI(randomUuid());
-        if(!UiHandler.validateArticle(article)) {
+        var article = this.readArticleFromUI(randomUuid());
+        if(!this.validateArticle(article)) {
             return;
         }
-        Articles.saveArticle(article);
-        UiHandler.resetArticleList();
-        UiHandler.resetInputs();
+        this.articleRepo.saveArticle(article);
+        this.resetArticleList();
+        this.resetInputs();
     }
 
-    static onUpdateClicked() {
+    onUpdateClicked() {
         console.log("onUpdateClicked()");
-        let article = UiHandler.readArticleFromUI();
-        if(!UiHandler.validateArticle(article)) {
+        let article = this.readArticleFromUI();
+        if(!this.validateArticle(article)) {
             return;
         }
-        Articles.updateArticle(article);
-        UiHandler.resetArticleList();
+        this.articleRepo.updateArticle(article);
+        this.resetArticleList();
     }
 
-    static onCancelClicked() {
+    onCancelClicked() {
         console.log("onCancelClicked()");
-        UiHandler.resetInputs();
+        this.resetInputs();
     }
 
-    static onDeleteClicked() {
+    onDeleteClicked() {
         console.log("onDeleteClicked()");
-        Articles.deleteArticle(UiHandler.getInputValue("inpId"));
-        UiHandler.resetArticleList();
-        UiHandler.resetInputs();
+        this.articleRepo.deleteArticle(this.getInputValue("inpId"));
+        this.resetArticleList();
+        this.resetInputs();
     }
 
-    static onArticleTitleClicked(article: Article) {
-        UiHandler.scrollToTop();
-        UiHandler.updateArticleForm(article);
+    onArticleTitleClicked(article: Article) {
+        this.scrollToTop();
+        this.updateArticleForm(article);
     }
 
-    static onArticleTagClicked(tag: string) {
-        let oldSearch = UiHandler.getInputValue("inpSearch");
+    onArticleTagClicked(tag: string) {
+        let oldSearch = this.getInputValue("inpSearch");
         let tagHashed = "#" + tag;
         let newSearch = (oldSearch.length == 0) ? tagHashed  : oldSearch + " " + tagHashed;
-        UiHandler.setInputValue("inpSearch", newSearch);
-        UiHandler.onSearchInput();
+        this.setInputValue("inpSearch", newSearch);
+        this.onSearchInput();
     }
 
     // SEARCH
     // ------------========================================================------------
 
-    static registerSearchListener() {
-        document.getElementById("inpSearch")!.addEventListener("input", UiHandler.onSearchInput); 
-        document.getElementById("inpSearch")!.addEventListener('keydown', function(event) {
+    registerSearchListener() {
+        document.getElementById("inpSearch")!.addEventListener("input", this.onSearchInput); 
+        document.getElementById("inpSearch")!.addEventListener('keydown', (event) => {
             const key = event.key; // Or const {key} = event; in ES6+
             if (key === "Escape") {
-                UiHandler.resetSearch();
+                this.resetSearch();
             }
         });
-        document.getElementById("btnCancelSearch")!.addEventListener("click", UiHandler.resetSearch); 
+        document.getElementById("btnCancelSearch")!.addEventListener("click", this.resetSearch); 
     }
 
-    static onSearchInput() {
-        let searchTerm: string = UiHandler.getInputValue("inpSearch").trim()
+    onSearchInput() {
+        let searchTerm: string = this.getInputValue("inpSearch").trim()
         let terms = searchTerm.split(" ").filter((it) => { return it.length != 0});
         console.log("onSearchInput("+searchTerm+") => terms:", terms);
         if (terms.length == 0) {
-            UiHandler.resetSearch();
+            this.resetSearch();
             return;
         }
         document.getElementById("btnCancelSearch")!.hidden = false;
-        let articles = Articles.searchArticles(terms);
-        UiHandler.removeAndPrependArticleNodes(articles);
+        let articles = this.articleRepo.searchArticles(terms);
+        this.removeAndPrependArticleNodes(articles);
     }
 
-    static resetSearch() {
-        UiHandler.setInputValue("inpSearch", "");
+    resetSearch() {
+        this.setInputValue("inpSearch", "");
         document.getElementById("btnCancelSearch")!.hidden = true;
-        Articles.disableSearch();
-        UiHandler.resetArticleList();
+        this.articleRepo.disableSearch();
+        this.resetArticleList();
     }
 
     // UI LOGIC
     // ------------========================================================------------
 
-    static readArticleFromUI(givenId: string | undefined = undefined): Article {
+    readArticleFromUI(givenId: string | undefined = undefined): Article {
         return new Article(
-            (givenId !== undefined) ? givenId : UiHandler.getInputValue("inpId"),
-            UiHandler.getInputValue("inpTitle"),
-            UiHandler.getInputValue("inpTags").split(" ").filter(function(it) { return it.length > 0; }),
-            UiHandler.getInputValue("inpBody")
+            (givenId !== undefined) ? givenId : this.getInputValue("inpId"),
+            this.getInputValue("inpTitle"),
+            this.getInputValue("inpTags").split(" ").filter(function(it) { return it.length > 0; }),
+            this.getInputValue("inpBody")
         );
     }
 
-    static updateArticleForm(article: Article) {
-        UiHandler.setInputValue("inpId", article.id);
-        UiHandler.setInputValue("inpTitle", article.title);
-        UiHandler.setInputValue("inpTags", article.tags.join(" "));
-        UiHandler.setInputValue("inpBody", article.body);
-        UiHandler.switchButtonsToCreateMode(false);
+    updateArticleForm(article: Article) {
+        this.setInputValue("inpId", article.id);
+        this.setInputValue("inpTitle", article.title);
+        this.setInputValue("inpTags", article.tags.join(" "));
+        this.setInputValue("inpBody", article.body);
+        this.switchButtonsToCreateMode(false);
     }
 
-    static resetInputs() {
-        UiHandler.setInputValue("inpId", "");
-        UiHandler.setInputValue("inpTitle", "");
-        UiHandler.setInputValue("inpTags", "");
-        UiHandler.setInputValue("inpBody", "");
-        UiHandler.switchButtonsToCreateMode(true);
+    resetInputs() {
+        this.setInputValue("inpId", "");
+        this.setInputValue("inpTitle", "");
+        this.setInputValue("inpTags", "");
+        this.setInputValue("inpBody", "");
+        this.switchButtonsToCreateMode(true);
     }
 
-    static resetArticleList() {
-        let articles = Articles.loadArticles();
-        UiHandler.removeAndPrependArticleNodes(articles);
+    resetArticleList() {
+        let articles = this.articleRepo.loadArticles();
+        this.removeAndPrependArticleNodes(articles);
     }
 
 
-    static removeAndPrependArticleNodes(articles: Article[]) {
+    removeAndPrependArticleNodes(articles: Article[]) {
         let articleList = document.getElementById("articleList")!;
-        UiHandler.removeAll(articleList);
-        articles.forEach(function(article) {
-            articleList.prepend(UiHandler.createArticleNode(article));
+        this.removeAll(articleList);
+        articles.forEach((article) => {
+            articleList.prepend(this.createArticleNode(article));
         });
-        UiHandler.fillTagsSummary(articles);
+        this.fillTagsSummary(articles);
     }
 
-    static fillTagsSummary(articles: Article[]) {
+    fillTagsSummary(articles: Article[]) {
         let allTagsCounted = new Map<string, number>();
         articles.forEach((article) => {
             article.tags.forEach((tag) => {
@@ -163,19 +176,19 @@ export default class UiHandler {
         let sortedTags = Array.from(allTagsCounted.keys()).sort() as string[];
 
         let tagsNode = document.getElementById("tagsSummary")!;
-        UiHandler.removeAll(tagsNode);
+        this.removeAll(tagsNode);
         
         sortedTags.forEach(tagName => {
             let tagNode = document.createElement("a");
             tagNode.innerText = "#" + tagName + "(" + allTagsCounted.get(tagName) + ") ";
             tagNode.href = "#";
             tagNode.classList.add("tagSummaryLink");
-            tagNode.onclick = () => { UiHandler.onArticleTagClicked(tagName); };
+            tagNode.onclick = () => { this.onArticleTagClicked(tagName); };
             tagsNode.appendChild(tagNode);
         });
     }
 
-    private static removeAll(node: HTMLElement) {
+    private removeAll(node: HTMLElement) {
         while (node.firstChild) {
             node.removeChild(node.lastChild!);
         };
@@ -185,7 +198,7 @@ export default class UiHandler {
     // ------------========================================================------------
 
     // TODO move inside article
-    static validateArticle(article: Article): boolean {
+    validateArticle(article: Article): boolean {
         if (article.title.trim().length == 0) {
             alert("Title must not be empty!");
             return false;
@@ -193,13 +206,13 @@ export default class UiHandler {
         return true;
     }
 
-    static createArticleNode(article: Article) {
+    createArticleNode(article: Article) {
         let articleTitle = document.createElement("h1");
         articleTitle.classList.add("articleTitle");
         let articleTitleLink = document.createElement("a");
         articleTitleLink.innerText = article.title;
         articleTitleLink.href = "#";
-        articleTitleLink.onclick = () => { UiHandler.onArticleTitleClicked(article); };
+        articleTitleLink.onclick = () => { this.onArticleTitleClicked(article); };
         articleTitle.appendChild(articleTitleLink);
 
         let articleTags = document.createElement("p");
@@ -210,7 +223,7 @@ export default class UiHandler {
             tagNode.classList.add("clickableTag");
             tagNode.innerText = "#" + tag;
             tagNode.href = "#";
-            tagNode.onclick = () => { UiHandler.onArticleTagClicked(tag); };
+            tagNode.onclick = () => { this.onArticleTagClicked(tag); };
             articleTags.appendChild(tagNode);
         });
 
@@ -226,8 +239,8 @@ export default class UiHandler {
         return articleNode;
     }
 
-    static switchButtonsToCreateMode(isCreateMode: boolean) {
-        document.getElementById("btnCreate")!.hidden = isCreateMode ? false : true;
+    switchButtonsToCreateMode(isCreateMode: boolean) {
+        IndexHtml.btnCreate().hidden = isCreateMode ? false : true;
         document.getElementById("btnUpdate")!.hidden = isCreateMode ? true : false;
         document.getElementById("btnCancel")!.hidden = isCreateMode ? true : false;
         document.getElementById("btnDelete")!.hidden = isCreateMode ? true : false;
@@ -236,17 +249,25 @@ export default class UiHandler {
     // COMMON
     // ------------========================================================------------
 
-    static getInputValue(selector: string): string {
+    getInputValue(selector: string): string {
         return (<HTMLInputElement>document.getElementById(selector)).value;
     }
 
-    static setInputValue(selector: string, newValue: string) {
+    setInputValue(selector: string, newValue: string) {
         (<HTMLInputElement>document.getElementById(selector)).value = newValue;
     }
 
-    static scrollToTop() {
+    scrollToTop() {
         document.body.scrollTop = 0; // safari
         document.documentElement.scrollTop = 0; // chrome, firefox, IE, opera
     }
 
+}
+
+class IndexHtml {
+    private static ID_BTN_CREATE = "btnCreate";
+
+    static btnCreate(): HTMLElement {
+        return document.getElementById(IndexHtml.ID_BTN_CREATE)!;
+    }
 }

@@ -1,21 +1,22 @@
 import { BrowserWindow } from 'electron';
 import { join } from 'path';
-import { Config } from './common';
 import { Settings } from './Settings';
+import { Env } from './Context';
 
 export class ElectronHandler {
 
     private mainWindow: Electron.BrowserWindow | null = null;
-    private readonly application: Electron.App;
-    private readonly BrowserWindow;
+
+    private static readonly HTML_FILE_URL: string = 'file://' + __dirname + '/../view/index.html';
+    private static readonly PRELOAD_JS_PATH: string = join(__dirname, 'preload.js');
 
     constructor(
-        application: Electron.App, 
-        browserWindow: typeof BrowserWindow,
-        private settings: Settings
+        private readonly application: Electron.App, 
+        private readonly browserWindow: typeof BrowserWindow,
+        private readonly settings: Settings,
+        private readonly env: Env,
+        private readonly windowTitle: string = "Artikles" + (env == Env.DEV ? " - DEV" : "")
         ) {
-        this.BrowserWindow = browserWindow;
-        this.application = application;
     }
 
     public registerHandlers() {
@@ -27,18 +28,23 @@ export class ElectronHandler {
         console.log("ElectronHandler.onReady()");
         console.log("userData path: ", this.application.getPath("userData"));
 
-        this.mainWindow = new this.BrowserWindow({
+        this.mainWindow = new this.browserWindow({
             width: 800, height: 600,
             webPreferences: {
-                preload: join(__dirname, 'preload.js')
+                preload: ElectronHandler.PRELOAD_JS_PATH
             }
         });
         this.applyWindowSettings();
-        this.mainWindow!.setTitle("Artikles" + (Config.IS_DEBUG ? " - DEV" : ""));
+        this.mainWindow!.setTitle(this.windowTitle);
         this.mainWindow!.setMinimumSize(600, 600);
-        this.mainWindow!.loadURL('file://' + __dirname + '/../view/index.html'); // loadFile("index.html");
+        this.mainWindow!.loadURL(ElectronHandler.HTML_FILE_URL); // or: loadFile("index.html");
         this.mainWindow!.on('close', () => { this.onClose(); });
         this.mainWindow!.on('closed', () => { this.onClosed(); });
+        this.mainWindow.webContents.once('dom-ready', () => {
+            console.log("ElectronHandler: on dom-ready");
+            // console.log("in handler:", document.getElementById("inpSearch"));
+        });
+        
         // this.mainWindow.webContents.openDevTools()
     }
 
@@ -47,7 +53,7 @@ export class ElectronHandler {
         this.application.quit();
     }
 
-    // also invoked when hitting CMD+Q :)
+    /** also invoked when hitting CMD+Q :) */
     private onClose() {
         console.log("ElectronHandler.onClose()");
         this.saveWindowSettings();

@@ -1,10 +1,11 @@
 {
-  "name": "articles",
+  "name": "artikles",
   "version": "1.9.0",
-  "description": "tag articles",
+  "description": "manages a set of artic(k)les",
   "main": "main.js",
   "dependencies": {
-    "electron-settings": "^3.2.0"
+    "electron-settings": "^3.2.0",
+    "node-ipc": "^9.1.1"
   },
   "devDependencies": {
     "electron": "^8.2.3",
@@ -17,5 +18,9 @@
   },
   "author": "",
   "license": "ISC",
-  "productName": "Articles"
+  "productName": "Articles",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/christophpickl/artikles.git"
+  }
 }
