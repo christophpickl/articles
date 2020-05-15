@@ -45,7 +45,9 @@ export class ElectronHandler {
             // console.log("in handler:", document.getElementById("inpSearch"));
         });
         
-        // this.mainWindow.webContents.openDevTools()
+        if (this.env == Env.DEV) {
+            this.mainWindow.webContents.openDevTools();
+        }
     }
 
     private onWindowAllClosed() {

@@ -1,9 +1,7 @@
-import UiHandler from './UiHandler';
-import { ipcRenderer } from 'electron';
+import UiHandler from './view/UiHandler';
+import { Context } from './Context';
 
 window.addEventListener('DOMContentLoaded', () => {
-    console.log("on DOMContentLoaded");
-    // UiHandler().init();
-    console.log("in preload:", document.getElementById("inpSearch"));
-    ipcRenderer.sendSync("preloaded", document);
+    console.log("preload.js: on DOMContentLoaded -> init UI");
+    Context.uiHandler().init();
 });

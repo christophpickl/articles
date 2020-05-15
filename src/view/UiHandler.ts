@@ -1,23 +1,16 @@
 
-import { randomUuid } from './common';
-import { Article } from './domain';
-import { ArticleRepo } from './Articles';
-const { ipcMain } = require('electron');
+import { randomUuid } from '../common';
+import { Article } from '../domain';
+import { ArticleRepo } from '../Articles';
+import IndexHtml from './IndexHtml';
 
 export default class UiHandler {
     constructor(
         private readonly articleRepo: ArticleRepo
-    ){}
+    ) {}
 
     init() {
         console.log("init()");
-
-        ipcMain.on('preloaded', (event, argDocument) => {
-            console.log("document: " + argDocument)
-            //event.reply('preloaded-reply', 'foobar');
-        });
-
-          return;
 
         document.addEventListener('keydown', function(event) {
             const key = event.key; // Or const {key} = event; in ES6+
@@ -27,12 +20,13 @@ export default class UiHandler {
         });
 
         this.resetArticleList()
-        document.getElementById("btnCancelSearch")!.hidden = true;
 
-        document.getElementById("btnCreate")!.addEventListener("click", this.onCreateClicked); 
-        document.getElementById("btnUpdate")!.addEventListener("click", this.onUpdateClicked); 
-        document.getElementById("btnCancel")!.addEventListener("click", this.onCancelClicked); 
-        document.getElementById("btnDelete")!.addEventListener("click", this.onDeleteClicked); 
+        IndexHtml.btnCancelSearchVisible(false);
+        IndexHtml.onClick(IndexHtml.btnCreate(), () => { this.onCreateClicked(); });
+        IndexHtml.onClick(IndexHtml.btnUpdate(), () => { this.onUpdateClicked(); });
+        IndexHtml.onClick(IndexHtml.btnCancel(), () => { this.onCancelClicked(); });
+        IndexHtml.onClick(IndexHtml.btnDelete(), () => { this.onDeleteClicked(); });
+
         this.registerSearchListener();
         
         this.switchButtonsToCreateMode(true);
@@ -89,6 +83,7 @@ export default class UiHandler {
     // ------------========================================================------------
 
     registerSearchListener() {
+        IndexHtml.onInpSearchInput(() => { this.onSearchInput(); });
         document.getElementById("inpSearch")!.addEventListener("input", this.onSearchInput); 
         document.getElementById("inpSearch")!.addEventListener('keydown', (event) => {
             const key = event.key; // Or const {key} = event; in ES6+
@@ -107,16 +102,17 @@ export default class UiHandler {
             this.resetSearch();
             return;
         }
-        document.getElementById("btnCancelSearch")!.hidden = false;
+
         let articles = this.articleRepo.searchArticles(terms);
         this.removeAndPrependArticleNodes(articles);
+        document.getElementById("btnCancelSearch")!.hidden = false;
     }
 
     resetSearch() {
         this.setInputValue("inpSearch", "");
-        document.getElementById("btnCancelSearch")!.hidden = true;
         this.articleRepo.disableSearch();
         this.resetArticleList();
+        document.getElementById("btnCancelSearch")!.hidden = true;
     }
 
     // UI LOGIC
@@ -262,12 +258,4 @@ export default class UiHandler {
         document.documentElement.scrollTop = 0; // chrome, firefox, IE, opera
     }
 
-}
-
-class IndexHtml {
-    private static ID_BTN_CREATE = "btnCreate";
-
-    static btnCreate(): HTMLElement {
-        return document.getElementById(IndexHtml.ID_BTN_CREATE)!;
-    }
 }

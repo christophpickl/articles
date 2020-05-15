@@ -2,6 +2,7 @@ import { Settings, ElectronSettings } from './Settings';
 import { ArticleRepo, JsonFileArticleRepo } from './Articles';
 import { ElectronHandler } from './ElectronHandler';
 import { BrowserWindow } from 'electron';
+import UiHandler from './view/UiHandler';
 
 export { Context, Env }
 
@@ -12,27 +13,43 @@ enum Env {
 
 class Context {
 
-    readonly settings: Settings;
-    readonly articleRepo: ArticleRepo;
-    readonly env: Env;
-    readonly isDev: Boolean;
+    static env: Env;
+    static isDev: Boolean;
 
-    constructor() {
-        this.env = (process.cwd() == "/") ? Env.PROD : Env.DEV;
-        this.isDev = this.env == Env.DEV;
+    private static _settings: Settings;
+    private static _articleRepo: ArticleRepo;
+    private static _uiHandler: UiHandler;
+    
+    private static _initizalize = (() => {
+        Context.env = (process.cwd() == "/") ? Env.PROD : Env.DEV;
+        Context.isDev = Context.env == Env.DEV;
 
-        this.settings = new ElectronSettings();
+        Context._settings = new ElectronSettings();
 
-        if(this.isDev) {
+        if(Context.isDev) {
             // TODO support in-memory impl
-            this.articleRepo = new JsonFileArticleRepo(process.cwd() + "/artikles.devdata.json");
+            Context._articleRepo = new JsonFileArticleRepo(process.cwd() + "/artikles.devdata.json");
         } else {
-            this.articleRepo = new JsonFileArticleRepo(process.env["HOME"] + "/.artikles/artikles.data.json");
+            Context._articleRepo = new JsonFileArticleRepo(process.env["HOME"] + "/.artikles/artikles.data.json");
         }
+    })();
+
+    static settings(): Settings {
+        return Context._settings;
     }
 
-    electronHandler(app: Electron.App): ElectronHandler {
-        return new ElectronHandler(app, BrowserWindow, this.settings, this.env);
+    static articleRepo(): ArticleRepo {
+        return Context._articleRepo;
     }
 
+    static electronHandler(app: Electron.App): ElectronHandler {
+        return new ElectronHandler(app, BrowserWindow, Context.settings(), Context.env);
+    }
+
+    static uiHandler(): UiHandler {
+        if (Context._uiHandler === undefined) {
+            Context._uiHandler = new UiHandler(Context.articleRepo());
+        }
+        return Context._uiHandler;
+    }
 }
