@@ -77,7 +77,7 @@ var UiHandler = /** @class */ (function () {
                 _this.resetSearch();
             }
         });
-        document.getElementById("btnCancelSearch").addEventListener("click", this.resetSearch);
+        IndexHtml_1["default"].onClick(IndexHtml_1["default"].btnCancelSearch(), function () { _this.resetSearch(); });
     };
     UiHandler.prototype.onSearchInput = function () {
         var searchTerm = this.getInputValue("inpSearch").trim();

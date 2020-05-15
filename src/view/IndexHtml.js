@@ -15,22 +15,28 @@ var IndexHtml = /** @class */ (function () {
     IndexHtml.btnDelete = function () {
         return document.getElementById(IndexHtml.ID_BTN_DELETE);
     };
+    IndexHtml.btnCancelSearch = function () {
+        return document.getElementById(IndexHtml.ID_BTN_CANCEL_SEARCH);
+    };
     IndexHtml.btnCancelSearchVisible = function (isVisible) {
-        document.getElementById(IndexHtml.ID_BTN_CANCEL_SEARCH).hidden = !isVisible;
+        IndexHtml.btnCancelSearch().hidden = !isVisible;
     };
     IndexHtml.onInpSearchInput = function (action) {
         document.getElementById("inpSearch").addEventListener("input", action);
     };
     // COMMON
+    // ================================================================================================================
     IndexHtml.onClick = function (element, action) {
         element.addEventListener("click", function () { action(); });
     };
     // CRUD
+    // ================================================================================================================
     IndexHtml.ID_BTN_CREATE = "btnCreate";
     IndexHtml.ID_BTN_UPDATE = "btnUpdate";
     IndexHtml.ID_BTN_CANCEL = "btnCancel";
     IndexHtml.ID_BTN_DELETE = "btnDelete";
     // SEARCH
+    // ================================================================================================================
     IndexHtml.ID_BTN_CANCEL_SEARCH = "btnCancelSearch";
     return IndexHtml;
 }());

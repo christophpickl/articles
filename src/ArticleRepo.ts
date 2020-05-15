@@ -3,7 +3,18 @@ import { Nullable } from './common';
 import { Article } from './domain';
 var fs = require("fs");
 
-export { ArticleRepo, JsonFileArticleRepo }
+export { ArticleRepo, JsonFileArticleRepo, InMemoryArticleRepo }
+
+function updateArticleInList(articles: Article[], update: Article) {
+    let storedArticle = articles.find(function (it) {
+        return it.id === update.id;
+    })!;
+    // console.log(JSON.stringify(article));
+    // console.log(storedArticle);
+    storedArticle.title = update.title;
+    storedArticle.body = update.body;
+    storedArticle.tags = update.tags;
+}
 
 interface ArticleRepo {
     saveArticle(article: Article);
@@ -11,8 +22,49 @@ interface ArticleRepo {
     updateArticle(article: Article);
     deleteArticle(articleId: string);
 
+    // TODO outsource into own class
     searchArticles(terms: string[]): Article[]
     disableSearch();
+}
+
+
+let demoArticles: Article[] = [
+    {
+        id: "id1",
+        title: "let lose",
+        tags: [ "dao", "zen", "stoi" ],
+        body: "let lose, let go, practice non-attachment, as everything is impermanent anyhow. stay low with compliments, stay high with criticism."
+    },{
+        id: "id2",
+        title: "be kind",
+        tags: [ "kindness" ],
+        body: "to yourself and others."
+    }
+];
+
+class InMemoryArticleRepo implements ArticleRepo {
+
+    private articles: Article[] = demoArticles;
+
+    saveArticle(article: Article) {
+        this.articles.push(article);
+    }
+    loadArticles(): Article[] {
+        return this.articles;
+    }
+    updateArticle(article: Article) {
+        updateArticleInList(this.articles, article);
+    }
+    deleteArticle(articleId: string) {
+        this.articles = this.articles.filter(function(value, index, arr) { return value.id != articleId; });
+    }
+    searchArticles(terms: string[]): Article[] {
+        // TODO
+        return this.articles;
+    }
+    disableSearch() {
+        // TODO
+    }
 }
 
 class JsonFileArticleRepo implements ArticleRepo {
@@ -57,15 +109,7 @@ class JsonFileArticleRepo implements ArticleRepo {
 
     updateArticle(article: Article) {
         console.log("updateArticle(article.id="+article.id+")");
-        let storedArticle = this.loadedArticles.find(function (it) {
-            return it.id === article.id;
-        })!;
-        // console.log(JSON.stringify(article));
-        // console.log(JSON.stringify(Articles.loadedArticles));
-        // console.log(storedArticle);
-        storedArticle.title = article.title;
-        storedArticle.body = article.body;
-        storedArticle.tags = article.tags;
+        updateArticleInList(this.loadedArticles, article);
         this.persistJson();
     }
     

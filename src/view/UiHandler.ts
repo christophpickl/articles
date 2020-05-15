@@ -1,7 +1,7 @@
 
 import { randomUuid } from '../common';
 import { Article } from '../domain';
-import { ArticleRepo } from '../Articles';
+import { ArticleRepo } from '../ArticleRepo';
 import IndexHtml from './IndexHtml';
 
 export default class UiHandler {
@@ -91,7 +91,7 @@ export default class UiHandler {
                 this.resetSearch();
             }
         });
-        document.getElementById("btnCancelSearch")!.addEventListener("click", this.resetSearch); 
+        IndexHtml.onClick(IndexHtml.btnCancelSearch(), () => { this.resetSearch(); });
     }
 
     onSearchInput() {

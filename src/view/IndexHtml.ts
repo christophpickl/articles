@@ -2,10 +2,12 @@
 export default class IndexHtml {
 
     // CRUD
+    // ================================================================================================================
     private static ID_BTN_CREATE = "btnCreate";
     private static ID_BTN_UPDATE = "btnUpdate";
     private static ID_BTN_CANCEL = "btnCancel";
     private static ID_BTN_DELETE = "btnDelete";
+
     static btnCreate(): HTMLElement {
         return document.getElementById(IndexHtml.ID_BTN_CREATE)!;
     }
@@ -20,15 +22,21 @@ export default class IndexHtml {
     }
 
     // SEARCH
+    // ================================================================================================================
     private static ID_BTN_CANCEL_SEARCH = "btnCancelSearch";
+
+    static btnCancelSearch(): HTMLElement {
+        return document.getElementById(IndexHtml.ID_BTN_CANCEL_SEARCH)!;
+    }
     static btnCancelSearchVisible(isVisible: boolean) {
-        document.getElementById(IndexHtml.ID_BTN_CANCEL_SEARCH)!.hidden = !isVisible;
+        IndexHtml.btnCancelSearch().hidden = !isVisible;
     }
     static onInpSearchInput(action: () => void) {
         document.getElementById("inpSearch")!.addEventListener("input", action); 
     }
 
     // COMMON
+    // ================================================================================================================
     static onClick(element: HTMLElement, action: () => void) {
         element.addEventListener("click", () => { action(); });
     }

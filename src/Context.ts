@@ -1,5 +1,5 @@
 import { Settings, ElectronSettings } from './Settings';
-import { ArticleRepo, JsonFileArticleRepo } from './Articles';
+import { ArticleRepo, JsonFileArticleRepo, InMemoryArticleRepo } from './ArticleRepo';
 import { ElectronHandler } from './ElectronHandler';
 import { BrowserWindow } from 'electron';
 import UiHandler from './view/UiHandler';
@@ -27,7 +27,7 @@ class Context {
         Context._settings = new ElectronSettings();
 
         if(Context.isDev) {
-            // TODO support in-memory impl
+            // Context._articleRepo = new InMemoryArticleRepo();
             Context._articleRepo = new JsonFileArticleRepo(process.cwd() + "/artikles.devdata.json");
         } else {
             Context._articleRepo = new JsonFileArticleRepo(process.env["HOME"] + "/.artikles/artikles.data.json");
