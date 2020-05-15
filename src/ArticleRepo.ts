@@ -27,7 +27,6 @@ interface ArticleRepo {
     disableSearch();
 }
 
-
 let demoArticles: Article[] = [
     {
         id: "id1",
@@ -80,11 +79,6 @@ class JsonFileArticleRepo implements ArticleRepo {
     private currentSearchTerms: Nullable<string[]> = null
 
     loadArticles() : Article[] {
-        // TODO implement in memory version
-        // Articles.loadedArticles = [
-        //     new Article("id1", "balance", [ "philo", "medi" ], "my body\nmy story."),
-        //     new Article("id2", "some thing", [ "" ], "")
-        // ];
         console.log("Loading articles from: " + this.jsonFilePath);
         // TODO handle file not existing => create it
         
