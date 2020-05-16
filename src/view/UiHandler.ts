@@ -165,7 +165,7 @@ export default class UiHandler {
 
     removeAndPrependArticleNodes(articles: Article[]) {
         let articleList = document.getElementById("articleList")!;
-        this.removeAll(articleList);
+        UiHandler.removeAll(articleList);
         articles.forEach((article) => {
             articleList.prepend(this.createArticleNode(article));
         });
@@ -185,7 +185,6 @@ export default class UiHandler {
             let aNode = document.createElement("a");
             aNode.innerText = "#" + tagName + "(" + allTagsCounted.get(tagName) + ")";
             aNode.href = "#";
-            aNode.classList.add("tagSummaryLink");
             aNode.onclick = () => { this.onArticleTagClicked(tagName); };
             let itemNode = document.createElement("li");
             itemNode.appendChild(aNode);

@@ -33,7 +33,6 @@ class DataMigrator {
                 article.likes = 0;
                 date = new Date(date.getTime() + 1_000);
             });
-            console.log("migrated JSON: ", json);
             fs.writeFileSync(this.jsonFilePath, JSON.stringify(json));
         }
     }

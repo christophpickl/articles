@@ -99,8 +99,6 @@ class JsonFileArticleRepo implements ArticleRepo {
         
         if(fs.existsSync(this.jsonFilePath)) {
             this.data = this.loadJson();
-            console.log("Loaded data:");
-            console.log(JSON.stringify(this.data));
         } else {
             console.log("Init data with empty file");
             this.persistJson();

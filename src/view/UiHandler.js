@@ -106,7 +106,6 @@ var UiHandler = /** @class */ (function () {
     // ------------========================================================------------
     UiHandler.prototype.readArticleFromUI = function (givenId) {
         if (givenId === void 0) { givenId = undefined; }
-        var now = new Date();
         return {
             id: (givenId !== undefined) ? givenId : this.getInputValue("inpId"),
             title: this.getInputValue("inpTitle"),
@@ -144,7 +143,7 @@ var UiHandler = /** @class */ (function () {
     UiHandler.prototype.removeAndPrependArticleNodes = function (articles) {
         var _this = this;
         var articleList = document.getElementById("articleList");
-        this.removeAll(articleList);
+        UiHandler.removeAll(articleList);
         articles.forEach(function (article) {
             articleList.prepend(_this.createArticleNode(article));
         });
@@ -155,13 +154,12 @@ var UiHandler = /** @class */ (function () {
         var allTagsCounted = this.countEachTag(articles);
         var sortedTags = Array.from(allTagsCounted.keys()).sort();
         var tagsSummaryNode = document.getElementById("tagsSummary");
-        this.removeAll(tagsSummaryNode);
+        UiHandler.removeAll(tagsSummaryNode);
         var listNode = document.createElement("ul");
         sortedTags.forEach(function (tagName) {
             var aNode = document.createElement("a");
             aNode.innerText = "#" + tagName + "(" + allTagsCounted.get(tagName) + ")";
             aNode.href = "#";
-            aNode.classList.add("tagSummaryLink");
             aNode.onclick = function () { _this.onArticleTagClicked(tagName); };
             var itemNode = document.createElement("li");
             itemNode.appendChild(aNode);
@@ -183,11 +181,10 @@ var UiHandler = /** @class */ (function () {
         return allTagsCounted;
     };
     /** general utility method / extension function */
-    UiHandler.prototype.removeAll = function (node) {
+    UiHandler.removeAll = function (node) {
         while (node.firstChild) {
             node.removeChild(node.lastChild);
         }
-        ;
     };
     // MISC
     // ------------========================================================------------
@@ -229,10 +226,10 @@ var UiHandler = /** @class */ (function () {
         return articleNode;
     };
     UiHandler.prototype.switchButtonsToCreateMode = function (isCreateMode) {
-        IndexHtml_1["default"].btnCreate().hidden = isCreateMode ? false : true;
-        document.getElementById("btnUpdate").hidden = isCreateMode ? true : false;
-        document.getElementById("btnCancel").hidden = isCreateMode ? true : false;
-        document.getElementById("btnDelete").hidden = isCreateMode ? true : false;
+        IndexHtml_1["default"].btnCreate().hidden = !isCreateMode;
+        document.getElementById("btnUpdate").hidden = isCreateMode;
+        document.getElementById("btnCancel").hidden = isCreateMode;
+        document.getElementById("btnDelete").hidden = isCreateMode;
     };
     // COMMON
     // ------------========================================================------------
