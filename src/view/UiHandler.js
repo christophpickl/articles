@@ -3,8 +3,8 @@ exports.__esModule = true;
 var common_1 = require("../common");
 var IndexHtml_1 = require("./IndexHtml");
 var UiHandler = /** @class */ (function () {
-    function UiHandler(articleRepo) {
-        this.articleRepo = articleRepo;
+    function UiHandler(articleService) {
+        this.articleService = articleService;
     }
     UiHandler.prototype.init = function () {
         var _this = this;
@@ -15,7 +15,6 @@ var UiHandler = /** @class */ (function () {
                 document.getElementById("inpSearch").focus();
             }
         });
-        this.resetArticleList();
         IndexHtml_1["default"].btnCancelSearchVisible(false);
         IndexHtml_1["default"].onClick(IndexHtml_1["default"].btnCreate(), function () { _this.onCreateClicked(); });
         IndexHtml_1["default"].onClick(IndexHtml_1["default"].btnUpdate(), function () { _this.onUpdateClicked(); });
@@ -23,6 +22,7 @@ var UiHandler = /** @class */ (function () {
         IndexHtml_1["default"].onClick(IndexHtml_1["default"].btnDelete(), function () { _this.onDeleteClicked(); });
         this.registerSearchListener();
         this.switchButtonsToCreateMode(true);
+        this.removeAndPrependArticleNodes(this.articleService.loadArticles());
     };
     UiHandler.prototype.onCreateClicked = function () {
         console.log("onCreateClicked()");
@@ -34,8 +34,7 @@ var UiHandler = /** @class */ (function () {
         if (!this.validateArticle(article)) {
             return;
         }
-        this.articleRepo.saveArticle(article);
-        this.resetArticleList();
+        this.removeAndPrependArticleNodes(this.articleService.saveArticle(article));
         this.resetInputs();
     };
     UiHandler.prototype.onUpdateClicked = function () {
@@ -46,8 +45,7 @@ var UiHandler = /** @class */ (function () {
         }
         article.updated = new Date();
         this.setInputValue("inpUpdated", JSON.stringify(article.updated).split("\"").join("")); // pseudo replaceAll :-/
-        this.articleRepo.updateArticle(article);
-        this.resetArticleList();
+        this.removeAndPrependArticleNodes(this.articleService.updateArticle(article));
     };
     UiHandler.prototype.onCancelClicked = function () {
         console.log("onCancelClicked()");
@@ -55,8 +53,7 @@ var UiHandler = /** @class */ (function () {
     };
     UiHandler.prototype.onDeleteClicked = function () {
         console.log("onDeleteClicked()");
-        this.articleRepo.deleteArticle(this.getInputValue("inpId"));
-        this.resetArticleList();
+        this.removeAndPrependArticleNodes(this.articleService.deleteArticle(this.getInputValue("inpId")));
         this.resetInputs();
     };
     UiHandler.prototype.onArticleTitleClicked = function (article) {
@@ -75,7 +72,7 @@ var UiHandler = /** @class */ (function () {
     UiHandler.prototype.registerSearchListener = function () {
         var _this = this;
         IndexHtml_1["default"].onInpSearchInput(function () { _this.onSearchInput(); });
-        document.getElementById("inpSearch").addEventListener("input", this.onSearchInput);
+        document.getElementById("inpSearch").addEventListener("input", function () { _this.onSearchInput(); });
         document.getElementById("inpSearch").addEventListener('keydown', function (event) {
             var key = event.key; // Or const {key} = event; in ES6+
             if (key === "Escape") {
@@ -92,14 +89,13 @@ var UiHandler = /** @class */ (function () {
             this.resetSearch();
             return;
         }
-        var articles = this.articleRepo.searchArticles(terms);
+        var articles = this.articleService.searchArticles(terms);
         this.removeAndPrependArticleNodes(articles);
         document.getElementById("btnCancelSearch").hidden = false;
     };
     UiHandler.prototype.resetSearch = function () {
         this.setInputValue("inpSearch", "");
-        this.articleRepo.disableSearch();
-        this.resetArticleList();
+        this.removeAndPrependArticleNodes(this.articleService.disableSearch());
         document.getElementById("btnCancelSearch").hidden = true;
     };
     // UI LOGIC
@@ -136,10 +132,10 @@ var UiHandler = /** @class */ (function () {
         this.setInputValue("inpLikes", "");
         this.switchButtonsToCreateMode(true);
     };
-    UiHandler.prototype.resetArticleList = function () {
-        var articles = this.articleRepo.loadArticles();
-        this.removeAndPrependArticleNodes(articles);
-    };
+    // resetArticleList() {
+    //     let articles = this.articleService.loadArticles();
+    //     this.removeAndPrependArticleNodes(articles);
+    // }
     UiHandler.prototype.removeAndPrependArticleNodes = function (articles) {
         var _this = this;
         var articleList = document.getElementById("articleList");

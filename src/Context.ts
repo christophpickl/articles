@@ -4,6 +4,7 @@ import { ElectronHandler } from './ElectronHandler';
 import { BrowserWindow } from 'electron';
 import UiHandler from './view/UiHandler';
 import { DataMigrator } from './DataMigrator';
+import {ArticleService, ArticleServiceImpl} from "./ArticleService";
 
 export { Context, Env }
 
@@ -19,6 +20,7 @@ class Context {
 
     private static _settings: Settings;
     private static _articleRepo: ArticleRepo;
+    private static _articleService: ArticleService;
     private static _uiHandler: UiHandler;
     private static _dataMigrator: DataMigrator;
 
@@ -36,6 +38,7 @@ class Context {
             jsonFilePath = process.env["HOME"] + "/.artikles/artikles.data.json";
         }
         Context._articleRepo = new JsonFileArticleRepo(jsonFilePath, DataMigrator.APPLICATION_VERSION);
+        Context._articleService = new ArticleServiceImpl(Context._articleRepo);
         Context._dataMigrator = new DataMigrator(jsonFilePath);
     })();
 
@@ -47,13 +50,17 @@ class Context {
         return Context._articleRepo;
     }
 
+    static articleService(): ArticleService {
+        return Context._articleService;
+    }
+
     static electronHandler(app: Electron.App): ElectronHandler {
         return new ElectronHandler(app, BrowserWindow, Context.settings(), Context.env);
     }
 
     static uiHandler(): UiHandler {
         if (Context._uiHandler === undefined) {
-            Context._uiHandler = new UiHandler(Context.articleRepo());
+            Context._uiHandler = new UiHandler(Context.articleService());
         }
         return Context._uiHandler;
     }

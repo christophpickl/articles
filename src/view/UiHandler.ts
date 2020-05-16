@@ -1,12 +1,12 @@
 
 import { randomUuid } from '../common';
 import { Article } from '../domain';
-import { ArticleRepo } from '../ArticleRepo';
 import IndexHtml from './IndexHtml';
+import {ArticleService} from "../ArticleService";
 
 export default class UiHandler {
     constructor(
-        private readonly articleRepo: ArticleRepo
+        private readonly articleService: ArticleService
     ) {}
 
     init() {
@@ -19,8 +19,6 @@ export default class UiHandler {
             }
         });
 
-        this.resetArticleList()
-
         IndexHtml.btnCancelSearchVisible(false);
         IndexHtml.onClick(IndexHtml.btnCreate(), () => { this.onCreateClicked(); });
         IndexHtml.onClick(IndexHtml.btnUpdate(), () => { this.onUpdateClicked(); });
@@ -30,6 +28,7 @@ export default class UiHandler {
         this.registerSearchListener();
         
         this.switchButtonsToCreateMode(true);
+        this.removeAndPrependArticleNodes(this.articleService.loadArticles());
     }
     
     onCreateClicked() {
@@ -43,8 +42,7 @@ export default class UiHandler {
         if(!this.validateArticle(article)) {
             return;
         }
-        this.articleRepo.saveArticle(article);
-        this.resetArticleList();
+        this.removeAndPrependArticleNodes(this.articleService.saveArticle(article));
         this.resetInputs();
     }
 
@@ -56,8 +54,7 @@ export default class UiHandler {
         }
         article.updated = new Date();
         this.setInputValue("inpUpdated", JSON.stringify(article.updated).split("\"").join("")); // pseudo replaceAll :-/
-        this.articleRepo.updateArticle(article);
-        this.resetArticleList();
+        this.removeAndPrependArticleNodes(this.articleService.updateArticle(article));
     }
 
     onCancelClicked() {
@@ -67,8 +64,7 @@ export default class UiHandler {
 
     onDeleteClicked() {
         console.log("onDeleteClicked()");
-        this.articleRepo.deleteArticle(this.getInputValue("inpId"));
-        this.resetArticleList();
+        this.removeAndPrependArticleNodes(this.articleService.deleteArticle(this.getInputValue("inpId")));
         this.resetInputs();
     }
 
@@ -90,7 +86,7 @@ export default class UiHandler {
 
     registerSearchListener() {
         IndexHtml.onInpSearchInput(() => { this.onSearchInput(); });
-        document.getElementById("inpSearch")!.addEventListener("input", this.onSearchInput); 
+        document.getElementById("inpSearch")!.addEventListener("input", () => { this.onSearchInput(); });
         document.getElementById("inpSearch")!.addEventListener('keydown', (event) => {
             const key = event.key; // Or const {key} = event; in ES6+
             if (key === "Escape") {
@@ -109,15 +105,14 @@ export default class UiHandler {
             return;
         }
 
-        let articles = this.articleRepo.searchArticles(terms);
+        let articles = this.articleService.searchArticles(terms);
         this.removeAndPrependArticleNodes(articles);
         document.getElementById("btnCancelSearch")!.hidden = false;
     }
 
     resetSearch() {
         this.setInputValue("inpSearch", "");
-        this.articleRepo.disableSearch();
-        this.resetArticleList();
+        this.removeAndPrependArticleNodes(this.articleService.disableSearch());
         document.getElementById("btnCancelSearch")!.hidden = true;
     }
 
@@ -158,10 +153,10 @@ export default class UiHandler {
         this.switchButtonsToCreateMode(true);
     }
 
-    resetArticleList() {
-        let articles = this.articleRepo.loadArticles();
-        this.removeAndPrependArticleNodes(articles);
-    }
+    // resetArticleList() {
+    //     let articles = this.articleService.loadArticles();
+    //     this.removeAndPrependArticleNodes(articles);
+    // }
 
     removeAndPrependArticleNodes(articles: Article[]) {
         let articleList = document.getElementById("articleList")!;
