@@ -17,7 +17,7 @@ npm version minor
 checkLastReturnCode
 
 echo "Packaging APP file ..."
-electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/applogo.mac.icns --prune=true --out=builds/
+electron-packager . --overwrite --platform=darwin --arch=x64 --icon=local/applogo.mac.icns --prune=true --out=builds/
 checkLastReturnCode
 
 echo "Moving/overwriting binaries ..."

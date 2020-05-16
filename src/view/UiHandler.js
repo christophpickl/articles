@@ -1,7 +1,6 @@
 "use strict";
 exports.__esModule = true;
 var common_1 = require("../common");
-var domain_1 = require("../domain");
 var IndexHtml_1 = require("./IndexHtml");
 var UiHandler = /** @class */ (function () {
     function UiHandler(articleRepo) {
@@ -28,6 +27,10 @@ var UiHandler = /** @class */ (function () {
     UiHandler.prototype.onCreateClicked = function () {
         console.log("onCreateClicked()");
         var article = this.readArticleFromUI(common_1.randomUuid());
+        var now = new Date();
+        article.created = now;
+        article.updated = now;
+        article.likes = 0;
         if (!this.validateArticle(article)) {
             return;
         }
@@ -41,6 +44,8 @@ var UiHandler = /** @class */ (function () {
         if (!this.validateArticle(article)) {
             return;
         }
+        article.updated = new Date();
+        this.setInputValue("inpUpdated", JSON.stringify(article.updated).split("\"").join("")); // pseudo replaceAll :-/
         this.articleRepo.updateArticle(article);
         this.resetArticleList();
     };
@@ -101,13 +106,25 @@ var UiHandler = /** @class */ (function () {
     // ------------========================================================------------
     UiHandler.prototype.readArticleFromUI = function (givenId) {
         if (givenId === void 0) { givenId = undefined; }
-        return new domain_1.Article((givenId !== undefined) ? givenId : this.getInputValue("inpId"), this.getInputValue("inpTitle"), this.getInputValue("inpTags").split(" ").filter(function (it) { return it.length > 0; }), this.getInputValue("inpBody"));
+        var now = new Date();
+        return {
+            id: (givenId !== undefined) ? givenId : this.getInputValue("inpId"),
+            title: this.getInputValue("inpTitle"),
+            tags: this.getInputValue("inpTags").split(" ").filter(function (it) { return it.length > 0; }),
+            body: this.getInputValue("inpBody"),
+            created: new Date(this.getInputValue("inpCreated")),
+            updated: new Date(this.getInputValue("inpUpdated")),
+            likes: parseInt(this.getInputValue("inpLikes"))
+        };
     };
     UiHandler.prototype.updateArticleForm = function (article) {
         this.setInputValue("inpId", article.id);
         this.setInputValue("inpTitle", article.title);
         this.setInputValue("inpTags", article.tags.join(" "));
         this.setInputValue("inpBody", article.body);
+        this.setInputValue("inpCreated", article.created.toString());
+        this.setInputValue("inpUpdated", article.updated.toString());
+        this.setInputValue("inpLikes", article.likes.toString());
         this.switchButtonsToCreateMode(false);
     };
     UiHandler.prototype.resetInputs = function () {
@@ -115,6 +132,9 @@ var UiHandler = /** @class */ (function () {
         this.setInputValue("inpTitle", "");
         this.setInputValue("inpTags", "");
         this.setInputValue("inpBody", "");
+        this.setInputValue("inpCreated", "");
+        this.setInputValue("inpUpdated", "");
+        this.setInputValue("inpLikes", "");
         this.switchButtonsToCreateMode(true);
     };
     UiHandler.prototype.resetArticleList = function () {
@@ -132,6 +152,24 @@ var UiHandler = /** @class */ (function () {
     };
     UiHandler.prototype.fillTagsSummary = function (articles) {
         var _this = this;
+        var allTagsCounted = this.countEachTag(articles);
+        var sortedTags = Array.from(allTagsCounted.keys()).sort();
+        var tagsSummaryNode = document.getElementById("tagsSummary");
+        this.removeAll(tagsSummaryNode);
+        var listNode = document.createElement("ul");
+        sortedTags.forEach(function (tagName) {
+            var aNode = document.createElement("a");
+            aNode.innerText = "#" + tagName + "(" + allTagsCounted.get(tagName) + ")";
+            aNode.href = "#";
+            aNode.classList.add("tagSummaryLink");
+            aNode.onclick = function () { _this.onArticleTagClicked(tagName); };
+            var itemNode = document.createElement("li");
+            itemNode.appendChild(aNode);
+            listNode.appendChild(itemNode);
+        });
+        tagsSummaryNode.appendChild(listNode);
+    };
+    UiHandler.prototype.countEachTag = function (articles) {
         var allTagsCounted = new Map();
         articles.forEach(function (article) {
             article.tags.forEach(function (tag) {
@@ -142,18 +180,9 @@ var UiHandler = /** @class */ (function () {
                 allTagsCounted.set(tag, oldTagCount + 1);
             });
         });
-        var sortedTags = Array.from(allTagsCounted.keys()).sort();
-        var tagsNode = document.getElementById("tagsSummary");
-        this.removeAll(tagsNode);
-        sortedTags.forEach(function (tagName) {
-            var tagNode = document.createElement("a");
-            tagNode.innerText = "#" + tagName + "(" + allTagsCounted.get(tagName) + ") ";
-            tagNode.href = "#";
-            tagNode.classList.add("tagSummaryLink");
-            tagNode.onclick = function () { _this.onArticleTagClicked(tagName); };
-            tagsNode.appendChild(tagNode);
-        });
+        return allTagsCounted;
     };
+    /** general utility method / extension function */
     UiHandler.prototype.removeAll = function (node) {
         while (node.firstChild) {
             node.removeChild(node.lastChild);
@@ -165,7 +194,7 @@ var UiHandler = /** @class */ (function () {
     // TODO move inside article
     UiHandler.prototype.validateArticle = function (article) {
         if (article.title.trim().length == 0) {
-            alert("Title must not be empty!");
+            alert("title must not be empty!");
             return false;
         }
         return true;

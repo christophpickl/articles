@@ -10,26 +10,37 @@
     </head>
     <body>
         <a name="top"/>
-        <div id="formCreate">
-            <input type="hidden" id="inpId" />
-            <input type="text" id="inpTitle" placeholder="title" title="come to the point; essence" /><br/>
-            <input type="text" id="inpTags" placeholder="tags" title="whitespace seperated list without hashtags" /><br/>
-            <textarea id="inpBody" placeholder="body"></textarea><br/>
-            <div>
-                <input type="button" id="btnCreate" class="crudButton" value="create" />
-                <input type="button" id="btnUpdate" class="crudButton" value="update" />
-                <input type="button" id="btnCancel" class="crudButton" value="cancel" />
-                <input type="button" id="btnDelete" class="crudButton" value="delete" />
+        
+        <div id="mainContainer">
+            <div id="leftContainer">
+                <div id="tagsSummary">
+                </div>
+            </div>
+            <div id="rightContainer">
+                <div id="formCreate">
+                    <input type="hidden" id="inpId" />
+                    <input type="hidden" id="inpCreated" />
+                    <input type="hidden" id="inpUpdated" />
+                    <input type="hidden" id="inpLikes" />
+                    <input type="text" id="inpTitle" placeholder="title" title="come to the point; essence" /><br/>
+                    <input type="text" id="inpTags" placeholder="tags" title="whitespace seperated list without hashtags" /><br/>
+                    <textarea id="inpBody" placeholder="body"></textarea><br/>
+                    <div>
+                        <input type="button" id="btnCreate" class="crudButton" value="create" />
+                        <input type="button" id="btnUpdate" class="crudButton" value="update" />
+                        <input type="button" id="btnCancel" class="crudButton" value="cancel" />
+                        <input type="button" id="btnDelete" class="crudButton" value="delete" />
+                    </div>
+                </div>
+
+
+                <div id="searchDiv">
+                    <input type="text" id="inpSearch" placeholder="search ..." />
+                    <input type="button" id="btnCancelSearch" value="cancel" />
+                </div>
+                <div id="articleList"></div>
             </div>
         </div>
-        <div id="tagsSummary">
-
-        </div>
-        <div id="searchDiv">
-            <input type="text" id="inpSearch" placeholder="search ..." />
-            <input type="button" id="btnCancelSearch" value="cancel" />
-        </div>
-        <div id="articleList"></div>
 
         <script src="./renderer.js"></script>
     </body>

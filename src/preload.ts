@@ -1,4 +1,3 @@
-import UiHandler from './view/UiHandler';
 import { Context } from './Context';
 
 window.addEventListener('DOMContentLoaded', () => {

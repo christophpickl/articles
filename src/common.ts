@@ -10,3 +10,14 @@ function randomUuid(): string {
       return v.toString(16);
     });
 }
+
+// saved as: 2020-05-15T19:50:57.512Z
+let DEMO_DATE = new Date("2016-01-17T08:44:29+0100"); // had to remove the colon (:) after the T in order to make it work
+function formatDate(date: Date): String {
+  var day = date.getDate();
+  var monthIndex = date.getMonth();
+  var year = date.getFullYear();
+  var minutes = date.getMinutes();
+  var hours = date.getHours();
+  return day+"."+(monthIndex+1)+"."+year+" "+ hours+":"+minutes;
+}

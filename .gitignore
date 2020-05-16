@@ -1,4 +1,6 @@
-node_modules/
-artikles.devdata.json
-src/*.js
-builds/
+/node_modules/
+/artikles.devdata.json
+/src/*.js
+/builds/
+/.vscode/
+/.idea/

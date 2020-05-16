@@ -36,6 +36,10 @@ export default class UiHandler {
         console.log("onCreateClicked()");
     
         var article = this.readArticleFromUI(randomUuid());
+        let now = new Date();
+        article.created = now;
+        article.updated = now;
+        article.likes = 0;
         if(!this.validateArticle(article)) {
             return;
         }
@@ -50,6 +54,8 @@ export default class UiHandler {
         if(!this.validateArticle(article)) {
             return;
         }
+        article.updated = new Date();
+        this.setInputValue("inpUpdated", JSON.stringify(article.updated).split("\"").join("")); // pseudo replaceAll :-/
         this.articleRepo.updateArticle(article);
         this.resetArticleList();
     }
@@ -119,12 +125,16 @@ export default class UiHandler {
     // ------------========================================================------------
 
     readArticleFromUI(givenId: string | undefined = undefined): Article {
-        return new Article(
-            (givenId !== undefined) ? givenId : this.getInputValue("inpId"),
-            this.getInputValue("inpTitle"),
-            this.getInputValue("inpTags").split(" ").filter(function(it) { return it.length > 0; }),
-            this.getInputValue("inpBody")
-        );
+        let now = new Date();
+        return {
+            id: (givenId !== undefined) ? givenId : this.getInputValue("inpId"),
+            title: this.getInputValue("inpTitle"),
+            tags: this.getInputValue("inpTags").split(" ").filter(function(it) { return it.length > 0; }),
+            body: this.getInputValue("inpBody"),
+            created: new Date(this.getInputValue("inpCreated")),
+            updated: new Date(this.getInputValue("inpUpdated")),
+            likes: parseInt(this.getInputValue("inpLikes"))
+        }
     }
 
     updateArticleForm(article: Article) {
@@ -132,6 +142,9 @@ export default class UiHandler {
         this.setInputValue("inpTitle", article.title);
         this.setInputValue("inpTags", article.tags.join(" "));
         this.setInputValue("inpBody", article.body);
+        this.setInputValue("inpCreated", article.created.toString());
+        this.setInputValue("inpUpdated", article.updated.toString());
+        this.setInputValue("inpLikes", article.likes.toString());
         this.switchButtonsToCreateMode(false);
     }
 
@@ -140,6 +153,9 @@ export default class UiHandler {
         this.setInputValue("inpTitle", "");
         this.setInputValue("inpTags", "");
         this.setInputValue("inpBody", "");
+        this.setInputValue("inpCreated", "");
+        this.setInputValue("inpUpdated", "");
+        this.setInputValue("inpLikes", "");
         this.switchButtonsToCreateMode(true);
     }
 
@@ -147,7 +163,6 @@ export default class UiHandler {
         let articles = this.articleRepo.loadArticles();
         this.removeAndPrependArticleNodes(articles);
     }
-
 
     removeAndPrependArticleNodes(articles: Article[]) {
         let articleList = document.getElementById("articleList")!;
@@ -159,6 +174,28 @@ export default class UiHandler {
     }
 
     fillTagsSummary(articles: Article[]) {
+        let allTagsCounted = this.countEachTag(articles);
+        let sortedTags = Array.from(allTagsCounted.keys()).sort() as string[];
+
+        let tagsSummaryNode = document.getElementById("tagsSummary")!;
+        this.removeAll(tagsSummaryNode);
+
+        let listNode = document.createElement("ul");
+
+        sortedTags.forEach(tagName => {
+            let aNode = document.createElement("a");
+            aNode.innerText = "#" + tagName + "(" + allTagsCounted.get(tagName) + ")";
+            aNode.href = "#";
+            aNode.classList.add("tagSummaryLink");
+            aNode.onclick = () => { this.onArticleTagClicked(tagName); };
+            let itemNode = document.createElement("li");
+            itemNode.appendChild(aNode);
+            listNode.appendChild(itemNode);
+        });
+        tagsSummaryNode.appendChild(listNode);
+    }
+
+    private countEachTag(articles: Article[]): Map<string, number> {
         let allTagsCounted = new Map<string, number>();
         articles.forEach((article) => {
             article.tags.forEach((tag) => {
@@ -169,21 +206,10 @@ export default class UiHandler {
                 allTagsCounted.set(tag, oldTagCount + 1);
             });
         });
-        let sortedTags = Array.from(allTagsCounted.keys()).sort() as string[];
-
-        let tagsNode = document.getElementById("tagsSummary")!;
-        this.removeAll(tagsNode);
-        
-        sortedTags.forEach(tagName => {
-            let tagNode = document.createElement("a");
-            tagNode.innerText = "#" + tagName + "(" + allTagsCounted.get(tagName) + ") ";
-            tagNode.href = "#";
-            tagNode.classList.add("tagSummaryLink");
-            tagNode.onclick = () => { this.onArticleTagClicked(tagName); };
-            tagsNode.appendChild(tagNode);
-        });
+        return allTagsCounted;
     }
 
+    /** general utility method / extension function */
     private removeAll(node: HTMLElement) {
         while (node.firstChild) {
             node.removeChild(node.lastChild!);
@@ -196,7 +222,7 @@ export default class UiHandler {
     // TODO move inside article
     validateArticle(article: Article): boolean {
         if (article.title.trim().length == 0) {
-            alert("Title must not be empty!");
+            alert("title must not be empty!");
             return false;
         }
         return true;

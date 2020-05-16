@@ -1,3 +1,6 @@
+
+/** GENERAL
+/*********************************************************************************************************************/
 body {
     /* top right bottom left*/
     padding: 30px 40px 0 40px;
@@ -5,6 +8,26 @@ body {
     background-color: #DCF8FA;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
+input[type=button] {
+    width: 250px;
+    font-size: 16pt;
+    background-color: lightskyblue;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#leftContainer {
+    float: left;
+    width: 150px;
+}
+#rightContainer {
+    margin-left: 150px;
+}
+
+/** INPUT FORM
+/*********************************************************************************************************************/
 
 #inpTitle, #inpBody, #inpTags {
     width: 100%;
@@ -21,25 +44,17 @@ body {
     border-color: lightgray;
 }
 
-input[type=button] {
-    width: 250px;
-    font-size: 16pt;
-    background-color: lightskyblue;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-.crudButton {
+/** SEARCH
+/*********************************************************************************************************************/
 
-}
-#tagsSummary {
-    margin-top: 8px;
-}
 #inpSearch {
     font-size: 14pt;
     width: 750px;
     margin-top: 6px;
 }
+
+/** ARTICLE ITEM
+/*********************************************************************************************************************/
 
 .articleNode {
     background-color: white;
@@ -50,21 +65,7 @@ input[type=button] {
 }
 
 .articleTitle , .articleBody, .articleTags {
-    margin: 0px;
-}
-
-.tagSummaryLink,
-.articleTitle > a,
-.clickableTag {
-    color: lightskyblue;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.tagSummaryLink:hover,
-.articleTitle > a:hover,
-.clickableTag:hover {
-    color: blue;
+    margin: 0;
 }
 
 .articleTitle {
@@ -80,4 +81,33 @@ input[type=button] {
 .articleBody {
     font-size: 11pt;
     font-family: 'Courier New', Courier, monospace;
+}
+
+/** TAGS
+/*********************************************************************************************************************/
+
+#tagsSummary > ul {
+    list-style-type: none;
+    margin: 0 0 0 0;
+}
+
+#tagsSummary > ul, #tagsSummary > li {
+    padding: 0 0 0 0;
+}
+
+/** MISC
+/*********************************************************************************************************************/
+
+.tagSummaryLink,
+.articleTitle > a,
+.clickableTag {
+    color: lightskyblue;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.tagSummaryLink:hover,
+.articleTitle > a:hover,
+.clickableTag:hover {
+    color: blue;
 }

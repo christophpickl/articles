@@ -34,7 +34,7 @@ class Context {
         } else {
             jsonFilePath = process.env["HOME"] + "/.artikles/artikles.data.json";
         }
-        Context._articleRepo = new JsonFileArticleRepo(jsonFilePath);
+        Context._articleRepo = new JsonFileArticleRepo(jsonFilePath, DataMigrator.APPLICATION_VERSION);
         Context._dataMigrator = new DataMigrator(jsonFilePath);
     })();
 
