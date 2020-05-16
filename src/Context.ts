@@ -1,5 +1,5 @@
 import { Settings, ElectronSettings } from './Settings';
-import { ArticleRepo, JsonFileArticleRepo, InMemoryArticleRepo } from './ArticleRepo';
+import { ArticleRepo, JsonFileArticleRepo } from './ArticleRepo';
 import { ElectronHandler } from './ElectronHandler';
 import { BrowserWindow } from 'electron';
 import UiHandler from './view/UiHandler';
@@ -21,13 +21,14 @@ class Context {
     private static _articleRepo: ArticleRepo;
     private static _uiHandler: UiHandler;
     private static _dataMigrator: DataMigrator;
-    
+
+    // noinspection JSUnusedLocalSymbols
     private static _initizalize = (() => {
         Context.env = (process.cwd() == "/") ? Env.PROD : Env.DEV;
         Context.isDev = Context.env == Env.DEV;
         Context._settings = new ElectronSettings();
 
-        var jsonFilePath = "";
+        let jsonFilePath: string;
         if(Context.isDev) {
             // Context._articleRepo = new InMemoryArticleRepo();
             jsonFilePath = process.cwd() + "/artikles.devdata.json";

@@ -1,7 +1,7 @@
-import { BrowserWindow } from 'electron';
-import { join } from 'path';
-import { Settings } from './Settings';
-import { Env } from './Context';
+import {BrowserWindow} from 'electron';
+import {join} from 'path';
+import {Settings} from './Settings';
+import {Env} from './Context';
 
 export class ElectronHandler {
 
@@ -11,17 +11,21 @@ export class ElectronHandler {
     private static readonly PRELOAD_JS_PATH: string = join(__dirname, 'preload.js');
 
     constructor(
-        private readonly application: Electron.App, 
+        private readonly application: Electron.App,
         private readonly browserWindow: typeof BrowserWindow,
         private readonly settings: Settings,
         private readonly env: Env,
         private readonly windowTitle: string = "Artikles" + (env == Env.DEV ? " - DEV" : "")
-        ) {
+    ) {
     }
 
     public registerHandlers() {
-        this.application.on('window-all-closed', () => { this.onWindowAllClosed(); });
-        this.application.on('ready', () => { this.onReady(); });
+        this.application.on('window-all-closed', () => {
+            this.onWindowAllClosed();
+        });
+        this.application.on('ready', () => {
+            this.onReady();
+        });
     }
 
     private onReady() {
@@ -37,14 +41,23 @@ export class ElectronHandler {
         this.applyWindowSettings();
         this.mainWindow!.setTitle(this.windowTitle);
         this.mainWindow!.setMinimumSize(600, 600);
-        this.mainWindow!.loadURL(ElectronHandler.HTML_FILE_URL); // or: loadFile("index.html");
-        this.mainWindow!.on('close', () => { this.onClose(); });
-        this.mainWindow!.on('closed', () => { this.onClosed(); });
+
+        this.mainWindow!.loadURL(ElectronHandler.HTML_FILE_URL).then(() => {
+            console.log("HTML file loaded successfully.");
+        }, rejected => {
+            console.log("Error loading: " + ElectronHandler.HTML_FILE_URL, rejected);
+        }); // or: loadFile("index.html");
+        this.mainWindow!.on('close', () => {
+            this.onClose();
+        });
+        this.mainWindow!.on('closed', () => {
+            this.onClosed();
+        });
         this.mainWindow.webContents.once('dom-ready', () => {
             console.log("ElectronHandler: on dom-ready");
             // console.log("in handler:", document.getElementById("inpSearch"));
         });
-        
+
         if (this.env == Env.DEV) {
             this.mainWindow.webContents.openDevTools();
         }
@@ -65,7 +78,7 @@ export class ElectronHandler {
         console.log("ElectronHandler.onClosed()");
         this.mainWindow = null;
     }
-    
+
     private saveWindowSettings() {
         let bounds = this.mainWindow!.getBounds();
         console.log("save window settings for:", bounds);

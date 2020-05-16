@@ -34,8 +34,8 @@ export default class UiHandler {
     
     onCreateClicked() {
         console.log("onCreateClicked()");
-    
-        var article = this.readArticleFromUI(randomUuid());
+
+        let article = this.readArticleFromUI(randomUuid());
         let now = new Date();
         article.created = now;
         article.updated = now;
@@ -125,7 +125,6 @@ export default class UiHandler {
     // ------------========================================================------------
 
     readArticleFromUI(givenId: string | undefined = undefined): Article {
-        let now = new Date();
         return {
             id: (givenId !== undefined) ? givenId : this.getInputValue("inpId"),
             title: this.getInputValue("inpTitle"),
@@ -178,7 +177,7 @@ export default class UiHandler {
         let sortedTags = Array.from(allTagsCounted.keys()).sort() as string[];
 
         let tagsSummaryNode = document.getElementById("tagsSummary")!;
-        this.removeAll(tagsSummaryNode);
+        UiHandler.removeAll(tagsSummaryNode);
 
         let listNode = document.createElement("ul");
 
@@ -210,10 +209,10 @@ export default class UiHandler {
     }
 
     /** general utility method / extension function */
-    private removeAll(node: HTMLElement) {
+    private static removeAll(node: HTMLElement) {
         while (node.firstChild) {
             node.removeChild(node.lastChild!);
-        };
+        }
     }
 
     // MISC
@@ -262,10 +261,10 @@ export default class UiHandler {
     }
 
     switchButtonsToCreateMode(isCreateMode: boolean) {
-        IndexHtml.btnCreate().hidden = isCreateMode ? false : true;
-        document.getElementById("btnUpdate")!.hidden = isCreateMode ? true : false;
-        document.getElementById("btnCancel")!.hidden = isCreateMode ? true : false;
-        document.getElementById("btnDelete")!.hidden = isCreateMode ? true : false;
+        IndexHtml.btnCreate().hidden = !isCreateMode;
+        document.getElementById("btnUpdate")!.hidden = isCreateMode;
+        document.getElementById("btnCancel")!.hidden = isCreateMode;
+        document.getElementById("btnDelete")!.hidden = isCreateMode;
     }
 
     // COMMON

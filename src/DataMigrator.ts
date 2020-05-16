@@ -1,4 +1,4 @@
-var fs = require("fs");
+let fs = require("fs");
 
 export { DataMigrator }
 
@@ -26,7 +26,7 @@ class DataMigrator {
 
         if (nextVersion == 2) {
             json.version = nextVersion;
-            var date = new Date("2020-01-01T00:00:00+0000");
+            let date = new Date("2020-01-01T00:00:00+0000");
             json.articles.forEach(article => {
                 article.created = date;
                 article.updated = date;

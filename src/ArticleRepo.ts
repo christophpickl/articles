@@ -1,7 +1,7 @@
 
 import { Nullable } from './common';
 import { Article, overrideUpdateableFields } from './domain';
-var fs = require("fs");
+let fs = require("fs");
 
 export { ArticleRepo, JsonFileArticleRepo, InMemoryArticleRepo }
 
@@ -45,6 +45,7 @@ let demoArticles: Article[] = [
     }
 ];
 
+// noinspection JSUnusedGlobalSymbols
 class InMemoryArticleRepo implements ArticleRepo {
 
     private articles: Article[] = demoArticles;
@@ -59,10 +60,11 @@ class InMemoryArticleRepo implements ArticleRepo {
         updateArticleInList(this.articles, article);
     }
     deleteArticle(articleId: string) {
-        this.articles = this.articles.filter(function(value, index, arr) { return value.id != articleId; });
+        this.articles = this.articles.filter(function(value) { return value.id != articleId; });
     }
     searchArticles(terms: string[]): Article[] {
         // TODO
+        console.log("search for terms: ", terms);
         return this.articles;
     }
     disableSearch() {
