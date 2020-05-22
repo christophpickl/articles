@@ -1,8 +1,18 @@
 
 export default class IndexHtml {
 
+    // ABSTRACTION
+    // =================================================================================================================
+
+    static switchButtonsToCreateMode(isCreateMode: boolean) {
+        IndexHtml.btnCreate().hidden = !isCreateMode;
+        IndexHtml.btnUpdate().hidden = isCreateMode;
+        IndexHtml.btnCancel().hidden = isCreateMode;
+        IndexHtml.btnDelete().hidden = isCreateMode;
+    }
+
     // CRUD
-    // ================================================================================================================
+    // =================================================================================================================
 
     static btnCreate(): HTMLButtonElement {
         return document.getElementById("btnCreate") as HTMLButtonElement;

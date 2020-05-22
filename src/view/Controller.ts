@@ -1,25 +1,65 @@
 import {EventBus} from "../EventBus";
-import {CreateEvent, DeleteEvent, UpdateEvent} from "./events";
+import {
+    CancelEditArticleEvent,
+    CancelSearchEvent,
+    CreateEvent,
+    DeleteEvent,
+    EditArticleEvent, SearchEvent,
+    UpdateEvent
+} from "./events";
 import UiHandler from "./UiHandler";
-import {randomUuid} from "../common";
+import {randomUuid, scrollToTop} from "../common";
 import {ArticleService} from "../ArticleService";
 import {Article} from "../domain";
 
 export class Controller {
     constructor(
-        eventBus: EventBus,
+        private readonly eventBus: EventBus,
         private readonly articleService: ArticleService,
         private readonly uiHandler: UiHandler
     ) {
-        eventBus.register(CreateEvent.ID, (event: CreateEvent) => {
+        eventBus.register(CreateEvent.ID, () => {
             this.onCreate();
         });
-        eventBus.register(UpdateEvent.ID, (event: UpdateEvent) => {
+        eventBus.register(UpdateEvent.ID, () => {
             this.onUpdate();
         });
-        eventBus.register(DeleteEvent.ID, (event: DeleteEvent) => {
+        eventBus.register(DeleteEvent.ID, () => {
             this.onDelete();
         });
+        eventBus.register(EditArticleEvent.ID, (event: EditArticleEvent) => {
+            this.onEdit(event.article);
+        });
+        eventBus.register(CancelEditArticleEvent.ID, () => {
+            this.onCancel();
+        });
+        eventBus.register(SearchEvent.ID, (event: SearchEvent) => {
+            this.onSearch(event.term);
+        });
+        eventBus.register(CancelSearchEvent.ID, () => {
+            this.onCancelSearch();
+        });
+    }
+
+    private onSearch(searchTerm: string) {
+        let terms = searchTerm.split(" ").filter((it) => {
+            return it.length != 0
+        });
+        if (terms.length == 0) {
+            this.onCancelSearch();
+            return;
+        }
+
+        console.log("onSearch(" + searchTerm + ") => terms:", terms);
+        let articles = this.articleService.searchArticles(terms);
+        this.uiHandler.resetArticleList(articles);
+        this.uiHandler.showBtnCancelSearch();
+    }
+
+    private onCancelSearch() {
+        let articles = this.articleService.disableSearch();
+        this.uiHandler.resetSearch();
+        this.uiHandler.resetArticleList(articles);
     }
 
     private onCreate() {
@@ -63,6 +103,15 @@ export class Controller {
         this.uiHandler.deleteArticle(currentId);
         this.uiHandler.resetArticleForm();
         this.uiHandler.fillTagsSummary(articles);
+    }
+
+    private onEdit(article: Article) {
+        this.uiHandler.updateArticleForm(article);
+        scrollToTop();
+    }
+
+    private onCancel() {
+        this.uiHandler.resetArticleForm();
     }
 
     private static validateArticle(article: Article):

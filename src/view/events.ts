@@ -1,4 +1,5 @@
 import {Event} from "../EventBus";
+import {Article} from "../domain";
 
 export class CreateEvent implements Event {
     static readonly ID = "CreateEvent"
@@ -13,4 +14,31 @@ export class UpdateEvent implements Event {
 export class DeleteEvent implements Event {
     static readonly ID = "DeleteEvent"
     readonly id = DeleteEvent.ID;
+}
+
+export class EditArticleEvent implements Event {
+    static readonly ID = "EditArticleEvent"
+    readonly id = EditArticleEvent.ID;
+    constructor(
+        public readonly article: Article
+    ) {
+    }
+}
+
+export class CancelEditArticleEvent implements Event {
+    static readonly ID = "CancelEditArticleEvent"
+    readonly id = CancelEditArticleEvent.ID;
+}
+
+export class CancelSearchEvent implements Event {
+    static readonly ID = "CancelSearchEvent"
+    readonly id = CancelSearchEvent.ID;
+}
+export class SearchEvent implements Event {
+    static readonly ID = "SearchEvent"
+    readonly id = SearchEvent.ID;
+    constructor(
+        public readonly term: string
+    ) {
+    }
 }

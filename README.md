@@ -6,20 +6,19 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 ## Now
 
-* ! in article body, make it "pre" to also indent properly
-* ! when hit "update", then reset form
+* change UI: make list of articles scrollable (fill vertical space); no need for "scrollUp" util
 * UI: tag summary list, make font-size dynamic based on count
 * UI: order tags alphabetically everywhere
-* UI: set focus on app load on title input field
-* change UI: make list of articles scrollable (fill vertical space); no need for "scrollUp" util
-* TECH: tests
 * UI: save with hitting CMD+S
+* confirm delete btn clicked
 
 ## Later
 
-* better build with electron, see: https://github.com/jreznot/electron-java-app/blob/master/build.gradle
+* TECH: tests
+* [2] UI: mit SHIFT+click auf tag: reset search to only this tag
+* [3] better build with electron, see: https://github.com/jreznot/electron-java-app/blob/master/build.gradle
 * [7] live autocomplete suggestion combox for tags
-* when search for #dao it also finds #daoism and also #foodaofoo (shouldn't it be a "direct" match?!)
+* [3] when search for #dao it also finds #daoism and also #foodaofoo (shouldn't it be a "direct" match?!)
 * [8] auto backup functionality
 
 ## Luxury
