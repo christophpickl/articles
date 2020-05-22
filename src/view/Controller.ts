@@ -4,7 +4,7 @@ import {
     CancelSearchEvent,
     CreateEvent,
     DeleteEvent,
-    EditArticleEvent, SearchEvent,
+    EditArticleEvent, SaveEvent, SearchEvent,
     UpdateEvent
 } from "./events";
 import UiHandler from "./UiHandler";
@@ -24,6 +24,9 @@ export class Controller {
         eventBus.register(UpdateEvent.ID, () => {
             this.onUpdate();
         });
+        eventBus.register(SaveEvent.ID, () => {
+            this.onSave();
+        });
         eventBus.register(DeleteEvent.ID, () => {
             this.onDelete();
         });
@@ -31,7 +34,7 @@ export class Controller {
             this.onEdit(event.article);
         });
         eventBus.register(CancelEditArticleEvent.ID, () => {
-            this.uiHandler.resetArticleForm();
+            this.onCancelEditArticle();
         });
         eventBus.register(SearchEvent.ID, (event: SearchEvent) => {
             this.onSearch(event.term);
@@ -79,10 +82,24 @@ export class Controller {
         this.uiHandler.writeArticleUpdatedInputValue(updatedString);
 
         let articles = this.articleService.update(article);
-        // MINOR if this update made it run positive through search, then it would be in articles, but not in ui-list...
         this.uiHandler.updateArticleInList(article);
         this.uiHandler.resetArticleForm();
+        this.uiHandler.inpTitleFocus();
         this.uiHandler.fillTagsSummary(Tags.buildFrom(articles));
+    }
+
+    private onCancelEditArticle() {
+        this.uiHandler.resetArticleForm();
+        this.uiHandler.inpTitleFocus();
+    }
+
+    private onSave() {
+        console.log("onSave");
+        if (this.uiHandler.isCreateMode()) {
+            this.onCreate();
+        } else {
+            this.onUpdate();
+        }
     }
 
     private onDelete() {
@@ -94,11 +111,13 @@ export class Controller {
         let articles = this.articleService.delete(articleToDelete.id);
         this.uiHandler.deleteArticleFromList(articleToDelete.id);
         this.uiHandler.resetArticleForm();
+        this.uiHandler.inpTitleFocus();
         this.uiHandler.fillTagsSummary(Tags.buildFrom(articles));
     }
 
     private onEdit(article: Article) {
         this.uiHandler.updateArticleForm(article);
+        this.uiHandler.inpTitleFocus();
         scrollToTop();
     }
 

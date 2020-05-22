@@ -9,10 +9,15 @@ An (electron) desktop application to manage (tagged) articles locally.
 * change UI: make list of articles scrollable (fill vertical space); no need for "scrollUp" util
 * UI: tag summary list, make font-size dynamic based on count
 * UI: order tags alphabetically everywhere
-* UI: save with hitting CMD+S
 
 ## Later
 
+* UI BUG:
+    * GIVEN editing an article
+    *   AND search so it won't match
+    * WHEN update article so it does match
+    * THEN suddenly show up in the UI
+    * // same also in other direction: given visible, when update mismatching, then hide 
 * keyboard navigation:
     * up/down, CMD+F/S
     * ESC (cancel edit in all inp fields; when esc "ins nichts" UND search active => cancel search)

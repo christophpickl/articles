@@ -11,6 +11,12 @@ export class UpdateEvent implements Event {
     readonly id = UpdateEvent.ID;
 }
 
+/** depending on current state, either create OR update */
+export class SaveEvent implements Event {
+    static readonly ID = "SaveEvent"
+    readonly id = SaveEvent.ID;
+}
+
 export class DeleteEvent implements Event {
     static readonly ID = "DeleteEvent"
     readonly id = DeleteEvent.ID;

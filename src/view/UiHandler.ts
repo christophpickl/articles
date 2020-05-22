@@ -1,14 +1,14 @@
 import {Article, Tags} from '../domain';
 import IndexHtml from './IndexHtml';
 import {ArticleService} from "../ArticleService";
-import {EventBus} from "../EventBus";
+import {EventBus, Event} from "../EventBus";
 import {
     EditArticleEvent,
     CreateEvent,
     DeleteEvent,
     UpdateEvent,
     CancelEditArticleEvent,
-    CancelSearchEvent, SearchEvent
+    CancelSearchEvent, SearchEvent, SaveEvent
 } from "./events";
 import {findChildByAttribute, removeAllChildren} from "../common";
 
@@ -31,13 +31,19 @@ export default class UiHandler {
         IndexHtml.switchButtonsToCreateMode(true);
 
         this.initSearchListener();
-        this.initCrudButtonListener();
+        this.initFormListener();
         document.addEventListener('keydown', function (event) {
-            const key = event.key; // Or const {key} = event; in ES6+
-            if (event.metaKey && key == "f") {
-                document.getElementById("inpSearch")!.focus();
+            const key = event.key;
+            if (event.metaKey) {
+                if (key == "f") {
+                    document.getElementById("inpSearch")!.focus();
+                }
             }
         });
+    }
+
+    public inpTitleFocus() {
+        IndexHtml.inpTitle().focus();
     }
 
     // CRUD FORM
@@ -70,7 +76,6 @@ export default class UiHandler {
         IndexHtml.inpUpdated().value = article.updated.toString();
         IndexHtml.inpLikes().value = article.likes.toString();
         IndexHtml.switchButtonsToCreateMode(false);
-        IndexHtml.inpTitle().focus();
     }
 
     public resetArticleForm() {
@@ -84,6 +89,10 @@ export default class UiHandler {
         IndexHtml.switchButtonsToCreateMode(true);
     }
 
+    public isCreateMode(): boolean {
+        return IndexHtml.isInCreateMode;
+    }
+
     // SEARCH
     // ------------========================================================------------
 
@@ -91,12 +100,10 @@ export default class UiHandler {
         IndexHtml.onInpSearchInput(() => {
             this.eventBus.dispatch(new SearchEvent(IndexHtml.inpSearch().value));
         });
-        IndexHtml.inpSearch().addEventListener("keydown", (event) => {
-            const key = event.key; // Or const {key} = event; in ES6+
-            if (key == "Escape") {
-                this.eventBus.dispatch(new CancelSearchEvent());
-            }
+        this.registerOnEscapeDispatch(IndexHtml.inpSearch(), () => {
+            return new CancelSearchEvent();
         });
+
         IndexHtml.onClick(IndexHtml.btnCancelSearch(), () => {
             this.eventBus.dispatch(new CancelSearchEvent());
         });
@@ -183,7 +190,21 @@ export default class UiHandler {
     // PRIVATE
     // ------------========================================================------------
 
-    private initCrudButtonListener() {
+    private initFormListener() {
+        let reactiveForm = [
+            IndexHtml.inpTitle(), IndexHtml.inpTags(), IndexHtml.inpBody(),
+            IndexHtml.btnCreate(), IndexHtml.btnUpdate(), IndexHtml.btnCancel(), IndexHtml.btnDelete()
+        ];
+        reactiveForm.forEach((input) => {
+            IndexHtml.onKeyDown(input, (event: KeyboardEvent) => {
+                if (event.key == "Escape") {
+                    this.eventBus.dispatch(new CancelEditArticleEvent());
+                } else if(event.metaKey && event.key == "s") {
+                    this.eventBus.dispatch(new SaveEvent());
+                }
+            });
+        });
+
         IndexHtml.onClick(IndexHtml.btnCreate(), () => {
             this.eventBus.dispatch(new CreateEvent());
         });
@@ -237,6 +258,14 @@ export default class UiHandler {
                 this.onArticleTagClicked(tag);
             };
             html.appendChild(tagNode);
+        });
+    }
+
+    private registerOnEscapeDispatch(html: HTMLInputElement, eventProducer: () => Event) {
+        IndexHtml.onKeyDown(html, (event: KeyboardEvent) => {
+            if (event.key == "Escape") {
+                this.eventBus.dispatch(eventProducer());
+            }
         });
     }
 

@@ -3,8 +3,10 @@ export default class IndexHtml {
 
     // ABSTRACTION
     // =================================================================================================================
+    static isInCreateMode = true
 
     static switchButtonsToCreateMode(isCreateMode: boolean) {
+        IndexHtml.isInCreateMode = isCreateMode;
         IndexHtml.btnCreate().hidden = !isCreateMode;
         IndexHtml.btnUpdate().hidden = isCreateMode;
         IndexHtml.btnCancel().hidden = isCreateMode;
@@ -56,8 +58,9 @@ export default class IndexHtml {
     static inpSearch(): HTMLInputElement {
         return document.getElementById("inpSearch") as HTMLInputElement;
     }
+
     static onInpSearchInput(action: () => void) {
-        IndexHtml.inpSearch().addEventListener("input", action);
+        IndexHtml.onInput(IndexHtml.inpSearch(), action);
     }
 
     static btnCancelSearch(): HTMLButtonElement {
@@ -67,9 +70,11 @@ export default class IndexHtml {
         IndexHtml.btnCancelSearch().hidden = !isVisible;
     }
 
-    // MAIN
+    // LIST
     // ================================================================================================================
+
     private static ID_ARTICLE_LIST = "articleList";
+
     static articleList(): HTMLDivElement {
         return document.getElementById(IndexHtml.ID_ARTICLE_LIST) as HTMLDivElement;
     }
@@ -79,4 +84,13 @@ export default class IndexHtml {
     static onClick(element: HTMLElement, action: () => void) {
         element.addEventListener("click", () => { action(); });
     }
+
+    static onInput(element: HTMLInputElement, action: () => void) {
+        element.addEventListener("input", action);
+    }
+
+    static onKeyDown(element: HTMLElement, action: (KeyboardEvent) => void) {
+        element.addEventListener("keydown", action);
+    }
+
 }
