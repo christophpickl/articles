@@ -4,7 +4,7 @@ export { DataMigrator }
 
 class DataMigrator {
     
-    static readonly APPLICATION_VERSION = 2;
+    static readonly APPLICATION_VERSION = 3;
 
     constructor(
         private readonly jsonFilePath: string
@@ -25,7 +25,6 @@ class DataMigrator {
         console.log("migrating data version from "+currentVersion+" -> " + nextVersion + " for file: " + this.jsonFilePath);
 
         if (nextVersion == 2) {
-            json.version = nextVersion;
             let date = new Date("2020-01-01T00:00:00+0000");
             json.articles.forEach(article => {
                 article.created = date;
@@ -33,7 +32,15 @@ class DataMigrator {
                 article.likes = 0;
                 date = new Date(date.getTime() + 1_000);
             });
-            fs.writeFileSync(this.jsonFilePath, JSON.stringify(json));
+            nextVersion++;
         }
+        if (nextVersion == 3) {
+            json.articles.forEach(article => {
+                article.isDeleted = false;
+                article.tags = article.tags.sort()
+            });
+        }
+        json.version = DataMigrator.APPLICATION_VERSION;
+        fs.writeFileSync(this.jsonFilePath, JSON.stringify(json));
     }
 }

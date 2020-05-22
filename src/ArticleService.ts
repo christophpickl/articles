@@ -16,6 +16,10 @@ interface SearchService {
 interface ArticleService extends ArticleCrudOperations, SearchService {
 }
 
+function isNotDeleted(article: Article): boolean {
+    return !article.isDeleted;
+}
+
 class ArticleServiceImpl implements ArticleService {
 
     private articles: Article[] = [];
@@ -31,22 +35,27 @@ class ArticleServiceImpl implements ArticleService {
     // CRUD
     // ------------========================================================------------
     create(article: Article): Article[] {
-        this.articles = this.repo.create(article);
+        this.articles = this.repo.create(article).filter(isNotDeleted);
         return this.runSearch();
     }
 
     readAll(): Article[] {
-        this.articles = this.repo.readAll();
+        this.articles = this.repo.readAll().filter(isNotDeleted);
         return this.runSearch();
     }
 
     update(article: Article): Article[] {
-        this.articles = this.repo.update(article);
+        this.articles = this.repo.update(article).filter(isNotDeleted);
         return this.runSearch();
     }
 
     delete(articleId: string): Article[] {
-        this.articles = this.repo.delete(articleId);
+        // NO: this.articles = this.repo.delete(articleId);
+        let articleToDelete = this.articles.find((it) => {
+            return it.id == articleId
+        })!;
+        articleToDelete.isDeleted = true
+        this.articles = this.repo.update(articleToDelete).filter(isNotDeleted);
         return this.runSearch();
     }
 

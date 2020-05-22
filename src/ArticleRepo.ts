@@ -33,7 +33,8 @@ let demoArticles: Article[] = [
         body: "let lose, let go, practice non-attachment, as everything is impermanent anyhow. stay low with compliments, stay high with criticism.",
         created: new Date("2005-01-01T08:44:29+0100"),
         updated: new Date(),
-        likes: 7
+        likes: 7,
+        isDeleted: false
     }, {
         id: "id2",
         title: "be kind",
@@ -41,7 +42,8 @@ let demoArticles: Article[] = [
         body: "to yourself and others.",
         created: new Date(),
         updated: new Date(),
-        likes: 2
+        likes: 2,
+        isDeleted: false
     }
 ];
 
@@ -88,16 +90,32 @@ class JsonFileArticleRepo implements ArticleRepo {
     ) {
     }
 
+    create(article: Article): Article[] {
+        console.log("save:", article);
+        let data = this.loadJson()
+        data.articles.push(article);
+        this.persistJson(data);
+        return data.articles;
+    }
+
     readAll(): Article[] {
         console.log("load from: " + this.jsonFilePath);
         if (fs.existsSync(this.jsonFilePath)) {
             return this.loadJson().articles;
         }
-        this.persistData({
+        this.persistJson({
             version: this.dataVersion,
             articles: []
         });
         return [];
+    }
+
+    update(article: Article): Article[] {
+        console.log("update:", article);
+        let data = this.loadJson()
+        updateArticleInList(data.articles, article);
+        this.persistJson(data);
+        return data.articles;
     }
 
     delete(articleId: string): Article[] {
@@ -106,23 +124,7 @@ class JsonFileArticleRepo implements ArticleRepo {
         data.articles = data.articles.filter(function (it) {
             return it.id !== articleId;
         });
-        this.persistData(data);
-        return data.articles;
-    }
-
-    update(article: Article): Article[] {
-        console.log("update:", article);
-        let data = this.loadJson()
-        updateArticleInList(data.articles, article);
-        this.persistData(data);
-        return data.articles;
-    }
-
-    create(article: Article): Article[] {
-        console.log("save:", article);
-        let data = this.loadJson()
-        data.articles.push(article);
-        this.persistData(data);
+        this.persistJson(data);
         return data.articles;
     }
 
@@ -130,7 +132,7 @@ class JsonFileArticleRepo implements ArticleRepo {
         return JSON.parse(fs.readFileSync(this.jsonFilePath, 'utf8').toString());
     }
 
-    private persistData(data: PersistedData) {
+    private persistJson(data: PersistedData) {
         console.log("Persisting JSON to: " + this.jsonFilePath);
         fs.writeFileSync(this.jsonFilePath, JSON.stringify(data));
     }

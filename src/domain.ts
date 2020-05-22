@@ -8,7 +8,8 @@ export class Article {
         public body: string,
         public created: Date,
         public updated: Date,
-        public likes: number
+        public likes: number,
+        public isDeleted: boolean
     ) {
     }
 }
@@ -21,6 +22,7 @@ export function overrideUpdateableFields(original: Article, update: Article) {
     original.created = update.created;
     original.updated = update.updated;
     original.likes = update.likes;
+    original.isDeleted = update.isDeleted;
 }
 
 export class Tags {

@@ -62,11 +62,12 @@ export default class UiHandler {
             IndexHtml.inpTitle().value,
             IndexHtml.inpTags().value.split(" ").filter(function (it) {
                 return it.length > 0;
-            }),
+            }).sort(),
             IndexHtml.inpBody().value,
             new Date(IndexHtml.inpCreated().value),
             new Date(IndexHtml.btnUpdate().value),
-            parseInt(IndexHtml.inpLikes().value)
+            parseInt(IndexHtml.inpLikes().value),
+            false
         );
     }
 
