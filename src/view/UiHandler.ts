@@ -1,4 +1,4 @@
-import {Article} from '../domain';
+import {Article, Tags} from '../domain';
 import IndexHtml from './IndexHtml';
 import {ArticleService} from "../ArticleService";
 import {EventBus} from "../EventBus";
@@ -26,12 +26,9 @@ export default class UiHandler {
 
     public init() {
         console.log("init()");
-
         IndexHtml.inpTitle().focus();
         IndexHtml.btnCancelSearchVisible(false);
         IndexHtml.switchButtonsToCreateMode(true);
-
-        this.resetArticleList(this.articleService.loadArticles()); // TODO let externally initializen
 
         this.initSearchListener();
         this.initCrudButtonListener();
@@ -43,41 +40,7 @@ export default class UiHandler {
         });
     }
 
-    // SEARCH
-    // ------------========================================================------------
-
-    private initSearchListener() {
-        IndexHtml.onInpSearchInput(() => {
-            this.eventBus.dispatch(new SearchEvent(IndexHtml.inpSearch().value));
-        });
-        IndexHtml.inpSearch().addEventListener("keydown", (event) => {
-            const key = event.key; // Or const {key} = event; in ES6+
-            if (key == "Escape") {
-                this.eventBus.dispatch(new CancelSearchEvent());
-            }
-        });
-        IndexHtml.onClick(IndexHtml.btnCancelSearch(), () => {
-            this.eventBus.dispatch(new CancelSearchEvent());
-        });
-    }
-
-    public showBtnCancelSearch() {
-        IndexHtml.btnCancelSearch().hidden = false;
-    }
-
-    public resetSearch() {
-        IndexHtml.inpSearch().value = "";
-        IndexHtml.btnCancelSearch().hidden = true;
-    }
-
-    private onArticleTagClicked(clickedTag: string) {
-        let oldSearch = IndexHtml.inpSearch().value;
-        let tagHashed = "#" + clickedTag;
-        IndexHtml.inpSearch().value = (oldSearch.length == 0) ? tagHashed : oldSearch + " " + tagHashed;
-        this.eventBus.dispatch(new SearchEvent(IndexHtml.inpSearch().value));
-    }
-
-    // PUBLIC
+    // CRUD FORM
     // ------------========================================================------------
 
     public writeArticleUpdatedInputValue(updated: string) {
@@ -121,27 +84,52 @@ export default class UiHandler {
         IndexHtml.switchButtonsToCreateMode(true);
     }
 
-    public resetArticleList(articles: Article[]) {
-        let articleList = IndexHtml.articleList();
-        removeAllChildren(articleList);
-        articles.forEach((article) => {
-            articleList.prepend(this.createArticleNode(article));
+    // SEARCH
+    // ------------========================================================------------
+
+    private initSearchListener() {
+        IndexHtml.onInpSearchInput(() => {
+            this.eventBus.dispatch(new SearchEvent(IndexHtml.inpSearch().value));
         });
-        this.fillTagsSummary(articles);
+        IndexHtml.inpSearch().addEventListener("keydown", (event) => {
+            const key = event.key; // Or const {key} = event; in ES6+
+            if (key == "Escape") {
+                this.eventBus.dispatch(new CancelSearchEvent());
+            }
+        });
+        IndexHtml.onClick(IndexHtml.btnCancelSearch(), () => {
+            this.eventBus.dispatch(new CancelSearchEvent());
+        });
     }
 
-    public fillTagsSummary(articles: Article[]) {
-        let allTagsCounted = this.countEachTag(articles);
-        let sortedTags = Array.from(allTagsCounted.keys()).sort() as string[];
+    public showBtnCancelSearch() {
+        IndexHtml.btnCancelSearch().hidden = false;
+    }
 
+    public resetSearch() {
+        IndexHtml.inpSearch().value = "";
+        IndexHtml.btnCancelSearch().hidden = true;
+    }
+
+    private onArticleTagClicked(clickedTag: string) {
+        let oldSearch = IndexHtml.inpSearch().value;
+        let tagHashed = "#" + clickedTag;
+        IndexHtml.inpSearch().value = (oldSearch.length == 0) ? tagHashed : oldSearch + " " + tagHashed;
+        this.eventBus.dispatch(new SearchEvent(IndexHtml.inpSearch().value));
+    }
+
+    // TAGS
+    // ------------========================================================------------
+
+    public fillTagsSummary(tags: Tags) {
         let tagsSummaryNode = document.getElementById("tagsSummary")!;
         removeAllChildren(tagsSummaryNode);
 
         let listNode = document.createElement("ul");
 
-        sortedTags.forEach(tagName => {
+        tags.forEach((tagName, count) => {
             let aNode = document.createElement("a");
-            aNode.innerText = "#" + tagName + "(" + allTagsCounted.get(tagName) + ")";
+            aNode.innerText = "#" + tagName + "(" + count + ")";
             aNode.href = "#";
             aNode.onclick = () => {
                 this.onArticleTagClicked(tagName);
@@ -153,17 +141,36 @@ export default class UiHandler {
         tagsSummaryNode.appendChild(listNode);
     }
 
-    public addArticle(article: Article) {
+    // ARTICLES LIST
+    // ------------========================================================------------
+
+    public resetArticleList(articles: Article[], tags: Tags) {
+        let articleList = IndexHtml.articleList();
+        removeAllChildren(articleList);
+        articles.forEach((article) => {
+            articleList.prepend(this.createArticleNode(article));
+        });
+
+        this.fillTagsSummary(tags);
+    }
+
+    public addArticleToList(article: Article) {
         IndexHtml.articleList().prepend(this.createArticleNode(article))
     }
 
-    public deleteArticle(id: string) {
+    public deleteArticleFromList(id: string) {
         let child = UiHandler.findArticleChildNodeById(id);
+        if (child === null) {
+            return;
+        }
         IndexHtml.articleList().removeChild(child);
     }
 
-    public updateArticleNode(article: Article) {
+    public updateArticleInList(article: Article) {
         let child = UiHandler.findArticleChildNodeById(article.id);
+        if (child === null) {
+            return;
+        }
         let articleTitleLink = child.getElementsByClassName(UiHandler.CLASS_TITLE)[0]!.firstChild! as HTMLAnchorElement;
         articleTitleLink.innerHTML = article.title;
         articleTitleLink.onclick = () => {
@@ -173,23 +180,8 @@ export default class UiHandler {
         child.getElementsByClassName(UiHandler.CLASS_BODY)[0]!.innerHTML = article.body;
     }
 
-
     // PRIVATE
     // ------------========================================================------------
-    // TODO outsource
-    private countEachTag(articles: Article[]): Map<string, number> {
-        let allTagsCounted = new Map<string, number>();
-        articles.forEach((article) => {
-            article.tags.forEach((tag) => {
-                if (!allTagsCounted.has(tag)) {
-                    allTagsCounted.set(tag, 0);
-                }
-                let oldTagCount = allTagsCounted.get(tag)!;
-                allTagsCounted.set(tag, oldTagCount + 1);
-            });
-        });
-        return allTagsCounted;
-    }
 
     private initCrudButtonListener() {
         IndexHtml.onClick(IndexHtml.btnCreate(), () => {
@@ -248,7 +240,7 @@ export default class UiHandler {
         });
     }
 
-    private static findArticleChildNodeById(articleId: string): HTMLElement {
+    private static findArticleChildNodeById(articleId: string): HTMLElement | null {
         return findChildByAttribute(IndexHtml.articleList(), UiHandler.ATTR_ARTIFACT_ID, articleId);
     }
 }

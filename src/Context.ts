@@ -21,11 +21,10 @@ class Context {
     static isDev: Boolean;
 
     private static _settings: Settings;
-    private static _articleRepo: ArticleRepo;
     private static _articleService: ArticleService;
-    private static _uiHandler: UiHandler;
     private static _dataMigrator: DataMigrator;
     private static _eventBus: EventBus;
+    private static _controler: Controller;
 
     // noinspection JSUnusedLocalSymbols
     private static _initizalize = (() => {
@@ -41,33 +40,21 @@ class Context {
         } else {
             jsonFilePath = process.env["HOME"] + "/.artikles/artikles.data.json";
         }
-        Context._articleRepo = new JsonFileArticleRepo(jsonFilePath, DataMigrator.APPLICATION_VERSION);
-        Context._articleService = new ArticleServiceImpl(Context._articleRepo);
+        let articleRepo = new JsonFileArticleRepo(jsonFilePath, DataMigrator.APPLICATION_VERSION);
+        Context._articleService = new ArticleServiceImpl(articleRepo);
         Context._dataMigrator = new DataMigrator(jsonFilePath);
     })();
 
-    static settings(): Settings {
-        return Context._settings;
-    }
-
-    static articleRepo(): ArticleRepo {
-        return Context._articleRepo;
-    }
-
-    static articleService(): ArticleService {
-        return Context._articleService;
-    }
-
     static electronHandler(app: Electron.App): ElectronHandler {
-        return new ElectronHandler(app, BrowserWindow, Context.settings(), Context.env);
+        return new ElectronHandler(app, BrowserWindow, Context._settings, Context.env);
     }
 
-    static uiHandler(): UiHandler {
-        if (Context._uiHandler === undefined) {
-            Context._uiHandler = new UiHandler(Context.articleService(), Context._eventBus);
-            new Controller(Context._eventBus, Context.articleService(), Context._uiHandler)
+    static controller(): Controller {
+        if (Context._controler === undefined) {
+            let uiHandler = new UiHandler(Context._articleService, Context._eventBus);
+            Context._controler = new Controller(Context._eventBus, Context._articleService, uiHandler);
         }
-        return Context._uiHandler;
+        return Context._controler;
     }
 
     static dataMigrator(): DataMigrator {

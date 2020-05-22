@@ -31,7 +31,7 @@ export function scrollToTop() {
     document.documentElement.scrollTop = 0; // chrome, firefox, IE, opera
 }
 
-export function findChildByAttribute(parent: HTMLElement, attributeName: string, searchValue: string) {
+export function findChildByAttribute(parent: HTMLElement, attributeName: string, searchValue: string): HTMLElement | null {
     let children = parent.children;
     for (let i = 0; i < children.length; i++) {
         let child = children[i];
@@ -40,5 +40,21 @@ export function findChildByAttribute(parent: HTMLElement, attributeName: string,
             return child as HTMLElement;
         }
     }
-    throw new Error("Child node not found by [" + attributeName + "]=[" + searchValue + "]!");
+    return null;
+}
+
+export function sortMapByKey<K, V>(map: Map<K, V>): Map<K, V> {
+    let sortedKeys = Array.from(map.keys()).sort() as K[];
+    let sortedMap = new Map<K, V>();
+    sortedKeys.forEach((sortedKey) => {
+        sortedMap.set(sortedKey, map.get(sortedKey)!);
+    });
+    return sortedMap;
+}
+
+export interface CrudOperations<T, K> {
+    create(entity: T): T[];
+    readAll(): T[];
+    update(entity: T): T[];
+    delete(id: K): T[];
 }

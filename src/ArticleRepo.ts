@@ -1,4 +1,4 @@
-import {Nullable} from './common';
+import {CrudOperations, Nullable} from './common';
 import {Article, overrideUpdateableFields} from './domain';
 
 let fs = require("fs");
@@ -7,7 +7,7 @@ export {
     ArticleRepo,
     JsonFileArticleRepo,
     InMemoryArticleRepo,
-    ArticleCrud
+    ArticleCrudOperations
 }
 
 function updateArticleInList(articles: Article[], update: Article) {
@@ -19,17 +19,10 @@ function updateArticleInList(articles: Article[], update: Article) {
     overrideUpdateableFields(storedArticle, update);
 }
 
-interface ArticleCrud {
-    saveArticle(article: Article): Article[];
-
-    loadArticles(): Article[];
-
-    updateArticle(article: Article): Article[];
-
-    deleteArticle(articleId: string): Article[];
+interface ArticleCrudOperations extends CrudOperations<Article, string> {
 }
 
-interface ArticleRepo extends ArticleCrud {
+interface ArticleRepo extends ArticleCrudOperations {
 }
 
 let demoArticles: Article[] = [
@@ -57,21 +50,21 @@ class InMemoryArticleRepo implements ArticleRepo {
 
     private articles: Article[] = demoArticles;
 
-    saveArticle(article: Article): Article[] {
+    create(article: Article): Article[] {
         this.articles.push(article);
         return this.articles;
     }
 
-    loadArticles(): Article[] {
+    readAll(): Article[] {
         return this.articles;
     }
 
-    updateArticle(article: Article): Article[] {
+    update(article: Article): Article[] {
         updateArticleInList(this.articles, article);
         return this.articles;
     }
 
-    deleteArticle(articleId: string): Article[] {
+    delete(articleId: string): Article[] {
         this.articles = this.articles.filter(function (value) {
             return value.id != articleId;
         });
@@ -95,7 +88,7 @@ class JsonFileArticleRepo implements ArticleRepo {
     ) {
     }
 
-    loadArticles(): Article[] {
+    readAll(): Article[] {
         console.log("load from: " + this.jsonFilePath);
         if (fs.existsSync(this.jsonFilePath)) {
             return this.loadJson().articles;
@@ -107,7 +100,7 @@ class JsonFileArticleRepo implements ArticleRepo {
         return [];
     }
 
-    deleteArticle(articleId: string): Article[] {
+    delete(articleId: string): Article[] {
         console.log("delete:", articleId);
         let data = this.loadJson()
         data.articles = data.articles.filter(function (it) {
@@ -117,7 +110,7 @@ class JsonFileArticleRepo implements ArticleRepo {
         return data.articles;
     }
 
-    updateArticle(article: Article): Article[] {
+    update(article: Article): Article[] {
         console.log("update:", article);
         let data = this.loadJson()
         updateArticleInList(data.articles, article);
@@ -125,7 +118,7 @@ class JsonFileArticleRepo implements ArticleRepo {
         return data.articles;
     }
 
-    saveArticle(article: Article): Article[] {
+    create(article: Article): Article[] {
         console.log("save:", article);
         let data = this.loadJson()
         data.articles.push(article);

@@ -10,10 +10,13 @@ An (electron) desktop application to manage (tagged) articles locally.
 * UI: tag summary list, make font-size dynamic based on count
 * UI: order tags alphabetically everywhere
 * UI: save with hitting CMD+S
-* confirm delete btn clicked
 
 ## Later
 
+* keyboard navigation:
+    * up/down, CMD+F/S
+    * ESC (cancel edit in all inp fields; when esc "ins nichts" UND search active => cancel search)
+    * tab order
 * TECH: tests
 * [2] UI: mit SHIFT+click auf tag: reset search to only this tag
 * [3] better build with electron, see: https://github.com/jreznot/electron-java-app/blob/master/build.gradle

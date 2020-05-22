@@ -6,7 +6,6 @@ export default class AppStarter {
         console.log("AppStarter.main(..)");
 
         Context.dataMigrator().migrate();
-        let handler = Context.electronHandler(app);
-        handler.registerHandlers();
+        Context.electronHandler(app).registerHandlers();
     }
 }

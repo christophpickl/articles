@@ -1,6 +1,6 @@
-export { Article , overrideUpdateableFields }
+import {sortMapByKey} from "./common";
 
-class Article {
+export class Article {
     constructor(
         public readonly id: string,
         public title: string,
@@ -9,11 +9,11 @@ class Article {
         public created: Date,
         public updated: Date,
         public likes: number
-        ) {
+    ) {
     }
 }
 
-function overrideUpdateableFields(original: Article, update: Article) {
+export function overrideUpdateableFields(original: Article, update: Article) {
     console.log("updating article with:", update);
     original.title = update.title;
     original.tags = update.tags;
@@ -21,4 +21,30 @@ function overrideUpdateableFields(original: Article, update: Article) {
     original.created = update.created;
     original.updated = update.updated;
     original.likes = update.likes;
+}
+
+export class Tags {
+    constructor(
+        private readonly map: Map<string, number>
+    ) {
+    }
+
+    public static buildFrom(articles: Article[]): Tags {
+        let allTagsCounted = new Map<string, number>();
+        articles.forEach((article) => {
+            article.tags.forEach((tag) => {
+                if (!allTagsCounted.has(tag)) {
+                    allTagsCounted.set(tag, 0);
+                }
+                allTagsCounted.set(tag, allTagsCounted.get(tag)! + 1);
+            });
+        });
+        return new Tags(sortMapByKey(allTagsCounted));
+    }
+
+    public forEach(fn: (string, number) => void) {
+        this.map.forEach((value, key) => {
+            fn(key, value);
+        });
+    }
 }

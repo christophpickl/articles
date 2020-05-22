@@ -1,16 +1,19 @@
 import {Article} from "./domain";
 import {Nullable} from "./common";
-import {ArticleCrud, ArticleRepo} from "./ArticleRepo";
+import {ArticleCrudOperations, ArticleRepo} from "./ArticleRepo";
 
 export {
     ArticleService,
     ArticleServiceImpl
 }
 
-interface ArticleService extends ArticleCrud {
+interface SearchService {
     searchArticles(terms: string[]): Article[]
 
     disableSearch(): Article[];
+}
+
+interface ArticleService extends ArticleCrudOperations, SearchService {
 }
 
 class ArticleServiceImpl implements ArticleService {
@@ -26,27 +29,30 @@ class ArticleServiceImpl implements ArticleService {
     }
 
     // CRUD
-    saveArticle(article: Article): Article[] {
-        this.articles = this.repo.saveArticle(article);
-        return this.articles;
-    }
-
-    loadArticles(): Article[] {
-        this.articles = this.repo.loadArticles();
+    // ------------========================================================------------
+    create(article: Article): Article[] {
+        this.articles = this.repo.create(article);
         return this.runSearch();
     }
 
-    updateArticle(article: Article): Article[] {
-        this.articles = this.repo.updateArticle(article);
-        return this.articles;
+    readAll(): Article[] {
+        this.articles = this.repo.readAll();
+        return this.runSearch();
     }
 
-    deleteArticle(articleId: string): Article[] {
-        this.articles = this.repo.deleteArticle(articleId);
-        return this.articles;
+    update(article: Article): Article[] {
+        this.articles = this.repo.update(article);
+        return this.runSearch();
+    }
+
+    delete(articleId: string): Article[] {
+        this.articles = this.repo.delete(articleId);
+        return this.runSearch();
     }
 
     // SEARCH
+    // ------------========================================================------------
+
     searchArticles(terms: string[]): Article[] {
         console.log("change search to: ", terms)
         this.currentSearchTerms = terms;
