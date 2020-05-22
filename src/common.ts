@@ -10,7 +10,7 @@ export function randomUuid(): string {
 
 // saved as: 2020-05-15T19:50:57.512Z
 // let DEMO_DATE = new Date("2016-01-17T08:44:29+0100"); // had to remove the colon (:) after the T in order to make it work
-// noinspection JSUnusedLocalSymbols
+// noinspection JSUnusedGlobalSymbols
 export function formatDate(date: Date): String {
   let day = date.getDate();
   let monthIndex = date.getMonth();

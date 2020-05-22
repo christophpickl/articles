@@ -11,7 +11,6 @@ import UiHandler from "./UiHandler";
 import {randomUuid, scrollToTop} from "../common";
 import {ArticleService} from "../ArticleService";
 import {Article, Tags} from "../domain";
-import {Context} from "../Context";
 
 export class Controller {
     constructor(

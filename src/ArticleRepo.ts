@@ -1,4 +1,4 @@
-import {CrudOperations, Nullable} from './common';
+import {CrudOperations} from './common';
 import {Article, overrideUpdateableFields} from './domain';
 
 let fs = require("fs");
