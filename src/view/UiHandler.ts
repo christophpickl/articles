@@ -11,6 +11,7 @@ import {
     CancelSearchEvent, SearchEvent, SaveEvent
 } from "./events";
 import {findChildByAttribute, removeAllChildren} from "../common";
+import {TagFontSizer} from "./TagFontSizer";
 
 export default class UiHandler {
     constructor(
@@ -23,6 +24,8 @@ export default class UiHandler {
     private static readonly CLASS_TITLE = "articleTitle";
     private static readonly CLASS_TAGS = "articleTags";
     private static readonly CLASS_BODY = "articleBody";
+    private static readonly CLASS_TAGS_LINK = "tagsLink";
+
 
     public init() {
         console.log("init()");
@@ -133,9 +136,11 @@ export default class UiHandler {
         removeAllChildren(tagsSummaryNode);
 
         let listNode = document.createElement("ul");
-
+        let fontSizer = new TagFontSizer(tags);
         tags.forEach((tagName, count) => {
             let aNode = document.createElement("a");
+            aNode.classList.add(UiHandler.CLASS_TAGS_LINK);
+            aNode.style.fontSize = fontSizer.sizeFor(count) + "pt";
             aNode.innerText = "#" + tagName + "(" + count + ")";
             aNode.href = "#";
             aNode.onclick = () => {

@@ -28,14 +28,14 @@ input[type=button]:hover {
 }
 
 
-#tagsSummary > ul > li > a,
+.tagsLink,
 .articleTitle > a,
 .clickableTag {
     color: black;
     text-decoration: underline;
     cursor: pointer;
 }
-#tagsSummary > ul > li > a:hover,
+.tagsLink:hover,
 .tagSummaryLink:hover,
 .articleTitle > a:hover,
 .clickableTag:hover {
