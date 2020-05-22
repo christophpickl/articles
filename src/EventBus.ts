@@ -1,7 +1,6 @@
 export class EventBus {
     private listeners: Map<string, Listener<Event>[]> = new Map()
 
-    // TODO make use of: typeof key
     register<E extends Event>(eventId: string, listener: Listener<E>) {
         console.log("register listener for: " + eventId);
         if (!this.listeners.has(eventId)) {
