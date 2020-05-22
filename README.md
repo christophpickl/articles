@@ -6,8 +6,6 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 ## Now
 
-* change UI: make list of articles scrollable (fill vertical space); no need for "scrollUp" util
-* UI: tag summary list, make font-size dynamic based on count
 * UI: order tags alphabetically everywhere
 
 ## Later

@@ -1,15 +1,41 @@
-
 /** GENERAL
 /*********************************************************************************************************************/
 
 body {
     /* top right bottom left*/
-    padding: 30px 40px 20px 40px;
-    margin: 0 0 0 0;
+    padding: 30px 40px 0 40px;
     background-color: #efefef;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
+html, body {
+    margin: 0 0 0 0;
+}
+
+html, body, #mainContainer, #leftContainer, #rightContainer {
+    /*background-color: red;*/
+}
+
+#leftContainer {
+    float: left;
+    width: 150px;
+}
+
+#rightContainer {
+    margin-left: 150px;
+    margin-bottom: 0;
+    /*background-color: yellow;*/
+}
+
+#articleList {
+    overflow-y: auto;
+    position: absolute;
+    top: 340px;
+    bottom: 0;
+    left: 190px;
+    right: 40px;
+    /*background-color: green;*/
+}
 input[type=button] {
     width: 150px;
     border-radius: 6px;
@@ -19,10 +45,11 @@ input[type=button] {
     font-weight: bold;
     cursor: pointer;
     /*https://www.cssmatic.com/box-shadow*/
-    -webkit-box-shadow: 6px 3px 5px -2px rgba(0,0,0,0.32);
-    -moz-box-shadow: 6px 3px 5px -2px rgba(0,0,0,0.32);
-    box-shadow: 6px 3px 5px -2px rgba(0,0,0,0.32);
+    -webkit-box-shadow: 6px 3px 5px -2px rgba(0, 0, 0, 0.32);
+    -moz-box-shadow: 6px 3px 5px -2px rgba(0, 0, 0, 0.32);
+    box-shadow: 6px 3px 5px -2px rgba(0, 0, 0, 0.32);
 }
+
 input[type=button]:hover {
     background-color: grey;
 }
@@ -35,20 +62,13 @@ input[type=button]:hover {
     text-decoration: underline;
     cursor: pointer;
 }
+
 .tagsLink:hover,
 .tagSummaryLink:hover,
 .articleTitle > a:hover,
 .clickableTag:hover {
     color: grey;
     text-decoration: underline;
-}
-
-#leftContainer {
-    float: left;
-    width: 150px;
-}
-#rightContainer {
-    margin-left: 150px;
 }
 
 /** INPUT FORM
@@ -74,10 +94,10 @@ input[type=button]:hover {
 #inpSearch {
     font-size: 14pt;
     width: 750px;
-    margin-top: 6px;
+    margin-top: 16px;
 }
 
-/** ARTICLE ITEM
+/** ARTICLE LIST/ITEM
 /*********************************************************************************************************************/
 
 .articleNode {
@@ -88,7 +108,7 @@ input[type=button]:hover {
     padding: 5px 10px 5px 10px;
 }
 
-.articleTitle , .articleBody, .articleTags {
+.articleTitle, .articleBody, .articleTags {
     margin: 0;
 }
 
@@ -96,12 +116,14 @@ input[type=button]:hover {
     font-size: 13pt;
     font-weight: bold;
 }
+
 .articleTags {
     font-size: 8pt;
     font-style: italic;
     margin-top: 3px;
     margin-bottom: 3px;
 }
+
 .articleBody {
     font-size: 11pt;
     font-family: 'Courier New', Courier, monospace;
