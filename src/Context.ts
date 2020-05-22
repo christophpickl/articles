@@ -1,12 +1,14 @@
-import { Settings, ElectronSettings } from './Settings';
-import { ArticleRepo, JsonFileArticleRepo } from './ArticleRepo';
-import { ElectronHandler } from './ElectronHandler';
-import { BrowserWindow } from 'electron';
+import {Settings, ElectronSettings} from './Settings';
+import {ArticleRepo, JsonFileArticleRepo} from './ArticleRepo';
+import {ElectronHandler} from './ElectronHandler';
+import {BrowserWindow} from 'electron';
 import UiHandler from './view/UiHandler';
-import { DataMigrator } from './DataMigrator';
+import {DataMigrator} from './DataMigrator';
 import {ArticleService, ArticleServiceImpl} from "./ArticleService";
+import {EventBus} from "./EventBus";
+import {Controller} from "./view/Controller";
 
-export { Context, Env }
+export {Context, Env}
 
 enum Env {
     DEV,
@@ -23,15 +25,17 @@ class Context {
     private static _articleService: ArticleService;
     private static _uiHandler: UiHandler;
     private static _dataMigrator: DataMigrator;
+    private static _eventBus: EventBus;
 
     // noinspection JSUnusedLocalSymbols
     private static _initizalize = (() => {
         Context.env = (process.cwd() == "/") ? Env.PROD : Env.DEV;
         Context.isDev = Context.env == Env.DEV;
         Context._settings = new ElectronSettings();
+        Context._eventBus = new EventBus();
 
         let jsonFilePath: string;
-        if(Context.isDev) {
+        if (Context.isDev) {
             // Context._articleRepo = new InMemoryArticleRepo();
             jsonFilePath = process.cwd() + "/artikles.devdata.json";
         } else {
@@ -60,7 +64,8 @@ class Context {
 
     static uiHandler(): UiHandler {
         if (Context._uiHandler === undefined) {
-            Context._uiHandler = new UiHandler(Context.articleService());
+            Context._uiHandler = new UiHandler(Context.articleService(), Context._eventBus);
+            new Controller(Context._eventBus, Context.articleService(), Context._uiHandler)
         }
         return Context._uiHandler;
     }

@@ -1,6 +1,6 @@
 /node_modules/
 /artikles.devdata.json
-/src/*.js
+/src/**/*.js
 /builds/
 /.vscode/
 /.idea/
