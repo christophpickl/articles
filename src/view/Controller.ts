@@ -11,6 +11,7 @@ import UiHandler from "./UiHandler";
 import {randomUuid} from "../common";
 import {ArticleService} from "../ArticleService";
 import {Article, Tags} from "../domain";
+import {SortEvent, SortOption} from "../sort";
 
 export class Controller {
     constructor(
@@ -44,6 +45,9 @@ export class Controller {
         });
         eventBus.register(CancelSearchEvent.ID, () => {
             this.onCancelSearch();
+        });
+        eventBus.register(SortEvent.ID, (event: SortEvent) => {
+            this.onSort(event.option);
         });
     }
 
@@ -161,6 +165,14 @@ export class Controller {
     private onCancelSearch() {
         let articles = this.articleService.disableSearch();
         this.uiHandler.resetSearch();
+        this.uiHandler.resetArticleList(articles, Tags.buildFrom(articles));
+    }
+
+    // SORT
+    // ------------========================================================------------
+
+    private onSort(option: SortOption) {
+        let articles = this.articleService.changeSort(option);
         this.uiHandler.resetArticleList(articles, Tags.buildFrom(articles));
     }
 }

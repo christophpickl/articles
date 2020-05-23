@@ -1,4 +1,5 @@
 import {sortMapByKey} from "./common";
+import {SortOption} from "./sort";
 
 export class Articles {
     constructor(
@@ -40,6 +41,12 @@ export class Articles {
             throw Error("Article with ID '" + findId + "' not existing!");
         }
         return found;
+    }
+
+    sorted(sortOption: SortOption): Articles {
+        let list2 = Object.assign([], this.list) as Article[];
+        list2.sort(sortOption.sortCallback);
+        return new Articles(list2);
     }
 }
 

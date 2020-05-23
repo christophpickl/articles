@@ -6,13 +6,12 @@ import {DataMigrator, JsonDataMigrator, NoOpDataMigrator} from './DataMigrator';
 import {ArticleService, ArticleServiceImpl} from "./ArticleService";
 import {EventBus} from "./EventBus";
 import {Controller} from "./view/Controller";
-import {SortService} from "./sort";
 
 export {Context, Env}
 
 enum Env {
-    DEV,
-    PROD
+    DEV = "DEV",
+    PROD = "PROD"
 }
 
 class Context {
@@ -23,7 +22,6 @@ class Context {
     private static _settings: Settings;
     private static _articleRepo: ArticleRepo;
     private static _articleService: ArticleService;
-    private static _sortService: SortService;
     private static _dataMigrator: DataMigrator = new NoOpDataMigrator();
     private static _eventBus: EventBus;
     private static _controler: Controller;
@@ -31,11 +29,13 @@ class Context {
     // noinspection JSUnusedLocalSymbols
     private static _initizalize = (() => {
         Context.env = (process.cwd() == "/") ? Env.PROD : Env.DEV;
+        console.log("========================================================================");
+        console.log("ARTIKELS ... env = " + Context.env);
+        console.log("========================================================================");
         Context.isDev = Context.env == Env.DEV;
 
         Context._settings = new ElectronSettings();
         Context._eventBus = new EventBus();
-        Context._sortService = new SortService();
         Context._articleRepo = Context.jsonArticleRepo();
 
         Context._articleService = new ArticleServiceImpl(Context._articleRepo);
@@ -59,7 +59,7 @@ class Context {
 
     static controller(): Controller {
         if (Context._controler === undefined) {
-            let uiHandler = new UiHandler(Context._eventBus, Context._articleService, Context._sortService);
+            let uiHandler = new UiHandler(Context._eventBus);
             Context._controler = new Controller(Context._eventBus, Context._articleService, uiHandler);
         }
         return Context._controler;

@@ -1,6 +1,5 @@
 import {Article, Articles, Tags} from '../domain';
 import IndexHtml from './IndexHtml';
-import {ArticleService} from "../ArticleService";
 import {EventBus, Event} from "../EventBus";
 import {
     EditArticleEvent,
@@ -11,13 +10,11 @@ import {
     CancelSearchEvent, SearchEvent, SaveEvent, SearchTagEvent
 } from "./events";
 import {TagFontSizer} from "./TagFontSizer";
-import {SortService} from "../sort";
+import {SortEvent, SortOptions } from "../sort";
 
 export default class UiHandler {
     constructor(
-        private readonly eventBus: EventBus,
-        private readonly articleService: ArticleService,
-        private readonly sortService: SortService
+        private readonly eventBus: EventBus
     ) {
     }
 
@@ -33,10 +30,11 @@ export default class UiHandler {
         IndexHtml.btnCancelSearchVisible(false);
         IndexHtml.switchButtonsToCreateMode(true);
 
-        this.sortService.sorts().forEach((option) => {
+        SortOptions.forEach((option) => {
             $("#sortSelect").append($("<option value='"+option.id+"'>"+option.label+"</option>"));
         });
         this.initSearchListener();
+        this.initSortListener();
         this.initFormListener();
         document.addEventListener('keydown', function (event) {
             const key = event.key;
@@ -115,6 +113,17 @@ export default class UiHandler {
         this.eventBus.dispatch(new SearchTagEvent(clickedTag));
     }
 
+    // SORT
+    // ------------========================================================------------
+
+    private initSortListener() {
+        $("#sortSelect").on("change", () => {
+            let selectedOptionId = $("#sortSelect").children("option:selected").val() as string;
+            console.log("sort changed to:", selectedOptionId);
+            let option = SortOptions.findByIdOrNull(selectedOptionId)!;
+            this.eventBus.dispatch(new SortEvent(option));
+        });
+    }
     // TAGS
     // ------------========================================================------------
 

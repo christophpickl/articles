@@ -94,7 +94,7 @@ class JsonFileArticleRepo implements ArticleRepo {
     }
 
     readAll(): Articles {
-        console.log("load from: " + this.jsonFilePath);
+        console.log("read articles from: " + this.jsonFilePath);
         if (fs.existsSync(this.jsonFilePath)) {
             return this.loadJson().articles;
         }
