@@ -12,6 +12,7 @@ echo "Incrementing to next version number ..."
 npm version minor
 checkLastReturnCode
 
+echo "Packaging APP file ..."
 packageElectron
 
 echo "Moving/overwriting app packages ..."

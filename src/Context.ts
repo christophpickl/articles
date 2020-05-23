@@ -16,8 +16,11 @@ export enum Env {
 }
 
 function determineEnv(): Env {
-    if (fs.existsSync("ENV_PROD")) {
+    if (fs.existsSync(__dirname + "/../ENV_PROD")) {
         return Env.PROD;
+    }
+    if (fs.existsSync(__dirname + "/../ENV_DEV")) {
+        return Env.DEV;
     }
     let passedEnv = process.env["ARTIKLES_ENV"];
     if (passedEnv === undefined) {

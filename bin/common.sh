@@ -7,7 +7,6 @@ checkLastReturnCode() {
 }
 
 packageElectron() {
-  echo "Packaging APP file ..."
   electron-packager . \
     --overwrite \
     --platform=darwin \
