@@ -43,8 +43,9 @@ html, body, #mainContainer, #leftContainer, #rightContainer {
     /*background-color: green;*/
 }
 
-input[type=button] {
+input[type=button], select {
     width: 150px;
+    height: 26px;
     border-radius: 6px;
     font-size: 16pt;
     background-color: black;
@@ -57,7 +58,7 @@ input[type=button] {
     box-shadow: 6px 3px 5px -2px rgba(0, 0, 0, 0.32);
 }
 
-input[type=button]:hover {
+input[type=button]:hover, select:hover {
     background-color: grey;
 }
 
@@ -95,13 +96,27 @@ input[type=button]:hover {
     border-color: lightgray;
 }
 
-/** SEARCH
+/** SEARCH & SORT
 /*********************************************************************************************************************/
 
 #inpSearch {
     font-size: 14pt;
     width: 750px;
     margin-top: 16px;
+}
+
+#searchSortContainer {
+    display: flex;
+}
+
+#sortDiv {
+    right: 10px;
+    position: absolute;
+}
+
+#sortSelect {
+    font-size: 11pt;
+    font-weight: normal;
 }
 
 /** ARTICLE LIST/ITEM

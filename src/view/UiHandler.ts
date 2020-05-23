@@ -11,11 +11,13 @@ import {
     CancelSearchEvent, SearchEvent, SaveEvent, SearchTagEvent
 } from "./events";
 import {TagFontSizer} from "./TagFontSizer";
+import {SortService} from "../sort";
 
 export default class UiHandler {
     constructor(
+        private readonly eventBus: EventBus,
         private readonly articleService: ArticleService,
-        private readonly eventBus: EventBus
+        private readonly sortService: SortService
     ) {
     }
 
@@ -31,6 +33,9 @@ export default class UiHandler {
         IndexHtml.btnCancelSearchVisible(false);
         IndexHtml.switchButtonsToCreateMode(true);
 
+        this.sortService.sorts().forEach((option) => {
+            $("#sortSelect").append($("<option value='"+option.id+"'>"+option.label+"</option>"));
+        });
         this.initSearchListener();
         this.initFormListener();
         document.addEventListener('keydown', function (event) {

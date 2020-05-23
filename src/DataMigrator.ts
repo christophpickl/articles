@@ -1,30 +1,39 @@
 let fs = require("fs");
 
-export { DataMigrator }
+export interface DataMigrator {
+    migrate()
+}
 
-class DataMigrator {
-    
-    static readonly APPLICATION_VERSION = 4;
+export class NoOpDataMigrator implements DataMigrator {
+    public migrate() {
+        console.log("no op migrator :)");
+    }
+}
+
+export class JsonDataMigrator {
+
+    public static readonly APPLICATION_VERSION = 4;
 
     constructor(
         private readonly jsonFilePath: string
-    ) {}
+    ) {
+    }
 
-    migrate() {
-        if(!fs.existsSync(this.jsonFilePath)) {
+    public migrate() {
+        if (!fs.existsSync(this.jsonFilePath)) {
             return
         }
-        
+
         let json = JSON.parse(fs.readFileSync(this.jsonFilePath, 'utf8').toString());
         let currentVersion = <number>json.version;
-        if (currentVersion == DataMigrator.APPLICATION_VERSION) {
+        if (currentVersion == JsonDataMigrator.APPLICATION_VERSION) {
             return;
         }
 
         let nextVersion = currentVersion + 1;
         console.log("MIGRATING");
         console.log("=========");
-        console.log("migrating data version from "+currentVersion+" -> " + nextVersion + " for file: " + this.jsonFilePath);
+        console.log("migrating data version from " + currentVersion + " -> " + nextVersion + " for file: " + this.jsonFilePath);
 
         if (nextVersion == 2) {
             let date = new Date("2020-01-01T00:00:00+0000");
@@ -50,7 +59,7 @@ class DataMigrator {
             };
             nextVersion++;
         }
-        json.version = DataMigrator.APPLICATION_VERSION;
+        json.version = JsonDataMigrator.APPLICATION_VERSION;
         fs.writeFileSync(this.jsonFilePath, JSON.stringify(json));
     }
 }

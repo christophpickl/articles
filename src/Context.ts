@@ -1,11 +1,12 @@
 import {Settings, ElectronSettings} from './Settings';
-import {JsonFileArticleRepo} from './ArticleRepo';
+import {ArticleRepo, JsonFileArticleRepo} from './ArticleRepo';
 import {ElectronHandler} from './ElectronHandler';
 import UiHandler from './view/UiHandler';
-import {DataMigrator} from './DataMigrator';
+import {DataMigrator, JsonDataMigrator, NoOpDataMigrator} from './DataMigrator';
 import {ArticleService, ArticleServiceImpl} from "./ArticleService";
 import {EventBus} from "./EventBus";
 import {Controller} from "./view/Controller";
+import {SortService} from "./sort";
 
 export {Context, Env}
 
@@ -20,8 +21,10 @@ class Context {
     static isDev: Boolean;
 
     private static _settings: Settings;
+    private static _articleRepo: ArticleRepo;
     private static _articleService: ArticleService;
-    private static _dataMigrator: DataMigrator;
+    private static _sortService: SortService;
+    private static _dataMigrator: DataMigrator = new NoOpDataMigrator();
     private static _eventBus: EventBus;
     private static _controler: Controller;
 
@@ -29,9 +32,16 @@ class Context {
     private static _initizalize = (() => {
         Context.env = (process.cwd() == "/") ? Env.PROD : Env.DEV;
         Context.isDev = Context.env == Env.DEV;
+
         Context._settings = new ElectronSettings();
         Context._eventBus = new EventBus();
+        Context._sortService = new SortService();
+        Context._articleRepo = Context.jsonArticleRepo();
 
+        Context._articleService = new ArticleServiceImpl(Context._articleRepo);
+    })();
+
+    private static jsonArticleRepo(): ArticleRepo {
         let jsonFilePath: string;
         if (Context.isDev) {
             // Context._articleRepo = new InMemoryArticleRepo();
@@ -39,10 +49,9 @@ class Context {
         } else {
             jsonFilePath = process.env["HOME"] + "/.artikles/artikles.data.json";
         }
-        let articleRepo = new JsonFileArticleRepo(jsonFilePath, DataMigrator.APPLICATION_VERSION);
-        Context._articleService = new ArticleServiceImpl(articleRepo);
-        Context._dataMigrator = new DataMigrator(jsonFilePath);
-    })();
+        Context._dataMigrator = new JsonDataMigrator(jsonFilePath);
+        return new JsonFileArticleRepo(jsonFilePath, JsonDataMigrator.APPLICATION_VERSION);
+    }
 
     static electronHandler(app: Electron.App): ElectronHandler {
         return new ElectronHandler(app, Context._settings, Context.env);
@@ -50,7 +59,7 @@ class Context {
 
     static controller(): Controller {
         if (Context._controler === undefined) {
-            let uiHandler = new UiHandler(Context._articleService, Context._eventBus);
+            let uiHandler = new UiHandler(Context._eventBus, Context._articleService, Context._sortService);
             Context._controler = new Controller(Context._eventBus, Context._articleService, uiHandler);
         }
         return Context._controler;
