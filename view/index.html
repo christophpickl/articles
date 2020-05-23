@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
-        <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-        <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-        <!-- <title>Articles - DEV</title> -->
         <link rel="stylesheet" href="main.css">
+        <title>Artikles</title>
     </head>
     <body>
-        <a name="top"/>
-        
         <div id="mainContainer">
             <div id="leftContainer">
                 <div id="tagsSummary"></div>
@@ -18,29 +14,28 @@
 
             <div id="rightContainer">
                 <div id="formCreate">
-                    <input type="hidden" id="inpId" />
-                    <input type="hidden" id="inpCreated" />
-                    <input type="hidden" id="inpUpdated" />
-                    <input type="hidden" id="inpLikes" />
-                    <input type="text" id="inpTitle" placeholder="title" title="come to the point; essence" /><br/>
-                    <input type="text" id="inpTags" placeholder="tags" title="whitespace seperated list without hashtags" /><br/>
-                    <textarea id="inpBody" placeholder="body"></textarea><br/>
+                    <input id="inpId" type="hidden" />
+                    <input id="inpCreated" type="hidden" />
+                    <input id="inpUpdated" type="hidden" />
+                    <input id="inpLikes" type="hidden" />
+                    <input id="inpTitle" type="text" placeholder="title" title="come to the point; essence" /><br/>
+                    <input id="inpTags" type="text" placeholder="tags" title="whitespace seperated list without hashtags" /><br/>
+                    <textarea id="inpBody" title="body" placeholder="body"></textarea><br/>
                     <div>
-                        <input type="button" id="btnCreate" class="crudButton" value="create" />
-                        <input type="button" id="btnUpdate" class="crudButton" value="update" />
-                        <input type="button" id="btnCancel" class="crudButton" value="cancel" />
-                        <input type="button" id="btnDelete" class="crudButton" value="delete" />
+                        <input id="btnCreate" value="create" type="button" class="crudButton" />
+                        <input id="btnUpdate" value="update" type="button" class="crudButton" />
+                        <input id="btnCancel" value="cancel" type="button" class="crudButton" />
+                        <input id="btnDelete" value="delete" type="button" class="crudButton" />
                     </div>
                 </div>
 
                 <div id="searchDiv">
-                    <input type="text" id="inpSearch" placeholder="search ..." />
-                    <input type="button" id="btnCancelSearch" value="cancel" />
+                    <input id="inpSearch" type="text" title="search" placeholder="search ..." />
+                    <input id="btnCancelSearch" type="button" value="cancel" />
                 </div>
                 <div id="articleList"></div>
             </div>
         </div>
-
         <script src="./renderer.js"></script>
     </body>
 </html>

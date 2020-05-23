@@ -1,7 +1,6 @@
 import {Settings, ElectronSettings} from './Settings';
 import {JsonFileArticleRepo} from './ArticleRepo';
 import {ElectronHandler} from './ElectronHandler';
-import {BrowserWindow} from 'electron';
 import UiHandler from './view/UiHandler';
 import {DataMigrator} from './DataMigrator';
 import {ArticleService, ArticleServiceImpl} from "./ArticleService";
@@ -46,7 +45,7 @@ class Context {
     })();
 
     static electronHandler(app: Electron.App): ElectronHandler {
-        return new ElectronHandler(app, BrowserWindow, Context._settings, Context.env);
+        return new ElectronHandler(app, Context._settings, Context.env);
     }
 
     static controller(): Controller {

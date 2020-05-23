@@ -13,12 +13,15 @@ An (electron) desktop application to manage (tagged) articles locally.
     * WHEN update article so it does match
     * THEN suddenly show up in the UI
     * // same also in other direction: given visible, when update mismatching, then hide 
-* TECH: tests
+* TECH: tests; first unit, then UI tests
 * [2] UI: mit SHIFT+click auf tag: reset search to only this tag
 * [3] UX: when search for #dao it also finds #daoism and also #foodaofoo (shouldn't it be a "direct" match?!)
+* display count of articles being displayed in list
+* frameworks: bootstrap, log4js, tslint 
 
 ## Super Fancy
 
+* each search #term as a rounded-corner-box (proper clickable tag)
 * [7] UX: live autocomplete suggestion combox for tags
 * keyboard navigation up/down
 * in-line editor, when click on article (don't jump to form at top!)
@@ -31,3 +34,11 @@ An (electron) desktop application to manage (tagged) articles locally.
 	* tags related to each other
 	* articles link with each other
 	* => increased search suggestions / network (afterwards with point system)
+	
+# HowTos
+
+## NPM
+
+* setup jquery:
+    * `npm install --save-dev @types/jquery` 
+    * `npm install jquery --save`    

@@ -10,7 +10,7 @@ import {
     CancelEditArticleEvent,
     CancelSearchEvent, SearchEvent, SaveEvent
 } from "./events";
-import {findChildByAttribute, removeAllChildren} from "../common";
+import {removeAllChildren} from "../common";
 import {TagFontSizer} from "./TagFontSizer";
 
 export default class UiHandler {
@@ -28,7 +28,7 @@ export default class UiHandler {
 
 
     public init() {
-        console.log("init()");
+        console.log("init UiHandler");
         IndexHtml.inpTitle().focus();
         IndexHtml.btnCancelSearchVisible(false);
         IndexHtml.switchButtonsToCreateMode(true);
@@ -123,6 +123,7 @@ export default class UiHandler {
     }
 
     private onArticleTagClicked(clickedTag: string) {
+        // TODO upsource
         let oldSearch = IndexHtml.inpSearch().value;
         let tagHashed = "#" + clickedTag;
         IndexHtml.inpSearch().value = (oldSearch.length == 0) ? tagHashed : oldSearch + " " + tagHashed;
@@ -133,9 +134,7 @@ export default class UiHandler {
     // ------------========================================================------------
 
     public fillTagsSummary(tags: Tags) {
-        let tagsSummaryNode = document.getElementById("tagsSummary")!;
-        removeAllChildren(tagsSummaryNode);
-
+        // TODO use jquery to create node
         let listNode = document.createElement("ul");
         let fontSizer = new TagFontSizer(tags);
         tags.forEach((tagName, count) => {
@@ -151,7 +150,10 @@ export default class UiHandler {
             itemNode.appendChild(aNode);
             listNode.appendChild(itemNode);
         });
-        tagsSummaryNode.appendChild(listNode);
+
+        let tagsSummaryNode: JQuery<HTMLElement> = $("#tagsSummary");
+        tagsSummaryNode.empty();
+        tagsSummaryNode.append(listNode);
     }
 
     // ARTICLES LIST
@@ -276,6 +278,7 @@ export default class UiHandler {
     }
 
     private static findArticleChildNodeById(articleId: string): HTMLElement | null {
-        return findChildByAttribute(IndexHtml.articleList(), UiHandler.ATTR_ARTIFACT_ID, articleId);
+        return IndexHtml.findArticleChildNodeById(UiHandler.ATTR_ARTIFACT_ID, articleId);
+        //return findChildByAttribute(IndexHtml.articleList(), UiHandler.ATTR_ARTIFACT_ID, articleId);
     }
 }

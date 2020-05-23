@@ -1,3 +1,4 @@
+// import * as $ from "jquery";
 
 export default class IndexHtml {
 
@@ -19,12 +20,15 @@ export default class IndexHtml {
     static btnCreate(): HTMLButtonElement {
         return document.getElementById("btnCreate") as HTMLButtonElement;
     }
+
     static btnUpdate(): HTMLButtonElement {
-        return document.getElementById( "btnUpdate") as HTMLButtonElement;
+        return document.getElementById("btnUpdate") as HTMLButtonElement;
     }
+
     static btnCancel(): HTMLButtonElement {
         return document.getElementById("btnCancel") as HTMLButtonElement;
     }
+
     static btnDelete(): HTMLButtonElement {
         return document.getElementById("btnDelete") as HTMLButtonElement;
     }
@@ -32,21 +36,27 @@ export default class IndexHtml {
     static inpId(): HTMLInputElement {
         return document.getElementById("inpId") as HTMLInputElement;
     }
+
     static inpTitle(): HTMLInputElement {
         return document.getElementById("inpTitle") as HTMLInputElement;
     }
+
     static inpTags(): HTMLInputElement {
         return document.getElementById("inpTags") as HTMLInputElement;
     }
+
     static inpBody(): HTMLInputElement {
         return document.getElementById("inpBody") as HTMLInputElement;
     }
+
     static inpCreated(): HTMLInputElement {
         return document.getElementById("inpCreated") as HTMLInputElement;
     }
+
     static inpUpdated(): HTMLInputElement {
         return document.getElementById("inpUpdated") as HTMLInputElement;
     }
+
     static inpLikes(): HTMLInputElement {
         return document.getElementById("inpLikes") as HTMLInputElement;
     }
@@ -66,6 +76,7 @@ export default class IndexHtml {
     static btnCancelSearch(): HTMLButtonElement {
         return document.getElementById("btnCancelSearch") as HTMLButtonElement;
     }
+
     static btnCancelSearchVisible(isVisible: boolean) {
         IndexHtml.btnCancelSearch().hidden = !isVisible;
     }
@@ -79,10 +90,17 @@ export default class IndexHtml {
         return document.getElementById(IndexHtml.ID_ARTICLE_LIST) as HTMLDivElement;
     }
 
+    static findArticleChildNodeById(attributeName: string, articleId: string): HTMLElement | null {
+        let found = $("#" + IndexHtml.ID_ARTICLE_LIST + " div[" + attributeName + "='" + articleId + "']").toArray();
+        return (found.length == 1) ? found[0] : null;
+    }
+
     // COMMON
     // ================================================================================================================
     static onClick(element: HTMLElement, action: () => void) {
-        element.addEventListener("click", () => { action(); });
+        element.addEventListener("click", () => {
+            action();
+        });
     }
 
     static onInput(element: HTMLInputElement, action: () => void) {

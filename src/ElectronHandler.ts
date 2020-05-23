@@ -2,17 +2,17 @@ import {BrowserWindow} from 'electron';
 import {join} from 'path';
 import {Settings} from './Settings';
 import {Env} from './Context';
+import App = Electron.App;
 
 export class ElectronHandler {
 
-    private mainWindow: Electron.BrowserWindow | null = null;
+    private mainWindow: BrowserWindow | null = null;
 
     private static readonly HTML_FILE_URL: string = 'file://' + __dirname + '/../view/index.html';
     private static readonly PRELOAD_JS_PATH: string = join(__dirname, 'preload.js');
 
     constructor(
-        private readonly application: Electron.App,
-        private readonly browserWindow: typeof BrowserWindow,
+        private readonly application: App,
         private readonly settings: Settings,
         private readonly env: Env,
         private readonly windowTitle: string = "Artikles" + (env == Env.DEV ? " - DEV" : "")
@@ -20,11 +20,11 @@ export class ElectronHandler {
     }
 
     public registerHandlers() {
-        this.application.on('window-all-closed', () => {
-            this.onWindowAllClosed();
-        });
         this.application.on('ready', () => {
             this.onReady();
+        });
+        this.application.on('window-all-closed', () => {
+            this.onWindowAllClosed();
         });
     }
 
@@ -32,8 +32,9 @@ export class ElectronHandler {
         console.log("ElectronHandler.onReady()");
         console.log("userData path: ", this.application.getPath("userData"));
 
-        this.mainWindow = new this.browserWindow({
-            width: 800, height: 600,
+        this.mainWindow = new BrowserWindow({
+            width: 800,
+            height: 600,
             webPreferences: {
                 preload: ElectronHandler.PRELOAD_JS_PATH
             }

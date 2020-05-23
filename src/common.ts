@@ -26,23 +26,6 @@ export function removeAllChildren(node: Element) {
     }
 }
 
-export function scrollToTop() {
-    document.body.scrollTop = 0; // safari
-    document.documentElement.scrollTop = 0; // chrome, firefox, IE, opera
-}
-
-export function findChildByAttribute(parent: HTMLElement, attributeName: string, searchValue: string): HTMLElement | null {
-    let children = parent.children;
-    for (let i = 0; i < children.length; i++) {
-        let child = children[i];
-        let childValue = child.getAttribute(attributeName);
-        if (childValue == searchValue) {
-            return child as HTMLElement;
-        }
-    }
-    return null;
-}
-
 export function sortMapByKey<K, V>(map: Map<K, V>): Map<K, V> {
     let sortedKeys = Array.from(map.keys()).sort() as K[];
     let sortedMap = new Map<K, V>();

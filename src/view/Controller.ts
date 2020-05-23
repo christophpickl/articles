@@ -8,7 +8,7 @@ import {
     UpdateEvent
 } from "./events";
 import UiHandler from "./UiHandler";
-import {randomUuid, scrollToTop} from "../common";
+import {randomUuid} from "../common";
 import {ArticleService} from "../ArticleService";
 import {Article, Tags} from "../domain";
 
@@ -118,7 +118,6 @@ export class Controller {
     private onEdit(article: Article) {
         this.uiHandler.updateArticleForm(article);
         this.uiHandler.inpTitleFocus();
-        scrollToTop();
     }
 
     private static validateArticle(article: Article):
