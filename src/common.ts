@@ -1,4 +1,3 @@
-
 export type Nullable<T> = T | null;
 
 export function randomUuid(): string {
@@ -27,4 +26,24 @@ export function sortMapByKey<K, V>(map: Map<K, V>): Map<K, V> {
         sortedMap.set(sortedKey, map.get(sortedKey)!);
     });
     return sortedMap;
+}
+
+export function mapOf<K, V>(...tuples: Tuple<K, V>[]): Map<K, V> {
+    const map = new Map<K, V>();
+    tuples.forEach((it) => {
+        map.set(it.x, it.y);
+    });
+    return map;
+}
+
+export class Tuple<X, Y> {
+    public constructor(
+        public readonly x: X,
+        public readonly y: Y
+    ) {
+    }
+}
+
+export function tuple<X, Y>(x: X, y: Y): Tuple<X, Y> {
+    return new Tuple(x, y);
 }

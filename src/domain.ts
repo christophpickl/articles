@@ -1,4 +1,4 @@
-import {sortMapByKey} from "./common";
+import {sortMapByKey, Tuple} from "./common";
 import {SortOption} from "./sort";
 
 export class Articles {
@@ -99,8 +99,7 @@ export class Article implements ArticleCtor {
 
 export class Tags {
     constructor(
-        private readonly map: Map<string, number/*=count*/>,
-        public readonly counts: number[]
+        private readonly map: Map<string, number/*=count*/>
     ) {
     }
 
@@ -115,13 +114,17 @@ export class Tags {
             });
         });
 
-        let counts = Array.from(allTagsCounted.values()).sort((o1, o2) => o1 - o2);
-        return new Tags(sortMapByKey(allTagsCounted), counts);
+        return new Tags(sortMapByKey(allTagsCounted));
     }
 
     public forEach(fn: (string, number) => void) {
         this.map.forEach((value, key) => {
             fn(key, value);
         });
+    }
+
+    public getMinMax(): Tuple<number, number> {
+        let counts = Array.from(this.map.values()).sort((o1, o2) => o1 - o2);
+        return new Tuple(counts[0], counts[counts.length - 1]);
     }
 }

@@ -11,7 +11,7 @@ An (electron) desktop application to manage (tagged) articles locally.
     * THEN suddenly show up in the UI
     * // same also in other direction: given visible, when update mismatching, then hide
     * SAME also for sort 
-* TECH: tests; first unit, then UI tests
+* TECH: spectron ui tests
 * [2] UI: mit SHIFT+click auf tag: reset search to only this tag
 * [3] UX: when search for #dao it also finds #daoism and also #foodaofoo (shouldn't it be a "direct" match?!)
 * frameworks: bootstrap, log4js, tslint 
@@ -38,4 +38,7 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 * setup jquery:
     * `npm install --save-dev @types/jquery` 
-    * `npm install jquery --save`    
+    * `npm install jquery --save`
+* setup jest:
+    * `npm i -D jest ts-jest typescript`
+    * `npm i -D @types/jest`

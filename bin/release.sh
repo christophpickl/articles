@@ -9,6 +9,9 @@ checkLastReturnCode() {
 	fi
 }
 
+npm test
+checkLastReturnCode
+
 rm -rf builds/
 checkLastReturnCode
 
