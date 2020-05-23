@@ -2,7 +2,7 @@ export class EventBus {
     private listeners: Map<string, Listener<Event>[]> = new Map()
 
     register<E extends Event>(eventId: string, listener: Listener<E>) {
-        console.log("register listener for: " + eventId);
+        // console.log("register listener for: " + eventId);
         if (!this.listeners.has(eventId)) {
             this.listeners.set(eventId, new Array<Listener<Event>>())
         }

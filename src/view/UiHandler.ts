@@ -141,7 +141,7 @@ export default class UiHandler {
         tags.forEach((tagName, count) => {
             let aNode = document.createElement("a");
             aNode.classList.add(UiHandler.CLASS_TAGS_LINK);
-            aNode.style.fontSize = fontSizer.sizeFor(count) + "pt";
+            aNode.style.fontSize = fontSizer.sizeFor(count);
             aNode.innerText = "#" + tagName + "(" + count + ")";
             aNode.href = "#";
             aNode.onclick = () => {
@@ -240,7 +240,7 @@ export default class UiHandler {
         articleTags.classList.add(UiHandler.CLASS_TAGS);
         this.resetTags(articleTags, article.tags);
 
-        let articleBody = document.createElement("pre");
+        let articleBody = document.createElement("div");
         articleBody.classList.add(UiHandler.CLASS_BODY);
         articleBody.innerText = article.body;
 

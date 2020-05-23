@@ -28,7 +28,6 @@ export function overrideUpdateableFields(original: Article, update: Article) {
 export class Tags {
     constructor(
         private readonly map: Map<string, number/*=count*/>,
-        /** sorted */
         public readonly counts: number[]
     ) {
     }
@@ -44,7 +43,7 @@ export class Tags {
             });
         });
 
-        let counts = Array.from(allTagsCounted.values()).sort();
+        let counts = Array.from(allTagsCounted.values()).sort((o1, o2) => o1 - o2);
         return new Tags(sortMapByKey(allTagsCounted), counts);
     }
 

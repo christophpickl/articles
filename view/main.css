@@ -1,15 +1,16 @@
 /** GENERAL
 /*********************************************************************************************************************/
 
-body {
-    /* top right bottom left*/
-    padding: 30px 40px 0 40px;
-    background-color: #efefef;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+* {
+    margin: 0;
+    padding: 0;
 }
 
-html, body {
-    margin: 0 0 0 0;
+body {
+    /* top right bottom left*/
+    padding: 15px 10px 0 10px;
+    background-color: #efefef;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 html, body, #mainContainer, #leftContainer, #rightContainer {
@@ -17,12 +18,17 @@ html, body, #mainContainer, #leftContainer, #rightContainer {
 }
 
 #leftContainer {
-    float: left;
-    width: 150px;
+    overflow-y: auto;
+    position: absolute;
+    /*float: left;*/
+    width: 180px;
+    top: 0;
+    bottom: 0;
+    left: 10px;
 }
 
 #rightContainer {
-    margin-left: 150px;
+    margin-left: 190px;
     margin-bottom: 0;
     /*background-color: yellow;*/
 }
@@ -30,12 +36,13 @@ html, body, #mainContainer, #leftContainer, #rightContainer {
 #articleList {
     overflow-y: auto;
     position: absolute;
-    top: 340px;
+    top: 320px;
     bottom: 0;
-    left: 190px;
-    right: 40px;
+    left: 200px;
+    right: 10px;
     /*background-color: green;*/
 }
+
 input[type=button] {
     width: 150px;
     border-radius: 6px;
@@ -127,6 +134,9 @@ input[type=button]:hover {
 .articleBody {
     font-size: 11pt;
     font-family: 'Courier New', Courier, monospace;
+    white-space: pre;
+    width: 100%;
+    overflow: auto;
 }
 
 /** TAGS
