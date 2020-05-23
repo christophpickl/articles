@@ -47,3 +47,5 @@ export class Tuple<X, Y> {
 export function tuple<X, Y>(x: X, y: Y): Tuple<X, Y> {
     return new Tuple(x, y);
 }
+
+export const delay = time => new Promise(resolve => setTimeout(resolve, time));

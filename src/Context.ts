@@ -1,5 +1,5 @@
 import {Settings, ElectronSettings} from './Settings';
-import {ArticleRepo, JsonFileArticleRepo} from './ArticleRepo';
+import {ArticleRepo, InMemoryArticleRepo, JsonFileArticleRepo} from './ArticleRepo';
 import {ElectronHandler} from './ElectronHandler';
 import UiHandler from './view/UiHandler';
 import {DataMigrator, JsonDataMigrator, NoOpDataMigrator} from './DataMigrator';
@@ -7,17 +7,32 @@ import {ArticleService, ArticleServiceImpl} from "./ArticleService";
 import {EventBus} from "./EventBus";
 import {Controller} from "./view/Controller";
 
-export {Context, Env}
+let fs = require("fs");
 
-enum Env {
+export enum Env {
     DEV = "DEV",
+    TEST = "TEST",
     PROD = "PROD"
 }
 
-class Context {
+function determineEnv(): Env {
+    if (fs.existsSync("ENV_PROD")) {
+        return Env.PROD;
+    }
+    let passedEnv = process.env["ARTIKLES_ENV"];
+    if (passedEnv === undefined) {
+        throw Error("Missing environment variable: ATRIKLES_ENV=[ DEV | TEST | PROD ]");
+    }
+    const foundEnv = Env[passedEnv];
+    if (foundEnv === undefined) {
+        throw Error("Invalid ATRIKLES_ENV value: '" + passedEnv + "'! Must be one of: [ DEV | TEST | PROD ]");
+    }
+    return foundEnv;
+}
 
-    static env: Env;
-    static isDev: Boolean;
+export class Context {
+
+    static readonly env: Env = determineEnv();
 
     private static _settings: Settings;
     private static _articleRepo: ArticleRepo;
@@ -28,27 +43,36 @@ class Context {
 
     // noinspection JSUnusedLocalSymbols
     private static _initizalize = (() => {
-        Context.env = (process.cwd() == "/") ? Env.PROD : Env.DEV;
         console.log("========================================================================");
         console.log("ARTIKELS ... env = " + Context.env);
         console.log("========================================================================");
-        Context.isDev = Context.env == Env.DEV;
 
         Context._settings = new ElectronSettings();
         Context._eventBus = new EventBus();
-        Context._articleRepo = Context.jsonArticleRepo();
+        if (Context.env == Env.TEST) {
+            console.log("Using IN-MEMORY article repository.");
+            Context._articleRepo = new InMemoryArticleRepo();
+        } else {
+            Context._articleRepo = Context.jsonArticleRepo();
+        }
 
         Context._articleService = new ArticleServiceImpl(Context._articleRepo);
     })();
 
     private static jsonArticleRepo(): ArticleRepo {
         let jsonFilePath: string;
-        if (Context.isDev) {
-            // Context._articleRepo = new InMemoryArticleRepo();
-            jsonFilePath = process.cwd() + "/artikles.devdata.json";
-        } else {
-            jsonFilePath = process.env["HOME"] + "/.artikles/artikles.data.json";
+        switch (Context.env) {
+            case Env.DEV:
+                // Context._articleRepo = new InMemoryArticleRepo();
+                jsonFilePath = process.cwd() + "/local/artikles.devdata.json";
+                break;
+            case Env.PROD:
+                jsonFilePath = process.env["HOME"] + "/.artikles/artikles.data.json";
+                break;
+            default:
+                throw new Error("Unhandled env: " + Context.env);
         }
+
         Context._dataMigrator = new JsonDataMigrator(jsonFilePath);
         return new JsonFileArticleRepo(jsonFilePath, JsonDataMigrator.APPLICATION_VERSION);
     }

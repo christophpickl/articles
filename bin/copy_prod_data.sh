@@ -1,4 +1,4 @@
 #!/bin/bash
 
 echo "Copying PROD to DEV data ..."
-cp ~/.artikles/artikles.data.json artikles.devdata.json
+cp ~/.artikles/artikles.data.json local/artikles.devdata.json

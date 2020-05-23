@@ -1,13 +1,6 @@
 #!/bin/bash
-
+source "bin/common.sh"
 # needs: npm install electron-packager -g
-
-checkLastReturnCode() {
-	if [ $? -ne 0 ]; then
-		echo "Fail";
-		exit 1;
-	fi
-}
 
 npm test
 checkLastReturnCode
@@ -19,14 +12,15 @@ echo "Incrementing to next version number ..."
 npm version minor
 checkLastReturnCode
 
-echo "Packaging APP file ..."
-electron-packager . --overwrite --platform=darwin --arch=x64 --icon=local/applogo.mac.icns --prune=true --out=builds/
+packageElectron
+
+echo "Moving/overwriting app packages ..."
+rm -rf /Applications/Artikles.app
 checkLastReturnCode
 
-echo "Moving/overwriting binaries ..."
-rm -rf /Applications/Articles.app
-checkLastReturnCode
-mv -f builds/Articles-darwin-x64/Articles.app /Applications/Articles.app
+# create file indicating in environment=PROD
+touch builds/Artikles-darwin-x64/Artikles.app/Contents/Resources/app/ENV_PROD
+mv -f builds/Artikles-darwin-x64/Artikles.app /Applications/Artikles.app
 checkLastReturnCode
 
 rm -rf builds

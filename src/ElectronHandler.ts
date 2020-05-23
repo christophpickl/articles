@@ -15,7 +15,7 @@ export class ElectronHandler {
         private readonly application: App,
         private readonly settings: Settings,
         private readonly env: Env,
-        private readonly windowTitle: string = "Artikles 📗" + (env == Env.DEV ? " - DEVELOPMENT 🛠🛠🛠" : "")
+        private readonly windowTitle: string = "Artikles 📗" + (env == Env.DEV ? " - DEVELOPMENT 🛠🛠🛠" : (env == Env.TEST ? "TEST ✅❌" : ""))
     ) {
     }
 

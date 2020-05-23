@@ -24,16 +24,20 @@ export class SortOptions {
 
     static readonly options = [
         new SortOption("created", "recently created", (a1, a2) => {
-            return a1.created.getTime() - a2.created.getTime()
+            return a1.created.getTime() - a2.created.getTime();
         }),
         new SortOption("updated", "recently updated", (a1, a2) => {
-            return a1.updated.getTime() - a2.updated.getTime()
+            return a1.updated.getTime() - a2.updated.getTime();
         }),
         new SortOption("title", "title desc", (a1, a2) => {
-            return a2.title.localeCompare(a1.title)
+            return a2.title.localeCompare(a1.title);
         }),
         new SortOption("tags", "number of tags", (a1, a2) => {
-            return a2.tags.length - a1.tags.length
+            let tagsDif = a2.tags.length - a1.tags.length;
+            if (tagsDif != 0) {
+                return tagsDif;
+            }
+            return a1.created.getTime() - a2.created.getTime();
         })
         // likes
     ];

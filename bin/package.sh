@@ -1,21 +1,11 @@
 #!/bin/bash
-
+source "bin/common.sh"
 # needs: npm install electron-packager -g
-
-checkLastReturnCode() {
-	if [ $? -ne 0 ]; then
-		echo "Fail";
-		exit 1;
-	fi
-}
 
 rm -rf builds/
 checkLastReturnCode
 
+packageElectron
 
-echo "Packaging APP file ..."
-electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/applogo.mac.icns --prune=true --out=builds/
-checkLastReturnCode
-
-open builds/Articles-darwin-x64
+open builds/Artikles-darwin-x64
 echo "Done"

@@ -1,6 +1,9 @@
 /node_modules/
-/artikles.devdata.json
+/local/artikles.devdata.json
 /src/**/*.js
+/src/**/*.js.map
+/tests/**/*.js
+/tests/**/*.js.map
 /builds/
 /.vscode/
 /.idea/

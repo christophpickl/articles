@@ -2,14 +2,7 @@ import {Article, Articles} from './domain';
 
 let fs = require("fs");
 
-export {
-    ArticleRepo,
-    JsonFileArticleRepo,
-    InMemoryArticleRepo,
-    ArticleCrudOperations
-}
-
-interface ArticleCrudOperations {
+export interface ArticleCrudOperations {
     create(article: Article): Articles;
 
     readAll(): Articles;
@@ -19,35 +12,13 @@ interface ArticleCrudOperations {
     delete(id: string): Articles;
 }
 
-interface ArticleRepo extends ArticleCrudOperations {
+export interface ArticleRepo extends ArticleCrudOperations {
 }
 
-let demoArticles: Article[] = [
-    new Article({
-        id: "id1",
-        title: "let lose",
-        tags: ["dao", "zen", "stoi"],
-        body: "let lose, let go, practice non-attachment, as everything is impermanent anyhow. stay low with compliments, stay high with criticism.",
-        created: new Date("2005-01-01T08:44:29+0100"),
-        updated: new Date(),
-        likes: 7,
-        isDeleted: false
-    }), new Article({
-        id: "id2",
-        title: "be kind",
-        tags: ["kindness"],
-        body: "to yourself and others.",
-        created: new Date(),
-        updated: new Date(),
-        likes: 2,
-        isDeleted: false
-    })
-];
-
 // noinspection JSUnusedGlobalSymbols
-class InMemoryArticleRepo implements ArticleRepo {
+export class InMemoryArticleRepo implements ArticleRepo {
 
-    private articles = new Articles(demoArticles);
+    private articles = new Articles([]);
 
     create(article: Article): Articles {
         this.articles.add(article);
@@ -77,7 +48,7 @@ class PersistedData {
     }
 }
 
-class JsonFileArticleRepo implements ArticleRepo {
+export class JsonFileArticleRepo implements ArticleRepo {
 
     constructor(
         private jsonFilePath: string,
