@@ -8,7 +8,7 @@ import {
     DeleteEvent,
     UpdateEvent,
     CancelEditArticleEvent,
-    CancelSearchEvent, SearchEvent, SaveEvent
+    CancelSearchEvent, SearchEvent, SaveEvent, SearchTagEvent
 } from "./events";
 import {removeAllChildren} from "../common";
 import {TagFontSizer} from "./TagFontSizer";
@@ -123,11 +123,7 @@ export default class UiHandler {
     }
 
     private onArticleTagClicked(clickedTag: string) {
-        // TODO upsource
-        let oldSearch = IndexHtml.inpSearch().value;
-        let tagHashed = "#" + clickedTag;
-        IndexHtml.inpSearch().value = (oldSearch.length == 0) ? tagHashed : oldSearch + " " + tagHashed;
-        this.eventBus.dispatch(new SearchEvent(IndexHtml.inpSearch().value));
+        this.eventBus.dispatch(new SearchTagEvent(clickedTag));
     }
 
     // TAGS
@@ -191,7 +187,7 @@ export default class UiHandler {
         articleTitleLink.onclick = () => {
             this.eventBus.dispatch(new EditArticleEvent(article));
         };
-        this.resetTags(child.getElementsByClassName(UiHandler.CLASS_TAGS)[0]!, article.tags);
+        this.resetArticleTags(child.getElementsByClassName(UiHandler.CLASS_TAGS)[0]!, article.tags);
         child.getElementsByClassName(UiHandler.CLASS_BODY)[0]!.innerHTML = article.body;
     }
 
@@ -207,7 +203,7 @@ export default class UiHandler {
             IndexHtml.onKeyDown(input, (event: KeyboardEvent) => {
                 if (event.key == "Escape") {
                     this.eventBus.dispatch(new CancelEditArticleEvent());
-                } else if(event.metaKey && event.key == "s") {
+                } else if (event.metaKey && event.key == "s") {
                     this.eventBus.dispatch(new SaveEvent());
                 }
             });
@@ -240,7 +236,7 @@ export default class UiHandler {
 
         let articleTags = document.createElement("p");
         articleTags.classList.add(UiHandler.CLASS_TAGS);
-        this.resetTags(articleTags, article.tags);
+        this.resetArticleTags(articleTags, article.tags);
 
         let articleBody = document.createElement("div");
         articleBody.classList.add(UiHandler.CLASS_BODY);
@@ -255,7 +251,7 @@ export default class UiHandler {
         return articleNode;
     }
 
-    private resetTags(html: Element, tags: string[]) {
+    private resetArticleTags(html: Element, tags: string[]) {
         removeAllChildren(html);
         tags.forEach((tag) => {
             let tagNode = document.createElement("a");
@@ -280,5 +276,13 @@ export default class UiHandler {
     private static findArticleChildNodeById(articleId: string): HTMLElement | null {
         return IndexHtml.findArticleChildNodeById(UiHandler.ATTR_ARTIFACT_ID, articleId);
         //return findChildByAttribute(IndexHtml.articleList(), UiHandler.ATTR_ARTIFACT_ID, articleId);
+    }
+
+    public getSearchTerm(): string {
+        return IndexHtml.inpSearch().value;
+    }
+
+    public setSearchTerm(value: string) {
+        IndexHtml.inpSearch().value = value;
     }
 }

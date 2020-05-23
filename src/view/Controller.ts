@@ -4,7 +4,7 @@ import {
     CancelSearchEvent,
     CreateEvent,
     DeleteEvent,
-    EditArticleEvent, SaveEvent, SearchEvent,
+    EditArticleEvent, SaveEvent, SearchEvent, SearchTagEvent,
     UpdateEvent
 } from "./events";
 import UiHandler from "./UiHandler";
@@ -38,6 +38,9 @@ export class Controller {
         });
         eventBus.register(SearchEvent.ID, (event: SearchEvent) => {
             this.onSearch(event.term);
+        });
+        eventBus.register(SearchTagEvent.ID, (event: SearchTagEvent) => {
+            this.onSearchTag(event.tag);
         });
         eventBus.register(CancelSearchEvent.ID, () => {
             this.onCancelSearch();
@@ -105,7 +108,7 @@ export class Controller {
     private onDelete() {
         console.log("onDelete");
         let articleToDelete = this.uiHandler.readArticleFromUI();
-        if (!confirm("Really delete '"+articleToDelete.title+"'?")) {
+        if (!confirm("Really delete '" + articleToDelete.title + "'?")) {
             return;
         }
         let articles = this.articleService.delete(articleToDelete.id);
@@ -131,6 +134,14 @@ export class Controller {
 
     // SEARCH
     // ------------========================================================------------
+
+    private onSearchTag(searchTag: string) {
+        let oldSearch = this.uiHandler.getSearchTerm();
+        let searchTagHashed = "#" + searchTag;
+        let newSearch = (oldSearch.length == 0) ? searchTagHashed : oldSearch + " " + searchTagHashed;
+        this.uiHandler.setSearchTerm(newSearch);
+        this.onSearch(newSearch);
+    }
 
     private onSearch(searchTerm: string) {
         let terms = searchTerm.split(" ").filter((it) => {

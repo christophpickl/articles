@@ -2,7 +2,7 @@ import {Event} from "../EventBus";
 import {Article} from "../domain";
 
 export class CreateEvent implements Event {
-    static readonly ID = "CreateEvent"
+    static readonly ID = "CreateEvent";
     readonly id = CreateEvent.ID;
 }
 
@@ -13,18 +13,19 @@ export class UpdateEvent implements Event {
 
 /** depending on current state, either create OR update */
 export class SaveEvent implements Event {
-    static readonly ID = "SaveEvent"
+    static readonly ID = "SaveEvent";
     readonly id = SaveEvent.ID;
 }
 
 export class DeleteEvent implements Event {
-    static readonly ID = "DeleteEvent"
+    static readonly ID = "DeleteEvent";
     readonly id = DeleteEvent.ID;
 }
 
 export class EditArticleEvent implements Event {
-    static readonly ID = "EditArticleEvent"
+    static readonly ID = "EditArticleEvent";
     readonly id = EditArticleEvent.ID;
+
     constructor(
         public readonly article: Article
     ) {
@@ -32,19 +33,29 @@ export class EditArticleEvent implements Event {
 }
 
 export class CancelEditArticleEvent implements Event {
-    static readonly ID = "CancelEditArticleEvent"
+    static readonly ID = "CancelEditArticleEvent";
     readonly id = CancelEditArticleEvent.ID;
 }
 
 export class CancelSearchEvent implements Event {
-    static readonly ID = "CancelSearchEvent"
+    static readonly ID = "CancelSearchEvent";
     readonly id = CancelSearchEvent.ID;
 }
+
 export class SearchEvent implements Event {
-    static readonly ID = "SearchEvent"
+    static readonly ID = "SearchEvent";
     readonly id = SearchEvent.ID;
     constructor(
         public readonly term: string
+    ) {
+    }
+}
+
+export class SearchTagEvent implements Event {
+    static readonly ID = "SearchTagEvent";
+    readonly id = SearchTagEvent.ID;
+    constructor(
+        public readonly tag: string
     ) {
     }
 }
