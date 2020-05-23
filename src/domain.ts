@@ -1,5 +1,48 @@
 import {sortMapByKey} from "./common";
 
+export class Articles {
+    constructor(
+        private list: Article[]
+    ) {
+    }
+
+    get length(): number {
+        return this.list.length;
+    }
+
+    public forEach(callback: (Article) => void) {
+        this.list.forEach(callback);
+    }
+
+    public filter(predicate: (Article) => boolean): Articles {
+        return new Articles(this.list.filter(predicate));
+    }
+
+    public add(article: Article) {
+        this.list.push(article);
+    }
+
+    public remove(articleId: string) {
+        this.list = this.list.filter(function (it) {
+            return it.id !== articleId;
+        });
+    }
+
+    public updateFieldsFor(update: Article) {
+        this.findByIdOrThrow(update.id).setFieldsFrom(update);
+    }
+
+    public findByIdOrThrow(findId: string): Article {
+        let found: Article | undefined = this.list.find(function (it) {
+            return it.id === findId;
+        });
+        if (found === undefined) {
+            throw Error("Article with ID '" + findId + "' not existing!");
+        }
+        return found;
+    }
+}
+
 interface ArticleCtor {
     readonly id: string
     title: string
@@ -54,7 +97,7 @@ export class Tags {
     ) {
     }
 
-    public static buildFrom(articles: Article[]): Tags {
+    public static buildFrom(articles: Articles): Tags {
         let allTagsCounted = new Map<string, number>();
         articles.forEach((article) => {
             article.tags.forEach((tag) => {

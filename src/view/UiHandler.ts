@@ -1,4 +1,4 @@
-import {Article, Tags} from '../domain';
+import {Article, Articles, Tags} from '../domain';
 import IndexHtml from './IndexHtml';
 import {ArticleService} from "../ArticleService";
 import {EventBus, Event} from "../EventBus";
@@ -137,7 +137,7 @@ export default class UiHandler {
     // ARTICLES LIST
     // ------------========================================================------------
 
-    public resetArticleList(articles: Article[], tags: Tags) {
+    public resetArticleList(articles: Articles, tags: Tags) {
         let articleList = $("#articleList");
         articleList.empty();
         articles.forEach((article) => {

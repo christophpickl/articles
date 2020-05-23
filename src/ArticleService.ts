@@ -1,4 +1,4 @@
-import {Article} from "./domain";
+import {Article, Articles} from "./domain";
 import {Nullable} from "./common";
 import {ArticleCrudOperations, ArticleRepo} from "./ArticleRepo";
 
@@ -8,9 +8,9 @@ export {
 }
 
 interface SearchService {
-    searchArticles(terms: string[]): Article[]
+    searchArticles(terms: string[]): Articles
 
-    disableSearch(): Article[];
+    disableSearch(): Articles;
 }
 
 interface ArticleService extends ArticleCrudOperations, SearchService {
@@ -22,7 +22,7 @@ function isNotDeleted(article: Article): boolean {
 
 class ArticleServiceImpl implements ArticleService {
 
-    private articles: Article[] = [];
+    private articles = new Articles([]);
 
     // terms mit start with a "#" indicating a tag search
     private currentSearchTerms: Nullable<string[]> = null
@@ -34,26 +34,23 @@ class ArticleServiceImpl implements ArticleService {
 
     // CRUD
     // ------------========================================================------------
-    create(article: Article): Article[] {
+    create(article: Article): Articles {
         this.articles = this.repo.create(article).filter(isNotDeleted);
         return this.runSearch();
     }
 
-    readAll(): Article[] {
+    readAll(): Articles {
         this.articles = this.repo.readAll().filter(isNotDeleted);
         return this.runSearch();
     }
 
-    update(article: Article): Article[] {
+    update(article: Article): Articles {
         this.articles = this.repo.update(article).filter(isNotDeleted);
         return this.runSearch();
     }
 
-    delete(articleId: string): Article[] {
-        // NO: this.articles = this.repo.delete(articleId);
-        let articleToDelete = this.articles.find((it) => {
-            return it.id == articleId
-        })!;
+    delete(articleId: string): Articles {
+        let articleToDelete = this.articles.findByIdOrThrow(articleId);
         articleToDelete.isDeleted = true
         this.articles = this.repo.update(articleToDelete).filter(isNotDeleted);
         return this.runSearch();
@@ -62,19 +59,19 @@ class ArticleServiceImpl implements ArticleService {
     // SEARCH
     // ------------========================================================------------
 
-    searchArticles(terms: string[]): Article[] {
+    searchArticles(terms: string[]): Articles {
         console.log("change search to: ", terms)
         this.currentSearchTerms = terms;
         return this.runSearch();
     }
 
-    disableSearch(): Article[] {
+    disableSearch(): Articles {
         console.log("disableSearch")
         this.currentSearchTerms = null
         return this.runSearch();
     }
 
-    private runSearch(): Article[] {
+    private runSearch(): Articles {
         if (this.currentSearchTerms === null) {
             return this.articles
         }

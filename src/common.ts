@@ -28,10 +28,3 @@ export function sortMapByKey<K, V>(map: Map<K, V>): Map<K, V> {
     });
     return sortedMap;
 }
-
-export interface CrudOperations<T, K> {
-    create(entity: T): T[];
-    readAll(): T[];
-    update(entity: T): T[];
-    delete(id: K): T[];
-}

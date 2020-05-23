@@ -1,5 +1,4 @@
-import {CrudOperations} from './common';
-import {Article} from './domain';
+import {Article, Articles} from './domain';
 
 let fs = require("fs");
 
@@ -10,17 +9,14 @@ export {
     ArticleCrudOperations
 }
 
-function updateArticleInList(articles: Article[], update: Article) {
-    let storedArticle: Article = articles.find(function (it) {
-        return it.id === update.id;
-    })!;
-    // console.log(JSON.stringify(article));
-    // console.log(storedArticle);
-    console.log("storedArticle:", storedArticle);
-    storedArticle.setFieldsFrom(update);
-}
+interface ArticleCrudOperations {
+    create(article: Article): Articles;
 
-interface ArticleCrudOperations extends CrudOperations<Article, string> {
+    readAll(): Articles;
+
+    update(article: Article): Articles;
+
+    delete(id: string): Articles;
 }
 
 interface ArticleRepo extends ArticleCrudOperations {
@@ -51,26 +47,24 @@ let demoArticles: Article[] = [
 // noinspection JSUnusedGlobalSymbols
 class InMemoryArticleRepo implements ArticleRepo {
 
-    private articles: Article[] = demoArticles;
+    private articles = new Articles(demoArticles);
 
-    create(article: Article): Article[] {
-        this.articles.push(article);
+    create(article: Article): Articles {
+        this.articles.add(article);
         return this.articles;
     }
 
-    readAll(): Article[] {
+    readAll(): Articles {
         return this.articles;
     }
 
-    update(article: Article): Article[] {
-        updateArticleInList(this.articles, article);
+    update(article: Article): Articles {
+        this.articles.updateFieldsFor(article);
         return this.articles;
     }
 
-    delete(articleId: string): Article[] {
-        this.articles = this.articles.filter(function (value) {
-            return value.id != articleId;
-        });
+    delete(articleId: string): Articles {
+        this.articles.remove(articleId);
         return this.articles;
     }
 }
@@ -78,7 +72,7 @@ class InMemoryArticleRepo implements ArticleRepo {
 class PersistedData {
     constructor(
         public version: number,
-        public articles: Article[]
+        public articles: Articles
     ) {
     }
 }
@@ -91,40 +85,41 @@ class JsonFileArticleRepo implements ArticleRepo {
     ) {
     }
 
-    create(article: Article): Article[] {
+    create(article: Article): Articles {
         console.log("save:", article);
         let data = this.loadJson()
-        data.articles.push(article);
+        data.articles.add(article);
         this.persistJson(data);
         return data.articles;
     }
 
-    readAll(): Article[] {
+    readAll(): Articles {
         console.log("load from: " + this.jsonFilePath);
         if (fs.existsSync(this.jsonFilePath)) {
             return this.loadJson().articles;
         }
-        this.persistJson({
-            version: this.dataVersion,
-            articles: []
-        });
-        return [];
+        const newData = new PersistedData(
+            this.dataVersion,
+            new Articles([])
+        );
+        this.persistJson(newData);
+        return newData.articles;
     }
 
-    update(article: Article): Article[] {
+    update(article: Article): Articles {
         console.log("update:", article);
         let data = this.loadJson()
-        updateArticleInList(data.articles, article);
+
+        data.articles.updateFieldsFor(article);
+
         this.persistJson(data);
         return data.articles;
     }
 
-    delete(articleId: string): Article[] {
+    delete(articleId: string): Articles {
         console.log("delete:", articleId);
         let data = this.loadJson()
-        data.articles = data.articles.filter(function (it) {
-            return it.id !== articleId;
-        });
+        data.articles.remove(articleId);
         this.persistJson(data);
         return data.articles;
     }
@@ -132,13 +127,13 @@ class JsonFileArticleRepo implements ArticleRepo {
     private loadJson(): PersistedData {
         let json = JSON.parse(fs.readFileSync(this.jsonFilePath, 'utf8').toString());
         let articles = new Array<Article>();
-        json.articles.forEach((it) => {
+        json.articles.list.forEach((it) => {
             it.created = new Date(it.created);
             it.updated = new Date(it.updated);
             articles.push(new Article(it))
         });
         return new PersistedData(
-            json.version, articles
+            json.version, new Articles(articles)
         );
     }
 

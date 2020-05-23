@@ -4,7 +4,7 @@ export { DataMigrator }
 
 class DataMigrator {
     
-    static readonly APPLICATION_VERSION = 3;
+    static readonly APPLICATION_VERSION = 4;
 
     constructor(
         private readonly jsonFilePath: string
@@ -22,6 +22,8 @@ class DataMigrator {
         }
 
         let nextVersion = currentVersion + 1;
+        console.log("MIGRATING");
+        console.log("=========");
         console.log("migrating data version from "+currentVersion+" -> " + nextVersion + " for file: " + this.jsonFilePath);
 
         if (nextVersion == 2) {
@@ -39,6 +41,14 @@ class DataMigrator {
                 article.isDeleted = false;
                 article.tags = article.tags.sort()
             });
+            nextVersion++;
+        }
+        if (nextVersion == 4) {
+            const oldArticles = json.articles;
+            json.articles = {
+                list: oldArticles
+            };
+            nextVersion++;
         }
         json.version = DataMigrator.APPLICATION_VERSION;
         fs.writeFileSync(this.jsonFilePath, JSON.stringify(json));
