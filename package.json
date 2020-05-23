@@ -1,6 +1,6 @@
 {
   "name": "artikles",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "description": "manages a set of articles",
   "main": "main.js",
   "scripts": {
