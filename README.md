@@ -4,7 +4,6 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 # Todos
 
-* neues logo, schlichter, edler ;)
 * introduce jquery
 * ! FEATURE: likes button
 * ! FEATURE: sort article list (created/updated/title/tagsCount/likes)
