@@ -13,12 +13,16 @@ export class TagFontSizer {
         const minMax = tags.getMinMax();
         const globalCountDif = minMax.y - minMax.x;
         tags.forEach((_, count) => {
-            this.sizes[count] = TagFontSizer.calculateFontSize(count, minMax.x, globalCountDif);
+            this.sizes.set(count, TagFontSizer.calculateFontSize(count, minMax.x, globalCountDif));
         });
     }
 
     public sizeFor(count: number): string {
-        return this.sizes[count]!
+        const size = this.sizes.get(count);
+        if (size === undefined) {
+            throw new Error("No font size stored for count: " + count);
+        }
+        return size;
     }
 
     private static calculateFontSize(count: number, min: number, globalCountDif: number): string {
