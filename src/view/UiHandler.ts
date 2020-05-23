@@ -130,26 +130,24 @@ export default class UiHandler {
     // ------------========================================================------------
 
     public fillTagsSummary(tags: Tags) {
-        // TODO use jquery to create node
-        let listNode = document.createElement("ul");
         let fontSizer = new TagFontSizer(tags);
+        let listNode = $("<ul>");
         tags.forEach((tagName, count) => {
-            let aNode = document.createElement("a");
-            aNode.classList.add(UiHandler.CLASS_TAGS_LINK);
-            aNode.style.fontSize = fontSizer.sizeFor(count);
-            aNode.innerText = "#" + tagName + "(" + count + ")";
-            aNode.href = "#";
-            aNode.onclick = () => {
-                this.onArticleTagClicked(tagName);
-            };
-            let itemNode = document.createElement("li");
-            itemNode.appendChild(aNode);
-            listNode.appendChild(itemNode);
+            listNode.append(this.buildTagHtmlElement(tagName, count, fontSizer.sizeFor(count)));
         });
 
-        let tagsSummaryNode: JQuery<HTMLElement> = $("#tagsSummary");
+        let tagsSummaryNode: JQuery = $("#tagsSummary");
         tagsSummaryNode.empty();
         tagsSummaryNode.append(listNode);
+    }
+
+    private buildTagHtmlElement(tagName: string, count: number, fontSize: string): JQuery {
+        let aNode = $("<a href='#' class='" + UiHandler.CLASS_TAGS_LINK + "'>#" + tagName + "(" + count + ")</a>");
+        aNode.css("font-size", fontSize)
+        aNode.on("click", () => {
+            this.onArticleTagClicked(tagName);
+        });
+        return $("<li>").append(aNode);
     }
 
     // ARTICLES LIST
