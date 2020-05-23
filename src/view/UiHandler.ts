@@ -10,7 +10,6 @@ import {
     CancelEditArticleEvent,
     CancelSearchEvent, SearchEvent, SaveEvent, SearchTagEvent
 } from "./events";
-import {removeAllChildren} from "../common";
 import {TagFontSizer} from "./TagFontSizer";
 
 export default class UiHandler {
@@ -25,7 +24,6 @@ export default class UiHandler {
     private static readonly CLASS_TAGS = "articleTags";
     private static readonly CLASS_BODY = "articleBody";
     private static readonly CLASS_TAGS_LINK = "tagsLink";
-
 
     public init() {
         console.log("init UiHandler");
@@ -57,40 +55,26 @@ export default class UiHandler {
     }
 
     public readArticleFromUI(givenId: string | undefined = undefined): Article {
-        return new Article(
-            (givenId !== undefined) ? givenId : IndexHtml.inpId().value,
-            IndexHtml.inpTitle().value,
-            IndexHtml.inpTags().value.split(" ").filter(function (it) {
+        return new Article({
+            id: (givenId !== undefined) ? givenId : IndexHtml.inpId().value,
+            title: IndexHtml.inpTitle().value,
+            tags: IndexHtml.inpTags().value.split(" ").filter(function (it) {
                 return it.length > 0;
             }).sort(),
-            IndexHtml.inpBody().value,
-            new Date(IndexHtml.inpCreated().value),
-            new Date(IndexHtml.btnUpdate().value),
-            parseInt(IndexHtml.inpLikes().value),
-            false
-        );
+            body: IndexHtml.inpBody().value,
+            created: new Date(IndexHtml.inpCreated().value),
+            updated: new Date(IndexHtml.btnUpdate().value),
+            likes: parseInt(IndexHtml.inpLikes().value),
+            isDeleted: false
+        });
     }
 
     public updateArticleForm(article: Article) {
-        IndexHtml.inpId().value = article.id;
-        IndexHtml.inpTitle().value = article.title;
-        IndexHtml.inpTags().value = article.tags.join(" ");
-        IndexHtml.inpBody().value = article.body;
-        IndexHtml.inpCreated().value = article.created.toString();
-        IndexHtml.inpUpdated().value = article.updated.toString();
-        IndexHtml.inpLikes().value = article.likes.toString();
-        IndexHtml.switchButtonsToCreateMode(false);
+        IndexHtml.fillArticleForm(article);
     }
 
     public resetArticleForm() {
-        IndexHtml.inpId().value = "";
-        IndexHtml.inpTitle().value = "";
-        IndexHtml.inpTags().value = "";
-        IndexHtml.inpBody().value = "";
-        IndexHtml.inpCreated().value = "";
-        IndexHtml.inpUpdated().value = "";
-        IndexHtml.inpLikes().value = "";
-        IndexHtml.switchButtonsToCreateMode(true);
+        IndexHtml.fillArticleForm(null);
     }
 
     public isCreateMode(): boolean {
@@ -154,17 +138,18 @@ export default class UiHandler {
     // ------------========================================================------------
 
     public resetArticleList(articles: Article[], tags: Tags) {
-        let articleList = IndexHtml.articleList();
-        removeAllChildren(articleList);
+        let articleList = $("#articleList");
+        articleList.empty();
         articles.forEach((article) => {
             articleList.prepend(this.createArticleNode(article));
         });
-
         this.fillTagsSummary(tags);
+        IndexHtml.setCounter(articles.length);
     }
 
     public addArticleToList(article: Article) {
-        IndexHtml.articleList().prepend(this.createArticleNode(article))
+        $("#articleList").prepend(this.createArticleNode(article));
+        IndexHtml.incrementCounter();
     }
 
     public deleteArticleFromList(id: string) {
@@ -173,6 +158,7 @@ export default class UiHandler {
             return;
         }
         IndexHtml.articleList().removeChild(child);
+        IndexHtml.decrementCounter();
     }
 
     public updateArticleInList(article: Article) {
@@ -185,8 +171,8 @@ export default class UiHandler {
         articleTitleLink.onclick = () => {
             this.eventBus.dispatch(new EditArticleEvent(article));
         };
-        this.resetArticleTags(child.getElementsByClassName(UiHandler.CLASS_TAGS)[0]!, article.tags);
-        child.getElementsByClassName(UiHandler.CLASS_BODY)[0]!.innerHTML = article.body;
+        this.resetArticleTags($("." + UiHandler.CLASS_TAGS, child), article.tags);
+        $("." + UiHandler.CLASS_BODY, child).text(article.body);
     }
 
     // PRIVATE
@@ -207,7 +193,7 @@ export default class UiHandler {
             });
         });
 
-        IndexHtml.onClick(IndexHtml.btnCreate(), () => {
+        $("#btnCreate").on("click", () => {
             this.eventBus.dispatch(new CreateEvent());
         });
         IndexHtml.onClick(IndexHtml.btnUpdate(), () => {
@@ -221,45 +207,35 @@ export default class UiHandler {
         });
     }
 
-    private createArticleNode(article: Article) {
-        let articleTitle = document.createElement("h1");
-        articleTitle.classList.add(UiHandler.CLASS_TITLE);
-        let articleTitleLink = document.createElement("a");
-        articleTitleLink.innerText = article.title;
-        articleTitleLink.href = "#";
-        articleTitleLink.onclick = () => {
-            this.eventBus.dispatch(new EditArticleEvent(article));
-        };
-        articleTitle.appendChild(articleTitleLink);
+    private createArticleNode(article: Article): JQuery {
+        let articleTitle = $("<h1 class='" + UiHandler.CLASS_TITLE + "'></h1>")
+            .append($("<a href='#'>" + article.title + "</a>")
+                .on("click", () => {
+                    this.eventBus.dispatch(new EditArticleEvent(article));
+                }));
 
-        let articleTags = document.createElement("p");
-        articleTags.classList.add(UiHandler.CLASS_TAGS);
+        let articleTags = $("<p class='" + UiHandler.CLASS_TAGS + "'></p>");//document.createElement("p");
+
         this.resetArticleTags(articleTags, article.tags);
 
         let articleBody = document.createElement("div");
         articleBody.classList.add(UiHandler.CLASS_BODY);
         articleBody.innerText = article.body;
 
-        let articleNode = document.createElement("div");
-        articleNode.setAttribute(UiHandler.ATTR_ARTIFACT_ID, article.id);
-        articleNode.classList.add("articleNode");
-        articleNode.appendChild(articleTitle);
-        articleNode.appendChild(articleTags);
-        articleNode.appendChild(articleBody);
-        return articleNode;
+        return $("<div class='articleNode' " + UiHandler.ATTR_ARTIFACT_ID + "='" + article.id + "'></div>")
+            .append(articleTitle)
+            .append(articleTags)
+            .append(articleBody);
     }
 
-    private resetArticleTags(html: Element, tags: string[]) {
-        removeAllChildren(html);
+    private resetArticleTags(html: JQuery, tags: string[]) {
+        html.empty();
         tags.forEach((tag) => {
-            let tagNode = document.createElement("a");
-            tagNode.classList.add("clickableTag");
-            tagNode.innerText = "#" + tag;
-            tagNode.href = "#";
-            tagNode.onclick = () => {
+            let tagNode = $("<a href='#' class='clickableTag'>#" + tag + "</a>");//document.createElement("a");
+            tagNode.on("click", () => {
                 this.onArticleTagClicked(tag);
-            };
-            html.appendChild(tagNode);
+            });
+            html.append(tagNode);
         });
     }
 
@@ -273,7 +249,6 @@ export default class UiHandler {
 
     private static findArticleChildNodeById(articleId: string): HTMLElement | null {
         return IndexHtml.findArticleChildNodeById(UiHandler.ATTR_ARTIFACT_ID, articleId);
-        //return findChildByAttribute(IndexHtml.articleList(), UiHandler.ATTR_ARTIFACT_ID, articleId);
     }
 
     public getSearchTerm(): string {

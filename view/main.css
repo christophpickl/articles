@@ -107,6 +107,23 @@ input[type=button]:hover {
 /** ARTICLE LIST/ITEM
 /*********************************************************************************************************************/
 
+#articleListCountContainer {
+    border-top-left-radius: 6px;
+    position: absolute;
+    background-color: rgba(216, 216, 216, 0.6);
+    bottom: 0;
+    right: 0;
+    width: 50px;
+    padding: 5px 9px 5px 0;
+}
+
+#articleListCount {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 9pt;
+    font-style: italic;
+    float: right;
+}
+
 .articleNode {
     background-color: white;
     border: lightgray 1px solid;

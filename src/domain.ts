@@ -1,28 +1,50 @@
 import {sortMapByKey} from "./common";
 
-export class Article {
-    constructor(
-        public readonly id: string,
-        public title: string,
-        public tags: Array<string>,
-        public body: string,
-        public created: Date,
-        public updated: Date,
-        public likes: number,
-        public isDeleted: boolean
-    ) {
-    }
+interface ArticleCtor {
+    readonly id: string
+    title: string
+    tags: Array<string>
+    body: string
+    created: Date
+    updated: Date
+    likes: number
+    isDeleted: boolean
 }
 
-export function overrideUpdateableFields(original: Article, update: Article) {
-    console.log("updating article with:", update);
-    original.title = update.title;
-    original.tags = update.tags;
-    original.body = update.body;
-    original.created = update.created;
-    original.updated = update.updated;
-    original.likes = update.likes;
-    original.isDeleted = update.isDeleted;
+export class Article implements ArticleCtor {
+    public readonly id: string;
+    public title: string;
+    public tags: Array<string>;
+    public body: string;
+    public created: Date;
+    public updated: Date;
+    public likes: number;
+    public isDeleted: boolean;
+
+    // noinspection DuplicatedCode
+    constructor(ctor: ArticleCtor) {
+        this.id = ctor.id;
+        this.title = ctor.title;
+        this.tags = ctor.tags;
+        this.body = ctor.body;
+        this.created = ctor.created;
+        this.updated = ctor.updated;
+        this.likes = ctor.likes;
+        this.isDeleted = ctor.isDeleted;
+    }
+
+    // noinspection DuplicatedCode
+    setFieldsFrom(update: Article) {
+        console.log("updating article with:", update);
+        this.title = update.title;
+        this.tags = update.tags;
+        this.body = update.body;
+        this.created = update.created;
+        this.updated = update.updated;
+        this.likes = update.likes;
+        this.isDeleted = update.isDeleted;
+    }
+
 }
 
 export class Tags {

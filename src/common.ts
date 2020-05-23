@@ -20,12 +20,6 @@ export function formatDate(date: Date): String {
   return day+"."+(monthIndex+1)+"."+year+" "+ hours+":"+minutes;
 }
 
-export function removeAllChildren(node: Element) {
-    while (node.firstChild) {
-        node.removeChild(node.lastChild!);
-    }
-}
-
 export function sortMapByKey<K, V>(map: Map<K, V>): Map<K, V> {
     let sortedKeys = Array.from(map.keys()).sort() as K[];
     let sortedMap = new Map<K, V>();

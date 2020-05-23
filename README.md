@@ -4,7 +4,6 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 # Todos
 
-* introduce jquery
 * ! FEATURE: likes button
 * ! FEATURE: sort article list (created/updated/title/tagsCount/likes)
 * UI BUG:
@@ -16,7 +15,6 @@ An (electron) desktop application to manage (tagged) articles locally.
 * TECH: tests; first unit, then UI tests
 * [2] UI: mit SHIFT+click auf tag: reset search to only this tag
 * [3] UX: when search for #dao it also finds #daoism and also #foodaofoo (shouldn't it be a "direct" match?!)
-* display count of articles being displayed in list
 * frameworks: bootstrap, log4js, tslint 
 
 ## Super Fancy

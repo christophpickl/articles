@@ -1,10 +1,24 @@
 // import * as $ from "jquery";
 
+import {Article} from "../domain";
+
 export default class IndexHtml {
 
     // ABSTRACTION
     // =================================================================================================================
+
     static isInCreateMode = true
+
+    static fillArticleForm(article: Article | null) {
+        IndexHtml.inpId().value = article ? article.id : "";
+        IndexHtml.inpTitle().value = article ? article.title : "";
+        IndexHtml.inpTags().value = article ? article.tags.join(" ") : "";
+        IndexHtml.inpBody().value = article ? article.body : "";
+        IndexHtml.inpCreated().value = article ? article.created.toString() : "";
+        IndexHtml.inpUpdated().value = article ? article.updated.toString() : "";
+        IndexHtml.inpLikes().value = article ? article.likes.toString() : "";
+        IndexHtml.switchButtonsToCreateMode(article === null);
+    }
 
     static switchButtonsToCreateMode(isCreateMode: boolean) {
         IndexHtml.isInCreateMode = isCreateMode;
@@ -93,6 +107,21 @@ export default class IndexHtml {
     static findArticleChildNodeById(attributeName: string, articleId: string): HTMLElement | null {
         let found = $("#" + IndexHtml.ID_ARTICLE_LIST + " div[" + attributeName + "='" + articleId + "']").toArray();
         return (found.length == 1) ? found[0] : null;
+    }
+
+    static incrementCounter() {
+        let counter = $("#articleListCount");
+        counter.text(parseInt(counter.text()) + 1);
+    }
+
+    static decrementCounter() {
+        let counter = $("#articleListCount");
+        counter.text(parseInt(counter.text()) - 1);
+    }
+
+    static setCounter(newCounter: number) {
+        let counter = $("#articleListCount");
+        counter.text(newCounter);
     }
 
     // COMMON

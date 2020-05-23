@@ -1,5 +1,5 @@
 import {CrudOperations} from './common';
-import {Article, overrideUpdateableFields} from './domain';
+import {Article} from './domain';
 
 let fs = require("fs");
 
@@ -11,12 +11,13 @@ export {
 }
 
 function updateArticleInList(articles: Article[], update: Article) {
-    let storedArticle = articles.find(function (it) {
+    let storedArticle: Article = articles.find(function (it) {
         return it.id === update.id;
     })!;
     // console.log(JSON.stringify(article));
     // console.log(storedArticle);
-    overrideUpdateableFields(storedArticle, update);
+    console.log("storedArticle:", storedArticle);
+    storedArticle.setFieldsFrom(update);
 }
 
 interface ArticleCrudOperations extends CrudOperations<Article, string> {
@@ -26,7 +27,7 @@ interface ArticleRepo extends ArticleCrudOperations {
 }
 
 let demoArticles: Article[] = [
-    {
+    new Article({
         id: "id1",
         title: "let lose",
         tags: ["dao", "zen", "stoi"],
@@ -35,7 +36,7 @@ let demoArticles: Article[] = [
         updated: new Date(),
         likes: 7,
         isDeleted: false
-    }, {
+    }), new Article({
         id: "id2",
         title: "be kind",
         tags: ["kindness"],
@@ -44,7 +45,7 @@ let demoArticles: Article[] = [
         updated: new Date(),
         likes: 2,
         isDeleted: false
-    }
+    })
 ];
 
 // noinspection JSUnusedGlobalSymbols
@@ -129,7 +130,16 @@ class JsonFileArticleRepo implements ArticleRepo {
     }
 
     private loadJson(): PersistedData {
-        return JSON.parse(fs.readFileSync(this.jsonFilePath, 'utf8').toString());
+        let json = JSON.parse(fs.readFileSync(this.jsonFilePath, 'utf8').toString());
+        let articles = new Array<Article>();
+        json.articles.forEach((it) => {
+            it.created = new Date(it.created);
+            it.updated = new Date(it.updated);
+            articles.push(new Article(it))
+        });
+        return new PersistedData(
+            json.version, articles
+        );
     }
 
     private persistJson(data: PersistedData) {
