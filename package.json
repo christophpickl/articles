@@ -9,8 +9,11 @@
     "coverage": "jest --coverage --collectCoverage=true --collectCoverageFrom=src/**/*.ts && open coverage/lcov-report/index.html"
   },
   "dependencies": {
+    "bootstrap": "^4.5.0",
     "electron-settings": "^3.2.0",
-    "jquery": "^3.5.1"
+    "jquery": "^3.5.1",
+    "jquery-ui": "^1.12.1",
+    "tokenize2": "^1.3.1"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",

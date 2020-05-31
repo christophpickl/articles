@@ -6,53 +6,43 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <!--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"-->
-    <!--            integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>-->
-    <!--    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"-->
-    <!--            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>-->
-    <!--    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>-->
+
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="tokenize2.min.css">
+    <script src="tokenize2.min.js"></script>
+
     <script type="application/javascript">
-        function findLastTagWord(raw) {
-            if (raw.trim() === "") {
-                return null;
-            }
-            return raw.trim();
-        }
-
-        let tags = [
-            "asdf",
-            "axxx",
-            "zzz"
-        ];
-
-        function findTagMatches(searchTerm)/*string[]*/ {
-            console.log("search for: ", searchTerm);
-            return tags.filter(it => it.startsWith(searchTerm));
-        }
-
         $(document).on("ready", () => {
-            $("#inp").trigger("focus");
-
-            $("#inp").on("input", function () {
-                let rawInput = $("#inp").val();
-                console.log("entered:", rawInput);
-                let tag = findLastTagWord(rawInput);
-                if (tag === null) {
-                    console.log("no auto suggest, as invalid input");
-                    return;
-                }
-                let suggestions = findTagMatches(tag);
-                console.log("suggestions:", suggestions);
+            const tagsInput = $('#tagsInput');
+            const tags = ["asdf", "aaa", "stoi", "zen"];
+            tags.forEach(function (it) {
+                tagsInput.append('<option value="' + it + '">' + it + '</option>');
             });
-            // });
-            // $('#inp').autocomplete({
-            //     source: tags,
-            //     minLength: 0,
-            //     scroll: true
-            // });
-            //     .focus(function() {
-            //     $(this).autocomplete("search", "");
-            // });
+            // https://www.jqueryscript.net/form/Dynamic-Autocomplete-Tag-Input-Plugin-For-jQuery-Tokenize2.html
+            tagsInput.tokenize2({
+                dataSource: "select",
+                tokensAllowCustom: true,
+                dropdownMaxItems: 9,
+                delimiter: " ",
+                searchMinLength: 1,
+                placeholder: "tags",
+                sortable: true
+            });
+
+            $("#save").on("click", () => {
+                let enteredTags = tagsInput.val(); // string[]
+                console.log("save", enteredTags);
+            });
+
+            $("#write").on("click", () => {
+                console.log("write");
+                // const programmaticTags = [ "artificial", "intelligence"];
+                // tagsInput.trigger('tokenize:dropdown:fill', [programmaticTags]);
+                tagsInput.trigger("tokenize:clear");
+                tagsInput.trigger("tokenize:tokens:add", "new1");
+                tagsInput.trigger("tokenize:tokens:add", "new1");
+                // tagsInput.val(["art", "int"]);
+            });
         });
     </script>
     <style>
@@ -65,6 +55,8 @@
     <title>Playground</title>
 </head>
 <body>
-<input type="text" id="inp" title="test input"/>
+<select id="tagsInput" multiple></select>
+<input id="save" type="button" value="Save"/>
+<input id="write" type="button" value="Write programmatically"/>
 </body>
 </html>
