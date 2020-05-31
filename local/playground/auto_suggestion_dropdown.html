@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <!--    <link rel="stylesheet" href="/resources/demos/style.css">-->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
     <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-    <link rel="stylesheet" href="bootstrap.min.css">
-    <link rel="stylesheet" href="tokenize2.min.css">
-    <script src="tokenize2.min.js"></script>
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="../../node_modules/tokenize2/dist/tokenize2.min.css">
+    <script src="../../node_modules/tokenize2/dist/tokenize2.min.js"></script>
 
     <script type="application/javascript">
         $(document).on("ready", () => {
@@ -36,12 +38,9 @@
 
             $("#write").on("click", () => {
                 console.log("write");
-                // const programmaticTags = [ "artificial", "intelligence"];
-                // tagsInput.trigger('tokenize:dropdown:fill', [programmaticTags]);
                 tagsInput.trigger("tokenize:clear");
                 tagsInput.trigger("tokenize:tokens:add", "new1");
                 tagsInput.trigger("tokenize:tokens:add", "new1");
-                // tagsInput.val(["art", "int"]);
             });
         });
     </script>
@@ -55,7 +54,7 @@
     <title>Playground</title>
 </head>
 <body>
-<select id="tagsInput" multiple></select>
+<select id="tagsInput" title="enter text" multiple></select>
 <input id="save" type="button" value="Save"/>
 <input id="write" type="button" value="Write programmatically"/>
 </body>

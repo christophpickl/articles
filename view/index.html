@@ -1,50 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-<!--        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
-        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-        <link rel="stylesheet" href="main.css">
-        <title></title><!-- will be set afterwards -->
-    </head>
-    <body>
-        <div id="mainContainer">
-            <div id="leftContainer">
-                <div id="tagsSummary"></div>
-            </div>
+<head>
+    <meta charset="UTF-8">
+    <title></title><!-- will be set afterwards -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"/>
 
-            <div id="rightContainer">
-                <div id="formCreate">
-                    <input id="inpId" type="hidden" />
-                    <input id="inpCreated" type="hidden" />
-                    <input id="inpUpdated" type="hidden" />
-                    <input id="inpLikes" type="hidden" />
-                    <input id="inpTitle" type="text" placeholder="title" title="come to the point; essence" /><br/>
-                    <input id="inpTags" type="text" placeholder="tags" title="whitespace seperated list without hashtags" /><br/>
-                    <textarea id="inpBody" title="body" placeholder="body"></textarea><br/>
-                    <div>
-                        <input id="btnCreate" value="create" type="button" class="crudButton" />
-                        <input id="btnUpdate" value="update" type="button" class="crudButton" />
-                        <input id="btnCancel" value="cancel" type="button" class="crudButton" />
-                        <input id="btnDelete" value="delete" type="button" class="crudButton" />
-                    </div>
-                </div>
+    <!-- see: https://stackoverflow.com/questions/32621988/electron-jquery-is-not-defined -->
+    <script>if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }</script>
 
-                <div id="searchSortContainer">
-                    <div id="searchDiv">
-                        <input id="inpSearch" type="text" title="search" placeholder="search ..." />
-                        <input id="btnCancelSearch" type="button" value="cancel" />
-                    </div>
-                    <div id="sortDiv">
-                        <select id="sortSelect" title="sort"></select>
-                    </div>
-                </div>
-                <div id="articleList"></div>
-                <div id="articleListCountContainer">
-                    <div id="articleListCount">0</div>
-                </div>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../node_modules/tokenize2/tokenize2.css"/><!-- after bootstrap CSS! -->
+    <script src="../node_modules/tokenize2/tokenize2.js" type="application/javascript"></script>
+
+    <script>if (window.module) module = window.module;</script>
+
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div id="mainContainer">
+    <div id="leftContainer">
+        <div id="tagsSummary"></div>
+    </div>
+
+    <div id="rightContainer">
+        <div id="formCreate">
+            <input id="inpId" type="hidden"/>
+            <input id="inpCreated" type="hidden"/>
+            <input id="inpUpdated" type="hidden"/>
+            <input id="inpLikes" type="hidden"/>
+            <input id="inpTitle" type="text" placeholder="title" title="come to the point; essence"/><br/>
+            <select id="inpTags" title="tags" multiple></select>
+            <textarea id="inpBody" title="body" placeholder="body"></textarea><br/>
+            <div>
+                <input id="btnCreate" value="create" type="button" class="crudButton"/>
+                <input id="btnUpdate" value="update" type="button" class="crudButton"/>
+                <input id="btnCancel" value="cancel" type="button" class="crudButton"/>
+                <input id="btnDelete" value="delete" type="button" class="crudButton"/>
             </div>
         </div>
-        <script src="./renderer.js"></script>
-    </body>
+
+        <div id="searchSortContainer">
+            <div id="searchDiv">
+                <input id="inpSearch" type="text" title="search" placeholder="search ..."/>
+                <input id="btnCancelSearch" type="button" value="cancel"/>
+            </div>
+            <div id="sortDiv">
+                <select id="sortSelect" title="sort"></select>
+            </div>
+        </div>
+        <div id="articleList"></div>
+        <div id="articleListCountContainer">
+            <div id="articleListCount">0</div>
+        </div>
+    </div>
+</div>
+<!--<script>$('#inpTags').tokenize2({});</script>-->
+<script src="./renderer.js"></script>
+</body>
 </html>

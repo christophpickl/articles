@@ -57,8 +57,9 @@ export class Controller {
 
     public initView() {
         let articles = this.articleService.readAll();
-        this.uiHandler.init();
-        this.uiHandler.resetArticleList(articles, Tags.buildFrom(articles));
+        let tags = Tags.buildFrom(articles);
+        this.uiHandler.init(tags);
+        this.uiHandler.resetArticleList(articles, tags);
     }
 
     // CRUD

@@ -1,9 +1,8 @@
 import {Context} from './Context';
 
-console.log("src/preload.js running ...");
+console.log("preload.js: adding event listener");
 
 window.addEventListener('DOMContentLoaded', () => {
-    console.log("preload.js: on DOMContentLoaded -> init UI");
-    (<any>window).$ = require('jquery');
+    console.log("preload.js: on DOMContentLoaded -> initView()");
     Context.controller().initView();
 });

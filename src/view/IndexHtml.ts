@@ -13,7 +13,13 @@ export default class IndexHtml {
     static fillArticleForm(article: Article | null) {
         IndexHtml.inpId().value = article ? article.id : "";
         IndexHtml.inpTitle().value = article ? article.title : "";
-        IndexHtml.inpTags().value = article ? article.tags.join(" ") : "";
+        let inpTags = IndexHtml.inpTags();
+        inpTags.trigger("tokenize:clear");
+        if (article !== null) {
+            article.tags.forEach((tag) => {
+                inpTags.trigger("tokenize:tokens:add", tag);
+            });
+        }
         IndexHtml.inpBody().value = article ? article.body : "";
         IndexHtml.inpCreated().value = article ? article.created.toString() : "";
         IndexHtml.inpUpdated().value = article ? article.updated.toString() : "";
@@ -56,7 +62,11 @@ export default class IndexHtml {
         return document.getElementById("inpTitle") as HTMLInputElement;
     }
 
-    static inpTags(): HTMLInputElement {
+    static inpTags(): JQuery {
+        return $("#inpTags");
+    }
+
+    static inpTagsOLD(): HTMLInputElement {
         return document.getElementById("inpTags") as HTMLInputElement;
     }
 

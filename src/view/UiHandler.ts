@@ -1,3 +1,6 @@
+// extend the JQuery object by tokenize2
+/// <reference path="../jquery.d.ts"/>
+
 import {Article, Articles, Tags} from '../domain';
 import IndexHtml from './IndexHtml';
 import {EventBus, Event} from "../EventBus";
@@ -27,9 +30,11 @@ export default class UiHandler {
     private static readonly CLASS_CMD_LIKE = "articleCmdLike";
     private static readonly CLASS_TAGS_LINK = "tagsLink";
 
-    public init() {
+    public init(tags: Tags) {
         console.log("init UiHandler");
         IndexHtml.inpTitle().focus();
+        UiHandler.initTagsAutoSuggest();
+        this.resetAutoSuggestTags(tags);
         IndexHtml.btnCancelSearchVisible(false);
         IndexHtml.switchButtonsToCreateMode(true);
 
@@ -49,6 +54,27 @@ export default class UiHandler {
         });
     }
 
+    private resetAutoSuggestTags(tags: Tags) {
+        // TODO have to keep up2date when tags changes
+        const tagsInput = $("#inpTags");
+        tagsInput.empty();
+        tags.forEach(function (tag) {
+            tagsInput.append('<option value="' + tag + '">' + tag + '</option>');
+        });
+    }
+
+    private static initTagsAutoSuggest() {
+        $("#inpTags").tokenize2({
+            dataSource: "select",
+            tokensAllowCustom: true,
+            dropdownMaxItems: 9,
+            delimiter: " ",
+            searchMinLength: 1,
+            placeholder: "tags",
+            sortable: true
+        });
+    }
+
     public inpTitleFocus() {
         IndexHtml.inpTitle().focus();
     }
@@ -64,9 +90,10 @@ export default class UiHandler {
         return new Article({
             id: (givenId !== undefined) ? givenId : IndexHtml.inpId().value,
             title: IndexHtml.inpTitle().value,
-            tags: IndexHtml.inpTags().value.split(" ").filter(function (it) {
-                return it.length > 0;
-            }).sort(),
+            tags: IndexHtml.inpTags().val() as string[],
+            // tags: IndexHtml.inpTags().value.split(" ").filter(function (it) {
+            //     return it.length > 0;
+            // }).sort(),
             body: IndexHtml.inpBody().value,
             created: new Date(IndexHtml.inpCreated().value),
             updated: new Date(IndexHtml.btnUpdate().value),
@@ -192,7 +219,7 @@ export default class UiHandler {
         };
         this.resetArticleTags($("." + UiHandler.CLASS_TAGS, child), article.tags);
         $("." + UiHandler.CLASS_BODY, child).text(article.body);
-        $("." + UiHandler.CLASS_CMD_LIKE, child).text(IndexHtml.LikeSymbol+" " + article.likes);
+        $("." + UiHandler.CLASS_CMD_LIKE, child).text(IndexHtml.LikeSymbol + " " + article.likes);
     }
 
     // PRIVATE
@@ -200,11 +227,12 @@ export default class UiHandler {
 
     private initFormListener() {
         let reactiveForm = [
-            IndexHtml.inpTitle(), IndexHtml.inpTags(), IndexHtml.inpBody(),
+            IndexHtml.inpTitle(), IndexHtml.inpTagsOLD(), IndexHtml.inpBody(),
             IndexHtml.btnCreate(), IndexHtml.btnUpdate(), IndexHtml.btnCancel(), IndexHtml.btnDelete()
         ];
         reactiveForm.forEach((input) => {
             IndexHtml.onKeyDown(input, (event: KeyboardEvent) => {
+                // TODO does not work for inpTags!
                 if (event.key == "Escape") {
                     this.eventBus.dispatch(new CancelEditArticleEvent());
                 } else if (event.metaKey && event.key == "s") {

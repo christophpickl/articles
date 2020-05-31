@@ -31,7 +31,7 @@ body {
 #articleList {
     overflow-y: auto;
     position: absolute;
-    top: 320px;
+    top: 340px;
     bottom: 0;
     left: 200px;
     right: 10px;
@@ -44,7 +44,7 @@ body {
 input[type=button], select {
     width: 150px;
     height: 26px;
-    font-size: 16pt;
+    font-size: 12pt;
 }
 
 input[type=button], select, .articleCmdButton {
@@ -118,6 +118,7 @@ input[type=button]:hover, select:hover {
 }
 
 #sortSelect {
+    width: 200px;
     font-size: 11pt;
     font-weight: normal;
 }
