@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!--    <link rel="stylesheet" href="/resources/demos/style.css">-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"-->
+    <!--            integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>-->
+    <!--    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"-->
+    <!--            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>-->
+    <!--    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>-->
+    <script type="application/javascript">
+        function findLastTagWord(raw) {
+            if (raw.trim() === "") {
+                return null;
+            }
+            return raw.trim();
+        }
+
+        let tags = [
+            "asdf",
+            "axxx",
+            "zzz"
+        ];
+
+        function findTagMatches(searchTerm)/*string[]*/ {
+            console.log("search for: ", searchTerm);
+            return tags.filter(it => it.startsWith(searchTerm));
+        }
+
+        $(document).on("ready", () => {
+            $("#inp").trigger("focus");
+
+            $("#inp").on("input", function () {
+                let rawInput = $("#inp").val();
+                console.log("entered:", rawInput);
+                let tag = findLastTagWord(rawInput);
+                if (tag === null) {
+                    console.log("no auto suggest, as invalid input");
+                    return;
+                }
+                let suggestions = findTagMatches(tag);
+                console.log("suggestions:", suggestions);
+            });
+            // });
+            // $('#inp').autocomplete({
+            //     source: tags,
+            //     minLength: 0,
+            //     scroll: true
+            // });
+            //     .focus(function() {
+            //     $(this).autocomplete("search", "");
+            // });
+        });
+    </script>
+    <style>
+        .ui-autocomplete {
+            cursor: pointer;
+            height: 120px;
+            overflow-y: scroll;
+        }
+    </style>
+    <title>Playground</title>
+</head>
+<body>
+<input type="text" id="inp" title="test input"/>
+</body>
+</html>
