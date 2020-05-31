@@ -4,6 +4,7 @@ import {Article} from "../domain";
 
 export default class IndexHtml {
 
+    static readonly LikeSymbol = "❤️"
     // ABSTRACTION
     // =================================================================================================================
 

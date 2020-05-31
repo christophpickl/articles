@@ -192,7 +192,7 @@ export default class UiHandler {
         };
         this.resetArticleTags($("." + UiHandler.CLASS_TAGS, child), article.tags);
         $("." + UiHandler.CLASS_BODY, child).text(article.body);
-        $("." + UiHandler.CLASS_CMD_LIKE, child).text("❤️ " + article.likes);
+        $("." + UiHandler.CLASS_CMD_LIKE, child).text(IndexHtml.LikeSymbol+" " + article.likes);
     }
 
     // PRIVATE
