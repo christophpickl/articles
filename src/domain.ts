@@ -61,10 +61,6 @@ interface ArticleCtor {
     isDeleted: boolean
 }
 
-export class ArticleId {
-
-}
-
 export class Article implements ArticleCtor {
     public readonly id: string;
     public title: string;
