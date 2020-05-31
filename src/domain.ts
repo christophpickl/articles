@@ -61,6 +61,10 @@ interface ArticleCtor {
     isDeleted: boolean
 }
 
+export class ArticleId {
+
+}
+
 export class Article implements ArticleCtor {
     public readonly id: string;
     public title: string;
@@ -95,6 +99,10 @@ export class Article implements ArticleCtor {
         this.isDeleted = update.isDeleted;
     }
 
+    like() {
+        this.likes++;
+        console.log("Article '" + this.title + "' liked: " + this.likes);
+    }
 }
 
 export class Tags {

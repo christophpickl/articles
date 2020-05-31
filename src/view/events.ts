@@ -32,6 +32,16 @@ export class EditArticleEvent implements Event {
     }
 }
 
+export class LikeEvent implements Event {
+    static readonly ID = "LikeEvent";
+    readonly id = LikeEvent.ID;
+
+    constructor(
+        public readonly article: Article
+    ) {
+    }
+}
+
 export class CancelEditArticleEvent implements Event {
     static readonly ID = "CancelEditArticleEvent";
     readonly id = CancelEditArticleEvent.ID;

@@ -4,7 +4,7 @@ import {
     CancelSearchEvent,
     CreateEvent,
     DeleteEvent,
-    EditArticleEvent, SaveEvent, SearchEvent, SearchTagEvent,
+    EditArticleEvent, LikeEvent, SaveEvent, SearchEvent, SearchTagEvent,
     UpdateEvent
 } from "./events";
 import UiHandler from "./UiHandler";
@@ -34,6 +34,10 @@ export class Controller {
         eventBus.register(EditArticleEvent.ID, (event: EditArticleEvent) => {
             this.onEdit(event.article);
         });
+        eventBus.register(LikeEvent.ID, (event: LikeEvent) => {
+            this.onLike(event.article);
+        });
+
         eventBus.register(CancelEditArticleEvent.ID, () => {
             this.onCancelEditArticle();
         });
@@ -125,6 +129,12 @@ export class Controller {
     private onEdit(article: Article) {
         this.uiHandler.updateArticleForm(article);
         this.uiHandler.inpTitleFocus();
+    }
+
+    private onLike(article: Article) {
+        article.like();
+        this.articleService.update(article);
+        this.uiHandler.updateArticleInList(article);
     }
 
     private static validateArticle(article: Article):

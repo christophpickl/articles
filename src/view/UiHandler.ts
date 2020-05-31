@@ -7,10 +7,10 @@ import {
     DeleteEvent,
     UpdateEvent,
     CancelEditArticleEvent,
-    CancelSearchEvent, SearchEvent, SaveEvent, SearchTagEvent
+    CancelSearchEvent, SearchEvent, SaveEvent, SearchTagEvent, LikeEvent
 } from "./events";
 import {TagFontSizer} from "./TagFontSizer";
-import {SortEvent, SortOptions } from "../sort";
+import {SortEvent, SortOptions} from "../sort";
 
 export default class UiHandler {
     constructor(
@@ -22,6 +22,9 @@ export default class UiHandler {
     private static readonly CLASS_TITLE = "articleTitle";
     private static readonly CLASS_TAGS = "articleTags";
     private static readonly CLASS_BODY = "articleBody";
+    private static readonly CLASS_CMDBAR = "articleCmdbar";
+    private static readonly CLASS_CMD_BUTTON = "articleCmdButton";
+    private static readonly CLASS_CMD_LIKE = "articleCmdLike";
     private static readonly CLASS_TAGS_LINK = "tagsLink";
 
     public init() {
@@ -31,7 +34,7 @@ export default class UiHandler {
         IndexHtml.switchButtonsToCreateMode(true);
 
         SortOptions.forEach((option) => {
-            $("#sortSelect").append($("<option value='"+option.id+"'>"+option.label+"</option>"));
+            $("#sortSelect").append($("<option value='" + option.id + "'>" + option.label + "</option>"));
         });
         this.initSearchListener();
         this.initSortListener();
@@ -124,6 +127,7 @@ export default class UiHandler {
             this.eventBus.dispatch(new SortEvent(option));
         });
     }
+
     // TAGS
     // ------------========================================================------------
 
@@ -155,14 +159,14 @@ export default class UiHandler {
         let articleList = $("#articleList");
         articleList.empty();
         articles.forEach((article) => {
-            articleList.prepend(this.createArticleNode(article));
+            articleList.prepend(this.createArticleHtml(article));
         });
         this.fillTagsSummary(tags);
         IndexHtml.setCounter(articles.length);
     }
 
     public addArticleToList(article: Article) {
-        $("#articleList").prepend(this.createArticleNode(article));
+        $("#articleList").prepend(this.createArticleHtml(article));
         IndexHtml.incrementCounter();
     }
 
@@ -178,6 +182,7 @@ export default class UiHandler {
     public updateArticleInList(article: Article) {
         let child = UiHandler.findArticleChildNodeById(article.id);
         if (child === null) {
+            console.log("article child in list not found for: " + article.title + " (" + article.id + ")");
             return;
         }
         let articleTitleLink = child.getElementsByClassName(UiHandler.CLASS_TITLE)[0]!.firstChild! as HTMLAnchorElement;
@@ -187,6 +192,7 @@ export default class UiHandler {
         };
         this.resetArticleTags($("." + UiHandler.CLASS_TAGS, child), article.tags);
         $("." + UiHandler.CLASS_BODY, child).text(article.body);
+        $("." + UiHandler.CLASS_CMD_LIKE, child).text("❤️ " + article.likes);
     }
 
     // PRIVATE
@@ -221,31 +227,36 @@ export default class UiHandler {
         });
     }
 
-    private createArticleNode(article: Article): JQuery {
+    private createArticleHtml(article: Article): JQuery {
         let articleTitle = $("<h1 class='" + UiHandler.CLASS_TITLE + "'></h1>")
             .append($("<a href='#'>" + article.title + "</a>")
                 .on("click", () => {
                     this.eventBus.dispatch(new EditArticleEvent(article));
                 }));
 
-        let articleTags = $("<p class='" + UiHandler.CLASS_TAGS + "'></p>");//document.createElement("p");
-
+        let articleTags = $("<p class='" + UiHandler.CLASS_TAGS + "'></p>");
         this.resetArticleTags(articleTags, article.tags);
 
-        let articleBody = document.createElement("div");
-        articleBody.classList.add(UiHandler.CLASS_BODY);
-        articleBody.innerText = article.body;
+        let articleBody = $("<div class='" + UiHandler.CLASS_BODY + "'>" + article.body + "</div>");
+
+        let articleCmdbar = $("<div class='" + UiHandler.CLASS_CMDBAR + "'></div>");
+        let cmdLike = $("<a class='" + UiHandler.CLASS_CMD_BUTTON + " " + UiHandler.CLASS_CMD_LIKE + "' href='#'>❤️ " + article.likes + "</a>");
+        cmdLike.on("click", () => {
+            this.eventBus.dispatch(new LikeEvent(article));
+        });
+        articleCmdbar.append(cmdLike);
 
         return $("<div class='articleNode' " + UiHandler.ATTR_ARTIFACT_ID + "='" + article.id + "'></div>")
             .append(articleTitle)
             .append(articleTags)
-            .append(articleBody);
+            .append(articleBody)
+            .append(articleCmdbar);
     }
 
     private resetArticleTags(html: JQuery, tags: string[]) {
         html.empty();
         tags.forEach((tag) => {
-            let tagNode = $("<a href='#' class='clickableTag'>#" + tag + "</a>");//document.createElement("a");
+            let tagNode = $("<a href='#' class='clickableTag'>#" + tag + "</a>");
             tagNode.on("click", () => {
                 this.onArticleTagClicked(tag);
             });

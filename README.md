@@ -5,8 +5,7 @@ An (electron) desktop application to manage (tagged) articles locally.
 # Todos
 
 * FINISH: spectron ui tests
-* `npm run watch` to run typescript in watch mode (recompile on file changes)
-* rename app: Articles -> Artikles
+* remove duplicate tags
 * !!! UI BUG:
     * GIVEN editing an article
     *   AND search so it won't match

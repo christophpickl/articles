@@ -13,14 +13,9 @@ body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-html, body, #mainContainer, #leftContainer, #rightContainer {
-    /*background-color: red;*/
-}
-
 #leftContainer {
     overflow-y: auto;
     position: absolute;
-    /*float: left;*/
     width: 180px;
     top: 0;
     bottom: 0;
@@ -43,11 +38,17 @@ html, body, #mainContainer, #leftContainer, #rightContainer {
     /*background-color: green;*/
 }
 
+/** GENERIC
+/*********************************************************************************************************************/
+
 input[type=button], select {
     width: 150px;
     height: 26px;
-    border-radius: 6px;
     font-size: 16pt;
+}
+
+input[type=button], select, .articleCmdButton {
+    border-radius: 6px;
     background-color: black;
     color: white;
     font-weight: bold;
@@ -58,13 +59,14 @@ input[type=button], select {
     box-shadow: 6px 3px 5px -2px rgba(0, 0, 0, 0.32);
 }
 
+
 input[type=button]:hover, select:hover {
     background-color: grey;
 }
 
-
 .tagsLink,
 .articleTitle > a,
+.articleCmdButton,
 .clickableTag {
     color: black;
     text-decoration: underline;
@@ -74,6 +76,7 @@ input[type=button]:hover, select:hover {
 .tagsLink:hover,
 .tagSummaryLink:hover,
 .articleTitle > a:hover,
+.articleCmdButton:hover,
 .clickableTag:hover {
     color: grey;
     text-decoration: underline;
@@ -169,6 +172,23 @@ input[type=button]:hover, select:hover {
     white-space: pre;
     width: 100%;
     overflow: auto;
+}
+
+.articleCmdbar {
+    margin-top: 4px;
+}
+
+.articleCmdButton {
+    padding: 5px 10px 5px 10px;
+    color: white;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.articleCmdButton:hover {
+    color: white;
+    text-decoration: none;
+    background-color: grey;
 }
 
 /** TAGS
