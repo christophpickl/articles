@@ -65,14 +65,14 @@ export default class UiHandler {
     }
 
     private static initTagsAutoSuggest() {
+        // https://dragonofmercy.github.io/Tokenize2/config.html
         $("#inpTags").tokenize2({
-            dataSource: "select",
             tokensAllowCustom: true,
             dropdownMaxItems: 9,
             delimiter: " ",
-            searchMinLength: 1,
+            searchMinLength: 0,
             placeholder: "tags",
-            sortable: true
+            sortable: false
         });
     }
 
@@ -91,10 +91,7 @@ export default class UiHandler {
         return new Article({
             id: (givenId !== undefined) ? givenId : IndexHtml.inpId().value,
             title: IndexHtml.inpTitle().value,
-            tags: IndexHtml.inpTags().val() as string[],
-            // tags: IndexHtml.inpTags().value.split(" ").filter(function (it) {
-            //     return it.length > 0;
-            // }).sort(),
+            tags: (IndexHtml.inpTags().val() as string[]).sort(),
             body: IndexHtml.inpBody().value,
             created: new Date(IndexHtml.inpCreated().value),
             updated: new Date(IndexHtml.btnUpdate().value),

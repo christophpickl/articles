@@ -5,7 +5,6 @@ An (electron) desktop application to manage (tagged) articles locally.
 # Todos
 
 * FINISH: spectron ui tests
-* remove duplicate tags
 * !!! UI BUG:
     * GIVEN editing an article
     *   AND search so it won't match

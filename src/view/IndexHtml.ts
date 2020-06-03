@@ -5,6 +5,7 @@ import {Article} from "../domain";
 export default class IndexHtml {
 
     static readonly LikeSymbol = "❤️"
+
     // ABSTRACTION
     // =================================================================================================================
 
@@ -25,6 +26,8 @@ export default class IndexHtml {
         IndexHtml.inpUpdated().value = article ? article.updated.toString() : "";
         IndexHtml.inpLikes().value = article ? article.likes.toString() : "";
         IndexHtml.switchButtonsToCreateMode(article === null);
+
+        $("li.token-search > input").val("");
     }
 
     static switchButtonsToCreateMode(isCreateMode: boolean) {
