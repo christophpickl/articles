@@ -65,6 +65,15 @@ export class Controller {
     // CRUD
     // ------------========================================================------------
 
+    private onSave() {
+        console.log("onSave");
+        if (this.uiHandler.isCreateMode()) {
+            this.onCreate();
+        } else {
+            this.onUpdate();
+        }
+    }
+
     private onCreate() {
         console.log("onCreate");
         let article = this.uiHandler.readArticleFromUI(randomUuid());
@@ -76,11 +85,11 @@ export class Controller {
         article.updated = now;
         article.likes = 0;
 
-        let articles = this.articleService.create(article);
-
-        this.uiHandler.addArticleToList(article);
         this.uiHandler.resetArticleForm();
+        this.uiHandler.addArticleToList(article);
+        let articles = this.articleService.create(article);
         this.uiHandler.fillTagsSummary(Tags.buildFrom(articles));
+        this.uiHandler.inpTitleFocus();
     }
 
     private onUpdate() {
@@ -93,25 +102,16 @@ export class Controller {
         let updatedString = JSON.stringify(article.updated).split("\"").join(""); // pseudo replaceAll :-/
         this.uiHandler.writeArticleUpdatedInputValue(updatedString);
 
-        let articles = this.articleService.update(article);
-        this.uiHandler.updateArticleInList(article);
         this.uiHandler.resetArticleForm();
-        this.uiHandler.inpTitleFocus();
+        this.uiHandler.updateArticleInList(article);
+        let articles = this.articleService.update(article);
         this.uiHandler.fillTagsSummary(Tags.buildFrom(articles));
+        this.uiHandler.inpTitleFocus();
     }
 
     private onCancelEditArticle() {
         this.uiHandler.resetArticleForm();
         this.uiHandler.inpTitleFocus();
-    }
-
-    private onSave() {
-        console.log("onSave");
-        if (this.uiHandler.isCreateMode()) {
-            this.onCreate();
-        } else {
-            this.onUpdate();
-        }
     }
 
     private onDelete() {
@@ -120,11 +120,12 @@ export class Controller {
         if (!confirm("Really delete '" + articleToDelete.title + "'?")) {
             return;
         }
-        let articles = this.articleService.delete(articleToDelete.id);
+
         this.uiHandler.deleteArticleFromList(articleToDelete.id);
         this.uiHandler.resetArticleForm();
-        this.uiHandler.inpTitleFocus();
+        let articles = this.articleService.delete(articleToDelete.id);
         this.uiHandler.fillTagsSummary(Tags.buildFrom(articles));
+        this.uiHandler.inpTitleFocus();
     }
 
     private onEdit(article: Article) {
