@@ -66,10 +66,6 @@ export default class IndexHtml {
         return $("#inpTags");
     }
 
-    static inpTagsOLD(): HTMLInputElement {
-        return document.getElementById("inpTags") as HTMLInputElement;
-    }
-
     static inpBody(): HTMLInputElement {
         return document.getElementById("inpBody") as HTMLInputElement;
     }

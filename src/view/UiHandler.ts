@@ -14,6 +14,7 @@ import {
 } from "./events";
 import {TagFontSizer} from "./TagFontSizer";
 import {SortEvent, SortOptions} from "../sort";
+import KeyDownEvent = JQuery.KeyDownEvent;
 
 export default class UiHandler {
     constructor(
@@ -225,32 +226,28 @@ export default class UiHandler {
     // PRIVATE
     // ------------========================================================------------
 
-    private initFormListener() {
-        let reactiveForm = [
-            IndexHtml.inpTitle(), IndexHtml.inpTagsOLD(), IndexHtml.inpBody(),
-            IndexHtml.btnCreate(), IndexHtml.btnUpdate(), IndexHtml.btnCancel(), IndexHtml.btnDelete()
-        ];
-        reactiveForm.forEach((input) => {
-            IndexHtml.onKeyDown(input, (event: KeyboardEvent) => {
-                // TODO does not work for inpTags!
-                if (event.key == "Escape") {
-                    this.eventBus.dispatch(new CancelEditArticleEvent());
-                } else if (event.metaKey && event.key == "s") {
-                    this.eventBus.dispatch(new SaveEvent());
-                }
-            });
-        });
+    private processKeyboardInteraction(eventKey: string, isCmdKeyPressed: boolean) {
+        if (eventKey == "Escape") {
+            this.eventBus.dispatch(new CancelEditArticleEvent());
+        } else if (isCmdKeyPressed && eventKey == "s") {
+            this.eventBus.dispatch(new SaveEvent());
+        }
+    }
 
+    private initFormListener() {
+        $("#formCreate input, #formCreate textarea").on("keydown", (event: KeyDownEvent) => {
+            this.processKeyboardInteraction(event.key, event.metaKey);
+        });
         $("#btnCreate").on("click", () => {
             this.eventBus.dispatch(new CreateEvent());
         });
-        IndexHtml.onClick(IndexHtml.btnUpdate(), () => {
+        $("#btnUpdate").on("click", () => {
             this.eventBus.dispatch(new UpdateEvent());
         });
-        IndexHtml.onClick(IndexHtml.btnCancel(), () => {
+        $("#btnCancel").on("click", () => {
             this.eventBus.dispatch(new CancelEditArticleEvent());
         });
-        IndexHtml.onClick(IndexHtml.btnDelete(), () => {
+        $("#btnDelete").on("click", () => {
             this.eventBus.dispatch(new DeleteEvent());
         });
     }
