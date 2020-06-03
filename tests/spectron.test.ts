@@ -6,6 +6,9 @@ import * as electron from "electron";
 // const electronPath = require('electron') // Require Electron from the binaries included in node_modules.
 const path = require('path')
 
+describe('Spectron', function () {
+   it('test ignored', () => {})
+});
 /* re-enable ... and use properly, sophisticated tests.
 
 describe('Spectron', function () {
