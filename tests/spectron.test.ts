@@ -6,6 +6,8 @@ import * as electron from "electron";
 // const electronPath = require('electron') // Require Electron from the binaries included in node_modules.
 const path = require('path')
 
+/* re-enable ... and use properly, sophisticated tests.
+
 describe('Spectron', function () {
     let app: Application;
 
@@ -53,33 +55,4 @@ describe('Spectron', function () {
         // app.electron.clipboard.readText().then
     });
 });
-
-
-/*
-const app = new Application({
-    path: "/Users/christoph/workspace/electron/Articles.app/Contents/MacOS/Articles"//join(__dirname, '../Articles.app/Contents/MacOS/Articles')
-})
-
-app.start()
-
-    .then(function () {
-        return app.browserWindow.isVisible()
-    })
-    .then(function (isVisible) {
-        assert.strictEqual(isVisible, true)
-    })
-
-    .then(function () {
-        return app.client.getTitle()
-    })
-    .then(function (title) {
-        assert.strictEqual(title, 'My App')
-    })
-
-    .then(function () {
-        return app.stop()
-    })
-    .catch(function (error) {
-        console.error('Test failed', error.message)
-    });
 */
