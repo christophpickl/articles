@@ -10,7 +10,7 @@ import {
 import UiHandler from "./UiHandler";
 import {randomUuid} from "../common";
 import {ArticleService} from "../ArticleService";
-import {Article, Tags} from "../domain";
+import {Article, Articles, Tags} from "../domain";
 import {SortEvent, SortOption} from "../sort";
 
 export class Controller {
@@ -85,11 +85,9 @@ export class Controller {
         article.updated = now;
         article.likes = 0;
 
-        this.uiHandler.resetArticleForm();
         this.uiHandler.addArticleToList(article);
         let articles = this.articleService.create(article);
-        this.uiHandler.fillTagsSummary(Tags.buildFrom(articles));
-        this.uiHandler.inpTitleFocus();
+        this.resetUiAfterCrud(articles);
     }
 
     private onUpdate() {
@@ -102,16 +100,9 @@ export class Controller {
         let updatedString = JSON.stringify(article.updated).split("\"").join(""); // pseudo replaceAll :-/
         this.uiHandler.writeArticleUpdatedInputValue(updatedString);
 
-        this.uiHandler.resetArticleForm();
         this.uiHandler.updateArticleInList(article);
         let articles = this.articleService.update(article);
-        this.uiHandler.fillTagsSummary(Tags.buildFrom(articles));
-        this.uiHandler.inpTitleFocus();
-    }
-
-    private onCancelEditArticle() {
-        this.uiHandler.resetArticleForm();
-        this.uiHandler.inpTitleFocus();
+        this.resetUiAfterCrud(articles);
     }
 
     private onDelete() {
@@ -122,9 +113,21 @@ export class Controller {
         }
 
         this.uiHandler.deleteArticleFromList(articleToDelete.id);
-        this.uiHandler.resetArticleForm();
         let articles = this.articleService.delete(articleToDelete.id);
-        this.uiHandler.fillTagsSummary(Tags.buildFrom(articles));
+        this.resetUiAfterCrud(articles);
+    }
+
+    private resetUiAfterCrud(articles: Articles) {
+        this.uiHandler.resetArticleForm();
+        this.uiHandler.inpTitleFocus();
+
+        let tags = Tags.buildFrom(articles);
+        this.uiHandler.fillTagsSummary(tags);
+        this.uiHandler.resetAutoSuggestTags(tags);
+    }
+
+    private onCancelEditArticle() {
+        this.uiHandler.resetArticleForm();
         this.uiHandler.inpTitleFocus();
     }
 

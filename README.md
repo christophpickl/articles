@@ -4,7 +4,6 @@ An (electron) desktop application to manage (tagged) articles locally.
 
 # Todos
 
-* FINISH: spectron ui tests
 * !!! UI BUG:
     * GIVEN editing an article
     *   AND search so it won't match
@@ -12,16 +11,17 @@ An (electron) desktop application to manage (tagged) articles locally.
     * THEN suddenly show up in the UI
     * // same also in other direction: given visible, when update mismatching, then hide
     * SAME also for sort 
-* [2] UI: mit SHIFT+click auf tag: reset search to only this tag
-* [3] UX: when search for #dao it also finds #daoism and also #foodaofoo (shouldn't it be a "direct" match?!)
+* store in settings also most recent sort order
+* UI: mit SHIFT+click auf tag: reset search to only this tag
+* UX: when search for #dao it also finds #daoism and also #foodaofoo (shouldn't it be a "direct" match?!)
 * frameworks: bootstrap, log4js, tslint 
 * proper environment (pass via system property; if none set-> fail! also needed for PROD/DEV/TEST)
-* ! FEATURE: likes button
+* FINISH: spectron ui tests
+* MINOR UI: UX from buttons also for inputs: black normally, :hover change grey
+* MINOR UI: unify look of placeholders ("tags" is different)
 
 ## Super Fancy
 
-* each search #term as a rounded-corner-box (proper clickable tag)
-* [7] UX: live autocomplete suggestion combox for tags
 * keyboard navigation up/down
 * in-line editor, when click on article (don't jump to form at top!)
 * [3] better build with electron, see: https://github.com/jreznot/electron-java-app/blob/master/build.gradle

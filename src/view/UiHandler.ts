@@ -55,8 +55,7 @@ export default class UiHandler {
         });
     }
 
-    private resetAutoSuggestTags(tags: Tags) {
-        // TODO have to keep up2date when tags changes
+    public resetAutoSuggestTags(tags: Tags) {
         const tagsInput = $("#inpTags");
         tagsInput.empty();
         tags.forEach(function (tag) {
