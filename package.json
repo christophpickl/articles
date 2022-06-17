@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/jest": "^25.2.3",
     "@types/jquery": "^3.3.38",
-    "electron": "^9.0.0",
+    "electron": "^15.5.5",
     "electron-packager": "^14.2.1",
     "jest": "^26.0.1",
     "spectron": "^11.0.0",
